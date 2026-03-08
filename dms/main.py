@@ -12,7 +12,9 @@ while True:
         break
 
     result = detector.detect(frame)
-
+    boxes = output[0]
+    for box in boxes:
+        draw_bbox(frame, box[:4].astype(int))
     print(result)
 
     cv2.imshow("cam", frame)
