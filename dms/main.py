@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from input.video_capture import VideoCapture, CameraNotFoundError
 from utils.logger import setup_logger
+from utils.helpers import draw_bbox
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
 MIN_FPS = 15
@@ -17,29 +18,44 @@ def main() -> None:
     logger.info("Driver Monitoring System starting")
 
     capture = VideoCapture(config_path=CONFIG_PATH)
-    detector = FaceDetector("models/det_2.5g.onnx")
+    detector = FaceDetector(
+        model_path="models/det_2.5g.onnx",
+        input_size=(320, 320),
+        conf_thres=0.5      
+    )
 
     try:
         capture.open()
         logger.info("Capture loop started. Press 'q' to quit.")
 
         while True:
-            ret, frame = capture.read()    
+            ret, frame = capture.read_frame()
             if not ret:
                 break
+            frame = cv2.flip(frame,1)
+            det, _ = detector.detect(frame)
 
-            result = detector.detect(frame) 
-            boxes = result[0]                
-
-            for box in boxes:
-                draw_bbox(frame, box[:4].astype(int))
+            # Handle empty detections
+            if det is None or len(det) == 0:
+                cv2.putText(
+                    frame,
+                    "No face detected",
+                    (20, 80),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    (0, 0, 255),
+                    2,
+                )
+            else:
+                for box in det:
+                    draw_bbox(frame, box[:4].astype(int), color=(255, 0, 255))  # Purple
 
             fps = capture.get_fps()
             cv2.putText(
                 frame,
                 f"FPS: {fps:.2f}",
                 (20, 40),
-                cv2.FONT_HERSHEY_SIMPLEX,
+                cv2.FONT_HERSHEY_SIMPLEX, 
                 1,
                 (0, 255, 0),
                 2,

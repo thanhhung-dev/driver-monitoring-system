@@ -1,0 +1,390 @@
+[2026-03-16 10:16:12] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:16:12] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:16:16] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:16:16] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:16:16] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:16:16] [INFO] [Main] System shutdown
+[2026-03-16 10:16:28] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:16:28] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:16:30] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:16:30] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:16:30] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:16:30] [INFO] [Main] System shutdown
+[2026-03-16 10:16:33] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:16:33] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:16:34] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:16:34] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:16:34] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:16:34] [INFO] [Main] System shutdown
+[2026-03-16 10:16:36] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:16:36] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:16:37] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:16:37] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:16:37] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:16:37] [INFO] [Main] System shutdown
+[2026-03-16 10:20:03] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:20:03] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:20:04] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:20:04] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:20:04] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:20:04] [WARNING] [Main] FPS dropped below requirement: 3.40
+[2026-03-16 10:20:04] [WARNING] [Main] FPS dropped below requirement: 5.09
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 6.08
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 6.38
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 6.87
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 6.98
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 7.29
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 7.55
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 7.76
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 7.93
+[2026-03-16 10:20:05] [WARNING] [Main] FPS dropped below requirement: 8.07
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.19
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.28
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.41
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.51
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.57
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.65
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.72
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.64
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.70
+[2026-03-16 10:20:06] [WARNING] [Main] FPS dropped below requirement: 8.75
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.79
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.85
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.79
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.82
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.87
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.89
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.92
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 8.96
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 9.55
+[2026-03-16 10:20:07] [WARNING] [Main] FPS dropped below requirement: 9.52
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.51
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.64
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.65
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.75
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.75
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.75
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.74
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:08] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.74
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.76
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.87
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.87
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:09] [WARNING] [Main] FPS dropped below requirement: 9.89
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.98
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.99
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.99
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 10.01
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 10.02
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.79
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.76
+[2026-03-16 10:20:10] [WARNING] [Main] FPS dropped below requirement: 9.79
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.80
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.67
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.67
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.67
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.65
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.67
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.67
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.65
+[2026-03-16 10:20:11] [WARNING] [Main] FPS dropped below requirement: 9.55
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.59
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.54
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.57
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.54
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.54
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.57
+[2026-03-16 10:20:12] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.55
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.53
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.59
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.76
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:13] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.89
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.68
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.67
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.66
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.65
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.68
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:14] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.76
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:15] [WARNING] [Main] FPS dropped below requirement: 9.76
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.78
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.77
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.79
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.76
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.89
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.89
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.86
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.87
+[2026-03-16 10:20:16] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 9.90
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.08
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.10
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.11
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.11
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.11
+[2026-03-16 10:20:17] [WARNING] [Main] FPS dropped below requirement: 10.10
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.26
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.25
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.22
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.22
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.26
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.38
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.37
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.36
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.36
+[2026-03-16 10:20:18] [WARNING] [Main] FPS dropped below requirement: 10.38
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.35
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.36
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.34
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.22
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.25
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.27
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.24
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.21
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.25
+[2026-03-16 10:20:19] [WARNING] [Main] FPS dropped below requirement: 10.23
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.26
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.10
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.13
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.11
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.12
+[2026-03-16 10:20:20] [WARNING] [Main] FPS dropped below requirement: 10.11
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.94
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.99
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 10.02
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 10.01
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.99
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.85
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.86
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.88
+[2026-03-16 10:20:21] [WARNING] [Main] FPS dropped below requirement: 9.85
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 9.92
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.30
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.20
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.19
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.19
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.19
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.19
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.20
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.18
+[2026-03-16 10:20:23] [WARNING] [Main] FPS dropped below requirement: 7.25
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.25
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.32
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.30
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:24] [WARNING] [Main] FPS dropped below requirement: 7.32
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.32
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.33
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.31
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.32
+[2026-03-16 10:20:25] [WARNING] [Main] FPS dropped below requirement: 7.30
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 9.91
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 10.10
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 10.01
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 9.99
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 10.00
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 10.00
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 10.00
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 9.99
+[2026-03-16 10:20:26] [WARNING] [Main] FPS dropped below requirement: 9.87
+[2026-03-16 10:20:27] [WARNING] [Main] FPS dropped below requirement: 9.90
+[2026-03-16 10:20:27] [WARNING] [Main] FPS dropped below requirement: 9.58
+[2026-03-16 10:20:27] [WARNING] [Main] FPS dropped below requirement: 9.57
+[2026-03-16 10:20:27] [WARNING] [Main] FPS dropped below requirement: 9.56
+[2026-03-16 10:20:27] [WARNING] [Main] FPS dropped below requirement: 9.58
+[2026-03-16 10:20:27] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:20:27] [INFO] [Main] System shutdown
+[2026-03-16 10:27:27] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:27:28] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:27:29] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:27:29] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:27:29] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:27:29] [WARNING] [Main] FPS dropped below requirement: 5.17
+[2026-03-16 10:27:29] [WARNING] [Main] FPS dropped below requirement: 8.79
+[2026-03-16 10:27:29] [WARNING] [Main] FPS dropped below requirement: 11.52
+[2026-03-16 10:27:29] [WARNING] [Main] FPS dropped below requirement: 13.64
+[2026-03-16 10:28:40] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:28:40] [INFO] [Main] System shutdown
+[2026-03-16 10:28:41] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:28:42] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:28:43] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:28:43] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:28:43] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:28:43] [WARNING] [Main] FPS dropped below requirement: 7.00
+[2026-03-16 10:28:43] [WARNING] [Main] FPS dropped below requirement: 11.30
+[2026-03-16 10:28:43] [WARNING] [Main] FPS dropped below requirement: 14.25
+[2026-03-16 10:29:34] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:29:34] [INFO] [Main] System shutdown
+[2026-03-16 10:32:50] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:32:50] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:32:52] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:32:52] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:32:52] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:32:52] [WARNING] [Main] FPS dropped below requirement: 8.98
+[2026-03-16 10:32:52] [WARNING] [Main] FPS dropped below requirement: 13.82
+[2026-03-16 10:36:19] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:36:19] [INFO] [Main] System shutdown
+[2026-03-16 10:37:19] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:37:19] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:37:20] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:37:20] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:37:20] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:37:20] [WARNING] [Main] FPS dropped below requirement: 7.09
+[2026-03-16 10:37:20] [WARNING] [Main] FPS dropped below requirement: 11.44
+[2026-03-16 10:37:21] [WARNING] [Main] FPS dropped below requirement: 14.29
+[2026-03-16 10:37:38] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:37:38] [INFO] [Main] System shutdown
+[2026-03-16 10:37:46] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:37:46] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:37:47] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:37:47] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:37:47] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:37:47] [WARNING] [Main] FPS dropped below requirement: 5.27
+[2026-03-16 10:37:47] [WARNING] [Main] FPS dropped below requirement: 8.98
+[2026-03-16 10:37:47] [WARNING] [Main] FPS dropped below requirement: 11.80
+[2026-03-16 10:37:47] [WARNING] [Main] FPS dropped below requirement: 13.93
+[2026-03-16 10:38:06] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:38:06] [INFO] [Main] System shutdown
+[2026-03-16 10:38:36] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:38:36] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:38:37] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:38:37] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 3.87
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 6.21
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 8.43
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 9.45
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 10.96
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 12.21
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 13.34
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 14.29
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 14.41
+[2026-03-16 10:38:38] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 14.93
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 14.70
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 14.46
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 14.24
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 14.00
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 13.77
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 13.55
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 13.36
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 13.14
+[2026-03-16 10:38:50] [WARNING] [Main] FPS dropped below requirement: 12.94
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 12.75
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 12.58
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 12.40
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 12.24
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 12.07
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 11.89
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 11.74
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 11.52
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 11.46
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 11.29
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 11.14
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 10.99
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 10.85
+[2026-03-16 10:38:51] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-16 10:38:52] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.91
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.96
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:53] [WARNING] [Main] FPS dropped below requirement: 14.95
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.96
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.96
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.94
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.96
+[2026-03-16 10:38:54] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.96
+[2026-03-16 10:38:55] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:56] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:56] [WARNING] [Main] FPS dropped below requirement: 14.92
+[2026-03-16 10:38:56] [WARNING] [Main] FPS dropped below requirement: 14.99
+[2026-03-16 10:38:56] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:56] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:38:56] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-16 10:38:57] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-16 10:39:01] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:39:01] [INFO] [Main] System shutdown
+[2026-03-16 10:39:11] [INFO] [Main] Driver Monitoring System starting
+[2026-03-16 10:39:11] [INFO] [VideoCapture] Opening camera device_id=0 ...
+[2026-03-16 10:39:12] [INFO] [VideoCapture] Camera opened successfully: 640x480 @ 15 FPS
+[2026-03-16 10:39:12] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-16 10:39:13] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-16 10:39:13] [WARNING] [Main] FPS dropped below requirement: 8.96
+[2026-03-16 10:39:13] [WARNING] [Main] FPS dropped below requirement: 13.75
+[2026-03-16 10:39:28] [INFO] [VideoCapture] Camera released.
+[2026-03-16 10:39:28] [INFO] [Main] System shutdown
