@@ -1,4 +1,6 @@
 camera:
+  # Use device_id (int) for camera, or source (string path) for video file
+  source: "data/in_video.mp4"
   device_id: 0
   resolution:
     width: 640
