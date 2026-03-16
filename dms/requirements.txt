@@ -4,6 +4,5 @@ opencv-python
 numpy
 scikit-image
 faiss-cpu
-dlib==19.22.1
-PyYAML==6.0
-pygame==2.1.2
+PyYAML>=6.0.2
+pygame>=2.5.2

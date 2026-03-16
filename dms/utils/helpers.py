@@ -292,3 +292,24 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float, bbox: li
     cv2.line(image, (tdx, tdy), (x1, y1), (0, 0, 255), 2)  # Red (X-axis)
     cv2.line(image, (tdx, tdy), (x2, y2), (0, 255, 0), 2)  # Green (Y-axis)
     cv2.line(image, (tdx, tdy), (x3, y3), (255, 0, 0), 2)  # Blue (Z-axis)
+
+
+def expand_bbox(x_min: int, y_min: int, x_max: int, y_max: int, factor: float = 0.2) -> Tuple[int, int, int, int]:
+    """Expand bounding box by a factor to include more context for head pose estimation.
+
+    Args:
+        x_min, y_min, x_max, y_max: Bounding box coordinates.
+        factor: Expansion factor (0.2 = 20% each side).
+
+    Returns:
+        Expanded bounding box as (x_min, y_min, x_max, y_max).
+    """
+    width = x_max - x_min
+    height = y_max - y_min
+
+    x_min_new = x_min - int(factor * height)
+    y_min_new = y_min - int(factor * width)
+    x_max_new = x_max + int(factor * height)
+    y_max_new = y_max + int(factor * width)
+
+    return max(0, x_min_new), max(0, y_min_new), x_max_new, y_max_new
