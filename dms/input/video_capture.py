@@ -58,6 +58,7 @@ class VideoCapture:
         self.logger = setup_logger("VideoCapture", config_path)
         self._config = self._load_config(config_path)
         self._cap: cv2.VideoCapture | None = None
+        self._is_video_file = False
         self.fps_counter = FPSCounter()
 
 
@@ -76,28 +77,32 @@ class VideoCapture:
             CameraNotFoundError: If the device cannot be opened (AC #5).
         """
         cam_cfg = self._config["camera"]
+        source = cam_cfg.get("source")
         device_id: int = cam_cfg["device_id"]
         width: int = cam_cfg["resolution"]["width"]
         height: int = cam_cfg["resolution"]["height"]
         target_fps: int = cam_cfg["fps"]
 
-        self.logger.info(f"Opening camera device_id={device_id} ...")
-        self._cap = cv2.VideoCapture(device_id)
+        # Use video file if source is set, otherwise use camera device
+        self._is_video_file = bool(source)
+        input_source = source if source else device_id
+        self.logger.info(f"Opening video source: {input_source} ...")
+        self._cap = cv2.VideoCapture(input_source)
 
         if not self._cap.isOpened():
-            # AC #5: specific, identifiable error code
             raise CameraNotFoundError(
-                f"[ERROR-CAM-001] Cannot open camera device_id={device_id}. "
-                "Check hardware connection."
+                f"[ERROR-CAM-001] Cannot open source: {input_source}. "
+                "Check file path or hardware connection."
             )
 
-        # Apply settings (best-effort; hardware may override)
-        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        self._cap.set(cv2.CAP_PROP_FPS, target_fps)
+        if not source:
+            # Apply settings only for camera (best-effort; hardware may override)
+            self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+            self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+            self._cap.set(cv2.CAP_PROP_FPS, target_fps)
 
         self.logger.info(
-            f"Camera opened successfully: {width}x{height} @ {target_fps} FPS"
+            f"Source opened successfully: {input_source}"
         )
 
     def read_frame(self):
@@ -116,6 +121,10 @@ class VideoCapture:
             )
 
         ret, frame = self._cap.read()
+        if not ret and self._is_video_file:
+            # Loop video from the beginning
+            self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            ret, frame = self._cap.read()
         if ret:
             self.fps_counter.tick()
         return ret, frame
