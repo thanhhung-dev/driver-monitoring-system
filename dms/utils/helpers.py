@@ -156,8 +156,8 @@ def compute_similarity(feat1: np.ndarray, feat2: np.ndarray) -> np.float32:
 def draw_bbox(
     image: np.ndarray,
     bbox: list[int],
-    color: Tuple[int, int, int] = (0, 239, 255),
-    thickness: int = 3,
+    color: Tuple[int, int, int] = (255, 0, 255),
+    thickness: int = 2,
     proportion: float = 0.2,
 ) -> None:
     """Draw a bounding box with corner accents on the image (in-place).
@@ -238,3 +238,78 @@ def draw_bbox_info(
 
     # Draw the filled rectangle
     cv2.rectangle(frame, (rect_x_start, rect_y_start), (rect_x_end, rect_y_end), color, cv2.FILLED)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Head pose visualization
+# ─────────────────────────────────────────────────────────────────────────────
+
+def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float, bbox: list, size_ratio: float = 0.5) -> None:
+    """
+    Draws 3D coordinate axes on a 2D image based on yaw, pitch, and roll angles.
+
+    Args:
+        image: The image to draw on.
+        yaw: Yaw angle in degrees.
+        pitch: Pitch angle in degrees.
+        roll: Roll angle in degrees.
+        bbox: Bounding box [x_min, y_min, x_max, y_max].
+        size_ratio: Scaling factor for the axis length.
+    """
+    import math
+
+    # Convert angles from degrees to radians
+    yaw, pitch, roll = math.radians(-yaw), math.radians(pitch), math.radians(roll)
+
+    # Bounding box calculations
+    x_min, y_min, x_max, y_max = bbox
+    tdx = int(x_min + (x_max - x_min) * 0.5)
+    tdy = int(y_min + (y_max - y_min) * 0.5)
+
+    bbox_size = min(x_max - x_min, y_max - y_min)
+    size = int(bbox_size * size_ratio)
+
+    # Pre-compute trigonometric values
+    cos_yaw = math.cos(yaw)
+    sin_yaw = math.sin(yaw)
+    cos_pitch = math.cos(pitch)
+    sin_pitch = math.sin(pitch)
+    cos_roll = math.cos(roll)
+    sin_roll = math.sin(roll)
+
+    # X-Axis (red)
+    x1 = int(size * (cos_yaw * cos_roll) + tdx)
+    y1 = int(size * (cos_pitch * sin_roll + cos_roll * sin_pitch * sin_yaw) + tdy)
+
+    # Y-Axis (green)
+    x2 = int(size * (-cos_yaw * sin_roll) + tdx)
+    y2 = int(size * (cos_pitch * cos_roll - sin_pitch * sin_yaw * sin_roll) + tdy)
+
+    # Z-Axis (blue)
+    x3 = int(size * sin_yaw + tdx)
+    y3 = int(size * (-cos_yaw * sin_pitch) + tdy)
+
+    cv2.line(image, (tdx, tdy), (x1, y1), (0, 0, 255), 2)  # Red (X-axis)
+    cv2.line(image, (tdx, tdy), (x2, y2), (0, 255, 0), 2)  # Green (Y-axis)
+    cv2.line(image, (tdx, tdy), (x3, y3), (255, 0, 0), 2)  # Blue (Z-axis)
+
+
+def expand_bbox(x_min: int, y_min: int, x_max: int, y_max: int, factor: float = 0.2) -> Tuple[int, int, int, int]:
+    """Expand bounding box by a factor to include more context for head pose estimation.
+
+    Args:
+        x_min, y_min, x_max, y_max: Bounding box coordinates.
+        factor: Expansion factor (0.2 = 20% each side).
+
+    Returns:
+        Expanded bounding box as (x_min, y_min, x_max, y_max).
+    """
+    width = x_max - x_min
+    height = y_max - y_min
+
+    x_min_new = x_min - int(factor * height)
+    y_min_new = y_min - int(factor * width)
+    x_max_new = x_max + int(factor * height)
+    y_max_new = y_max + int(factor * width)
+
+    return max(0, x_min_new), max(0, y_min_new), x_max_new, y_max_new
