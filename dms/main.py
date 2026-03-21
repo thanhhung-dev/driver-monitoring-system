@@ -6,6 +6,7 @@ import torch
 from torchvision import transforms
 
 from detection.face_detector import FaceDetector
+from detection.face_mesh import FaceMeshDetector
 from detection.mobilenetv2 import mobilenet_v2
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -41,6 +42,7 @@ def main() -> None:
         input_size=(320, 320),
         conf_thres=0.5
     )
+    mesh_detector = FaceMeshDetector()
 
     # Load MobileNetV2 head pose model directly
     head_pose = mobilenet_v2(pretrained=False, num_classes=6)
@@ -89,6 +91,15 @@ def main() -> None:
                         x1, y1, x2, y2 = box[:4].astype(int)
                         bbox_width = x2 - x1
                         draw_bbox(frame, (x1, y1, x2, y2))
+
+                        # Face Mesh (MediaPipe) — detect on cropped face, draw on full frame
+                        face_crop = frame[y1:y2, x1:x2]
+                        if face_crop.size > 0:
+                            landmarks = mesh_detector.detect(face_crop)
+                            if landmarks:
+                                # Convert crop coords back to full-frame coords
+                                offset_landmarks = [(x + x1, y + y1) for (x, y) in landmarks]
+                                frame = mesh_detector.draw_full_mesh(frame, offset_landmarks)
 
                         # Expand bbox for better head pose estimation
                         ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
