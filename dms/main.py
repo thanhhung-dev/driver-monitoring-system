@@ -99,7 +99,12 @@ def main() -> None:
                             if landmarks:
                                 # Convert crop coords back to full-frame coords
                                 offset_landmarks = [(x + x1, y + y1) for (x, y) in landmarks]
-                                frame = mesh_detector.draw_full_mesh(frame, offset_landmarks)
+                                frame = mesh_detector.draw_eye_mesh(frame, offset_landmarks)
+                                frame = mesh_detector.draw_nose(frame, offset_landmarks)
+                                frame = mesh_detector.draw_eyebrow_left(frame, offset_landmarks)
+                                frame = mesh_detector.draw_eyebrow_right(frame, offset_landmarks)
+                                frame = mesh_detector.draw_lips(frame, offset_landmarks)
+                                frame = mesh_detector.draw_chin(frame, offset_landmarks)
 
                         # Expand bbox for better head pose estimation
                         ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
