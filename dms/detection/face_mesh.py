@@ -27,6 +27,12 @@ class FaceMeshDetector:
     MOUTH_LEFT = 61
     MOUTH_RIGHT = 291
 
+    # ── Iris landmark indices (MediaPipe Iris) ────────────────────────────────
+    LEFT_IRIS = [468, 469, 470, 471, 472]
+    RIGHT_IRIS = [473, 474, 475, 476, 477]
+    LEFT_IRIS_CENTER = 468
+    RIGHT_IRIS_CENTER = 473
+
     # ── Connection sets ──────────────────────────────────────────────────────
     _CONN_LEFT_EYE       = FaceLandmarksConnections.FACE_LANDMARKS_LEFT_EYE
     _CONN_RIGHT_EYE      = FaceLandmarksConnections.FACE_LANDMARKS_RIGHT_EYE
@@ -63,9 +69,9 @@ class FaceMeshDetector:
         options = FaceLandmarkerOptions(
             base_options=_mp.tasks.BaseOptions(model_asset_path=model_abs),
             num_faces=num_faces,
-            min_face_detection_confidence=0.3,
-            min_face_presence_confidence=0.3,
-            min_tracking_confidence=0.3,
+            min_face_detection_confidence=0.6,
+            min_face_presence_confidence=0.6,
+            min_tracking_confidence=0.6,
             running_mode=RunningMode.IMAGE,
         )
         self.detector = FaceLandmarker.create_from_options(options)
@@ -89,8 +95,7 @@ class FaceMeshDetector:
             return None
 
         h, w = image.shape[:2]
-        landmarks = [(int(lm.x * w), int(lm.y * h)) for lm in result.face_landmarks[0]]
-        return landmarks
+        return [(int(lm.x * w), int(lm.y * h)) for lm in result.face_landmarks[0]]
 
     # ── Drawing helpers ──────────────────────────────────────────────────────
 
@@ -137,6 +142,7 @@ class FaceMeshDetector:
         img_h, img_w = image.shape[:2]
         norm_landmarks = self._make_norm_landmarks(landmarks, img_h, img_w)
         GREEN = (0, 255, 0)
+        CYAN = (0, 255, 255)
 
         # Vẽ mắt trái
         drawing_utils.draw_landmarks(
@@ -161,6 +167,42 @@ class FaceMeshDetector:
             ),
             is_drawing_landmarks=False,
         )
+
+        # Vẽ iris trái
+        drawing_utils.draw_landmarks(
+            image=image,
+            landmark_list=norm_landmarks,
+            connections=self._CONN_LEFT_IRIS,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=drawing_utils.DrawingSpec(
+                color=CYAN, thickness=1
+            ),
+            is_drawing_landmarks=False,
+        )
+
+        # Vẽ iris phải
+        drawing_utils.draw_landmarks(
+            image=image,
+            landmark_list=norm_landmarks,
+            connections=self._CONN_RIGHT_IRIS,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=drawing_utils.DrawingSpec(
+                color=CYAN, thickness=1
+            ),
+            is_drawing_landmarks=False,
+        )
+
+        for idx in self.LEFT_EYE:
+            cv2.circle(image, landmarks[idx], 3, GREEN, -1)
+        for idx in self.RIGHT_EYE:
+            cv2.circle(image, landmarks[idx], 3, (255, 0, 0), -1)
+
+        for idx in self.LEFT_IRIS:
+            cv2.circle(image, landmarks[idx], 2, CYAN, -1)
+        cv2.circle(image, landmarks[self.LEFT_IRIS_CENTER], 3, CYAN, -1)
+        for idx in self.RIGHT_IRIS:
+            cv2.circle(image, landmarks[idx], 2, CYAN, -1)
+        cv2.circle(image, landmarks[self.RIGHT_IRIS_CENTER], 3, CYAN, -1)
 
         return image
 
@@ -191,6 +233,18 @@ class FaceMeshDetector:
     ) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]]]:
         """Get 8-point eye landmark lists."""
         return [landmarks[i] for i in self.LEFT_EYE], [landmarks[i] for i in self.RIGHT_EYE]
+
+    def get_iris_center(
+        self, landmarks: List[Tuple[int, int]]
+    ) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+        """Get iris centers: ((left_x, left_y), (right_x, right_y))."""
+        return landmarks[self.LEFT_IRIS_CENTER], landmarks[self.RIGHT_IRIS_CENTER]
+
+    def get_iris_landmarks(
+        self, landmarks: List[Tuple[int, int]]
+    ) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]]]:
+        """Get 5-point iris landmark lists (center + 4 surrounding)."""
+        return [landmarks[i] for i in self.LEFT_IRIS], [landmarks[i] for i in self.RIGHT_IRIS]
 
     def close(self):
         """Release FaceLandmarker resources."""
