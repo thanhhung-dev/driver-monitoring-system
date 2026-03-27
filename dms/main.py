@@ -6,8 +6,7 @@ import torch
 from torchvision import transforms
 
 from detection.face_detector import FaceDetector
-from detection.face_mesh import FaceMeshDetector
-from detection.mobilenetv2 import mobilenet_v2
+from detection.facemap_3dmm import FaceMap3DMMDetector
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -42,15 +41,9 @@ def main() -> None:
         input_size=(320, 320),
         conf_thres=0.5
     )
-    mesh_detector = FaceMeshDetector()
+    facemap_detector = FaceMap3DMMDetector()
+    logger.info("FaceMap 3DMM landmark detector loaded")
 
-    # Load MobileNetV2 head pose model directly
-    head_pose = mobilenet_v2(pretrained=False, num_classes=6)
-    state_dict = torch.load("models/mobilenetv2.pt", map_location=device, weights_only=True)
-    load_filtered_state_dict(head_pose, state_dict)
-    head_pose.to(device)
-    head_pose.eval()
-    logger.info("MobileNetV2 head pose model loaded")
 
     video_writer = None
 
@@ -92,19 +85,10 @@ def main() -> None:
                         bbox_width = x2 - x1
                         draw_bbox(frame, (x1, y1, x2, y2))
 
-                        # Face Mesh (MediaPipe) — detect on cropped face, draw on full frame
-                        face_crop = frame[y1:y2, x1:x2]
-                        if face_crop.size > 0:
-                            landmarks = mesh_detector.detect(face_crop)
-                            if landmarks:
-                                # Convert crop coords back to full-frame coords
-                                offset_landmarks = [(x + x1, y + y1) for (x, y) in landmarks]
-                                frame = mesh_detector.draw_eye_mesh(frame, offset_landmarks)
-                                frame = mesh_detector.draw_nose(frame, offset_landmarks)
-                                frame = mesh_detector.draw_eyebrow_left(frame, offset_landmarks)
-                                frame = mesh_detector.draw_eyebrow_right(frame, offset_landmarks)
-                                frame = mesh_detector.draw_lips(frame, offset_landmarks)
-                                frame = mesh_detector.draw_chin(frame, offset_landmarks)
+                        # FaceMap 3DMM landmarks (68-point, Qualcomm)
+                        facemap_lmks = facemap_detector.detect(frame, (x1, y1, x2, y2))
+                        if facemap_lmks:
+                            facemap_detector.draw_landmarks(frame, facemap_lmks, color=(255, 255, 0))
 
                         # Expand bbox for better head pose estimation
                         ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
@@ -118,41 +102,6 @@ def main() -> None:
                             image = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
                             image = preprocess(image).unsqueeze(0).to(device)
 
-                            rotation_matrix = head_pose(image)
-                            euler = np.degrees(compute_euler_angles_from_rotation_matrices(rotation_matrix))
-                            pitch = float(euler[:, 0].cpu())
-                            yaw = float(euler[:, 1].cpu())
-                            roll = float(euler[:, 2].cpu())
-
-                            draw_axis(frame, yaw, pitch, roll, [x1, y1, x2, y2])
-
-                            cv2.putText(
-                                frame,
-                                f"Pitch: {pitch:.1f}",
-                                (x1, y1 - 45),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5,
-                                (255, 255, 0),
-                                1,
-                            )
-                            cv2.putText(
-                                frame,
-                                f"Yaw: {yaw:.1f}",
-                                (x1, y1 - 30),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5,
-                                (255, 255, 0),
-                                1,
-                            )
-                            cv2.putText(
-                                frame,
-                                f"Roll: {roll:.1f}",
-                                (x1, y1 - 15),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5,
-                                (255, 255, 0),
-                                1,
-                            )
 
                 fps = capture.get_fps()
                 cv2.putText(
@@ -168,7 +117,7 @@ def main() -> None:
                 video_writer.write(frame)
                 cv2.imshow("Driver Monitoring", frame)
 
-                if cv2.waitKey(1) == 27:
+                if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
 
                 if fps < MIN_FPS:
