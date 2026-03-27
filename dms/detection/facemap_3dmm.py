@@ -19,11 +19,14 @@ class FaceMap3DMMDetector:
     LEFT_EYE_INDICES = [36, 37, 38, 39, 40, 41]
     RIGHT_EYE_INDICES = [42, 43, 44, 45, 46, 47]
     NOISE_INDICES = [27,28,29,30]
-    NOISE_TRIANGLE_INDICES = [32,36]
-
+    NOISE_TRIANGLE_INDICES = [31,33,35]
+    EYE_BROW_LEFT = [17,19,21]
+    EYE_BROW_RIGHT = [22,24,26]
+    OUTER_LIPS_INDICES = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
+    INNER_LIPS_INDICES = [60, 61, 62, 63, 64, 65, 66, 67]
     ALPHA_ID_SIZE = 219
     ALPHA_EXP_SIZE = 39
-
+    CHIN_END = 8
     def __init__(
         self,
         model_dir: str = "models/face-lanmark-detection",
@@ -189,7 +192,7 @@ class FaceMap3DMMDetector:
         image: np.ndarray,
         landmarks: List[Tuple[int, int]],
         color: Tuple[int, int, int] = (255, 255, 0),
-        radius: int = 2,
+        radius: int = 1,
     ) -> np.ndarray:
         """Draw eye mesh only: left eye + right eye connections.
 
@@ -223,9 +226,41 @@ class FaceMap3DMMDetector:
             cv2.circle(image, (x,y), radius, color, -1, lineType=cv2.LINE_AA)
 
         #Ve Mui Tam Giac 
-        noise_rectangle = np.array([landmarks[i] for i in self.NOISE_TRIANGLE_INDICES], dtype=np.int32)
-        cv2.polylines(image , [noise_rectangle], isClosed=True , color=CYAN , thickness=1, lineType=cv2.LINE_AA)
+        # draw bottom noise
+        v_shape = np.array([landmarks[31], landmarks[30], landmarks[35]], dtype=np.int32)
+        cv2.polylines(image, [v_shape], isClosed=False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        w_shape = np.array([landmarks[31], landmarks[33], landmarks[35]], dtype=np.int32)
+        cv2.polylines(image, [w_shape], isClosed=False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
         for idx in self.NOISE_TRIANGLE_INDICES:
             x,y = landmarks[idx]
             cv2.circle(image, (x,y), radius, color, -1 , lineType=cv2.LINE_AA)
+
+        # Ve moi ngoai
+        outer_lips_pts = np.array([landmarks[i] for i in self.OUTER_LIPS_INDICES], dtype=np.int32)
+        cv2.polylines(image, [outer_lips_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.OUTER_LIPS_INDICES:
+            x, y = landmarks[idx]
+            cv2.circle(image, (x, y), radius, color, -1, lineType=cv2.LINE_AA)
+
+        # Ve moi trong
+        inner_lips_pts = np.array([landmarks[i] for i in self.INNER_LIPS_INDICES], dtype=np.int32)
+        cv2.polylines(image, [inner_lips_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.INNER_LIPS_INDICES:
+            x, y = landmarks[idx]
+            cv2.circle(image, (x, y), radius, color, -1, lineType=cv2.LINE_AA)
+        #Ve Long May Trai
+        brow_pts = np.array([landmarks[i] for i in self.EYE_BROW_LEFT], dtype=np.int32)
+        cv2.polylines(image, [brow_pts], isClosed= False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.EYE_BROW_LEFT:
+            x,y = landmarks[idx]
+            cv2.circle(image, [x,y], radius, color, -1 ,lineType=cv2.LINE_AA)
+            
+        #Ve Long May Phai
+        brow_pts = np.array([landmarks[i] for i in self.EYE_BROW_RIGHT], dtype=np.int32)
+        cv2.polylines(image, [brow_pts], isClosed= False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.EYE_BROW_RIGHT:
+            x,y = landmarks[idx]
+            cv2.circle(image, [x,y], radius, color, -1 ,lineType=cv2.LINE_AA)
+        # draw chin
+        cv2.circle(image, landmarks[self.CHIN_END], radius, color, -1, lineType=cv2.LINE_AA)
         
