@@ -88,7 +88,7 @@ def main() -> None:
                         # FaceMap 3DMM landmarks (68-point, Qualcomm)
                         facemap_lmks = facemap_detector.detect(frame, (x1, y1, x2, y2))
                         if facemap_lmks:
-                            facemap_detector.draw_landmarks(frame, facemap_lmks, color=(255, 255, 0))
+                            facemap_detector.draw_full_mesh(frame, facemap_lmks)
 
                         # Expand bbox for better head pose estimation
                         ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)

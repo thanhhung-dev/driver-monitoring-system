@@ -16253,3 +16253,215 @@
 [2026-03-27 16:08:32] [INFO] [Main] Output saved to output.mp4
 [2026-03-27 16:08:33] [INFO] [VideoCapture] Camera released.
 [2026-03-27 16:08:33] [INFO] [Main] System shutdown
+[2026-03-27 16:29:12] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 16:29:12] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 16:29:12] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 16:29:13] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 16:29:13] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 16:29:13] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 16:29:13] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 16:29:14] [WARNING] [Main] FPS dropped below requirement: 6.32
+[2026-03-27 16:29:14] [WARNING] [Main] FPS dropped below requirement: 8.85
+[2026-03-27 16:29:14] [WARNING] [Main] FPS dropped below requirement: 11.54
+[2026-03-27 16:29:14] [WARNING] [Main] FPS dropped below requirement: 13.65
+[2026-03-27 16:29:16] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 16:29:16] [INFO] [VideoCapture] Camera released.
+[2026-03-27 16:29:16] [INFO] [Main] System shutdown
+[2026-03-27 16:51:09] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 16:51:10] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 16:51:10] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 16:51:11] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 16:51:11] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 16:51:11] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 16:51:11] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 16:51:11] [WARNING] [Main] FPS dropped below requirement: 5.11
+[2026-03-27 16:51:11] [WARNING] [Main] FPS dropped below requirement: 7.64
+[2026-03-27 16:51:11] [WARNING] [Main] FPS dropped below requirement: 10.11
+[2026-03-27 16:51:11] [WARNING] [Main] FPS dropped below requirement: 12.17
+[2026-03-27 16:51:11] [WARNING] [Main] FPS dropped below requirement: 13.77
+[2026-03-27 16:51:30] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 16:51:30] [INFO] [VideoCapture] Camera released.
+[2026-03-27 16:51:30] [INFO] [Main] System shutdown
+[2026-03-27 16:55:13] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 16:55:14] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 16:55:14] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 16:55:15] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 16:55:15] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 16:55:15] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 16:55:15] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 16:55:15] [WARNING] [Main] FPS dropped below requirement: 3.45
+[2026-03-27 16:55:15] [WARNING] [Main] FPS dropped below requirement: 5.60
+[2026-03-27 16:55:15] [WARNING] [Main] FPS dropped below requirement: 7.66
+[2026-03-27 16:55:16] [WARNING] [Main] FPS dropped below requirement: 9.40
+[2026-03-27 16:55:16] [WARNING] [Main] FPS dropped below requirement: 10.93
+[2026-03-27 16:55:16] [WARNING] [Main] FPS dropped below requirement: 12.25
+[2026-03-27 16:55:16] [WARNING] [Main] FPS dropped below requirement: 13.36
+[2026-03-27 16:55:16] [WARNING] [Main] FPS dropped below requirement: 14.36
+[2026-03-27 16:55:20] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 16:55:20] [INFO] [VideoCapture] Camera released.
+[2026-03-27 16:55:20] [INFO] [Main] System shutdown
+[2026-03-27 16:56:29] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 16:56:30] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 16:56:30] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 16:56:31] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 16:56:31] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 16:56:31] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 16:56:31] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 16:56:31] [WARNING] [Main] FPS dropped below requirement: 6.16
+[2026-03-27 16:56:31] [WARNING] [Main] FPS dropped below requirement: 8.91
+[2026-03-27 16:56:31] [WARNING] [Main] FPS dropped below requirement: 11.60
+[2026-03-27 16:56:31] [WARNING] [Main] FPS dropped below requirement: 13.70
+[2026-03-27 16:56:35] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 16:56:35] [INFO] [VideoCapture] Camera released.
+[2026-03-27 16:56:35] [INFO] [Main] System shutdown
+[2026-03-27 16:57:22] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 16:57:23] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 16:57:23] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 16:57:24] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 16:57:24] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 16:57:24] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 16:57:24] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 16:57:24] [WARNING] [Main] FPS dropped below requirement: 6.23
+[2026-03-27 16:57:24] [WARNING] [Main] FPS dropped below requirement: 8.81
+[2026-03-27 16:57:24] [WARNING] [Main] FPS dropped below requirement: 11.46
+[2026-03-27 16:57:24] [WARNING] [Main] FPS dropped below requirement: 13.62
+[2026-03-27 16:57:29] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 16:57:29] [INFO] [VideoCapture] Camera released.
+[2026-03-27 16:57:29] [INFO] [Main] System shutdown
+[2026-03-27 17:00:01] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:00:01] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:00:01] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:00:02] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:00:02] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:00:02] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:00:02] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 4.39
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 6.75
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 9.11
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 10.94
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 11.70
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 12.83
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 14.11
+[2026-03-27 17:00:03] [WARNING] [Main] FPS dropped below requirement: 14.85
+[2026-03-27 17:00:10] [WARNING] [Main] FPS dropped below requirement: 14.95
+[2026-03-27 17:00:12] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:00:12] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:00:12] [INFO] [Main] System shutdown
+[2026-03-27 17:03:25] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:03:26] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:03:26] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:03:27] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:03:27] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:03:27] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:03:27] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:03:27] [WARNING] [Main] FPS dropped below requirement: 6.29
+[2026-03-27 17:03:27] [WARNING] [Main] FPS dropped below requirement: 9.06
+[2026-03-27 17:03:27] [WARNING] [Main] FPS dropped below requirement: 11.80
+[2026-03-27 17:03:27] [WARNING] [Main] FPS dropped below requirement: 13.99
+[2026-03-27 17:03:31] [WARNING] [Main] FPS dropped below requirement: 14.93
+[2026-03-27 17:03:32] [WARNING] [Main] FPS dropped below requirement: 14.98
+[2026-03-27 17:03:32] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-27 17:03:32] [WARNING] [Main] FPS dropped below requirement: 14.95
+[2026-03-27 17:03:32] [WARNING] [Main] FPS dropped below requirement: 15.00
+[2026-03-27 17:03:37] [WARNING] [Main] FPS dropped below requirement: 14.97
+[2026-03-27 17:03:41] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:03:41] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:03:41] [INFO] [Main] System shutdown
+[2026-03-27 17:04:01] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:04:02] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:04:02] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:04:03] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:04:03] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:04:03] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:04:03] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:04:03] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:04:03] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:04:03] [INFO] [Main] System shutdown
+[2026-03-27 17:04:25] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:04:25] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:04:25] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:04:26] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:04:26] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:04:26] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:04:26] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:04:26] [WARNING] [Main] FPS dropped below requirement: 7.39
+[2026-03-27 17:04:26] [WARNING] [Main] FPS dropped below requirement: 10.29
+[2026-03-27 17:04:26] [WARNING] [Main] FPS dropped below requirement: 13.17
+[2026-03-27 17:04:33] [WARNING] [Main] FPS dropped below requirement: 14.93
+[2026-03-27 17:04:33] [WARNING] [Main] FPS dropped below requirement: 14.95
+[2026-03-27 17:04:34] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:04:34] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:04:34] [INFO] [Main] System shutdown
+[2026-03-27 17:08:13] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:08:13] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:08:13] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:08:16] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:08:16] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:08:16] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 5.11
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 7.68
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 9.15
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 11.03
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 12.69
+[2026-03-27 17:08:16] [WARNING] [Main] FPS dropped below requirement: 14.05
+[2026-03-27 17:08:20] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:08:20] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:08:20] [INFO] [Main] System shutdown
+[2026-03-27 17:14:33] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:14:34] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:14:34] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:14:35] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:14:35] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:14:35] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:14:35] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:14:35] [WARNING] [Main] FPS dropped below requirement: 7.04
+[2026-03-27 17:14:36] [WARNING] [Main] FPS dropped below requirement: 8.91
+[2026-03-27 17:14:36] [WARNING] [Main] FPS dropped below requirement: 11.56
+[2026-03-27 17:14:36] [WARNING] [Main] FPS dropped below requirement: 13.65
+[2026-03-27 17:14:40] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:14:40] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:14:40] [INFO] [Main] System shutdown
+[2026-03-27 17:14:52] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:14:52] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:14:52] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:14:53] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:14:53] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:14:53] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:14:53] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:14:54] [WARNING] [Main] FPS dropped below requirement: 6.43
+[2026-03-27 17:14:54] [WARNING] [Main] FPS dropped below requirement: 9.81
+[2026-03-27 17:14:54] [WARNING] [Main] FPS dropped below requirement: 12.52
+[2026-03-27 17:14:54] [WARNING] [Main] FPS dropped below requirement: 14.64
+[2026-03-27 17:14:58] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:14:58] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:14:58] [INFO] [Main] System shutdown
+[2026-03-27 17:21:34] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:21:34] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:21:34] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:21:36] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:21:36] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:21:36] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:21:36] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:21:36] [WARNING] [Main] FPS dropped below requirement: 5.16
+[2026-03-27 17:21:36] [WARNING] [Main] FPS dropped below requirement: 7.63
+[2026-03-27 17:21:36] [WARNING] [Main] FPS dropped below requirement: 10.07
+[2026-03-27 17:21:36] [WARNING] [Main] FPS dropped below requirement: 12.13
+[2026-03-27 17:21:36] [WARNING] [Main] FPS dropped below requirement: 13.77
+[2026-03-27 17:21:39] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:21:39] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:21:39] [INFO] [Main] System shutdown
+[2026-03-27 17:29:03] [INFO] [Main] Driver Monitoring System starting
+[2026-03-27 17:29:03] [INFO] [Main] FaceMap 3DMM landmark detector loaded
+[2026-03-27 17:29:03] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-03-27 17:29:04] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-03-27 17:29:04] [INFO] [Main] Capture loop started. Press 'q' to quit.
+[2026-03-27 17:29:04] [INFO] [Main] Saving output to output.mp4
+[2026-03-27 17:29:04] [WARNING] [Main] FPS dropped below requirement: 0.00
+[2026-03-27 17:29:04] [WARNING] [Main] FPS dropped below requirement: 7.00
+[2026-03-27 17:29:04] [WARNING] [Main] FPS dropped below requirement: 8.96
+[2026-03-27 17:29:05] [WARNING] [Main] FPS dropped below requirement: 11.69
+[2026-03-27 17:29:05] [WARNING] [Main] FPS dropped below requirement: 13.79
+[2026-03-27 17:29:07] [INFO] [Main] Output saved to output.mp4
+[2026-03-27 17:29:07] [INFO] [VideoCapture] Camera released.
+[2026-03-27 17:29:07] [INFO] [Main] System shutdown
