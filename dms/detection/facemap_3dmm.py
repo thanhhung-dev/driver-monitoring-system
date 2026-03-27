@@ -16,6 +16,11 @@ class FaceMap3DMMDetector:
 
     INPUT_SIZE = 128
     VERTEX_NUM = 68
+    LEFT_EYE_INDICES = [36, 37, 38, 39, 40, 41]
+    RIGHT_EYE_INDICES = [42, 43, 44, 45, 46, 47]
+    NOISE_INDICES = [27,28,29,30]
+    NOISE_TRIANGLE_INDICES = [32,36]
+
     ALPHA_ID_SIZE = 219
     ALPHA_EXP_SIZE = 39
 
@@ -178,15 +183,49 @@ class FaceMap3DMMDetector:
         )
 
         return [(int(lm[0].item()), int(lm[1].item())) for lm in landmark]
-
-    def draw_landmarks(
+    
+    def draw_full_mesh(
         self,
         image: np.ndarray,
         landmarks: List[Tuple[int, int]],
         color: Tuple[int, int, int] = (255, 255, 0),
         radius: int = 2,
     ) -> np.ndarray:
-        """Draw 68 landmark points on the image."""
-        for x, y in landmarks:
-            cv2.circle(image, (x, y), radius, color, -1, lineType=cv2.LINE_AA)
-        return image
+        """Draw eye mesh only: left eye + right eye connections.
+
+        Args:
+            image: BGR image.
+            landmarks: List of (x, y) pixel landmark coordinates.
+
+        Returns:
+            Image with eye mesh drawn.
+        """
+        CYAN = (255, 255, 0)
+
+        # Vẽ mắt trái
+        left_pts = np.array([landmarks[i] for i in self.LEFT_EYE_INDICES], dtype=np.int32)
+        cv2.polylines(image, [left_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.LEFT_EYE_INDICES:
+            x, y = landmarks[idx]
+            cv2.circle(image, (x, y), radius,  color, -1, lineType=cv2.LINE_AA)
+
+        # Vẽ mắt phải
+        right_pts = np.array([landmarks[i] for i in self.RIGHT_EYE_INDICES], dtype=np.int32)
+        cv2.polylines(image, [right_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.RIGHT_EYE_INDICES:
+            x, y = landmarks[idx]
+            cv2.circle(image, (x, y), radius,  color, -1, lineType=cv2.LINE_AA)
+        # Ve mui
+        noise_pts = np.array([landmarks[i] for i in self.NOISE_INDICES], dtype=np.int32)
+        cv2.polylines(image, [noise_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.NOISE_INDICES:
+            x,y = landmarks[idx]
+            cv2.circle(image, (x,y), radius, color, -1, lineType=cv2.LINE_AA)
+
+        #Ve Mui Tam Giac 
+        noise_rectangle = np.array([landmarks[i] for i in self.NOISE_TRIANGLE_INDICES], dtype=np.int32)
+        cv2.polylines(image , [noise_rectangle], isClosed=True , color=CYAN , thickness=1, lineType=cv2.LINE_AA)
+        for idx in self.NOISE_TRIANGLE_INDICES:
+            x,y = landmarks[idx]
+            cv2.circle(image, (x,y), radius, color, -1 , lineType=cv2.LINE_AA)
+        
