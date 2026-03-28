@@ -7,7 +7,7 @@ from torchvision import transforms
 
 from detection.face_detector import FaceDetector
 from detection.facemap_3dmm import FaceMap3DMMDetector
-
+from detection.mobilenetv2 import mobilenet_v2
 sys.path.insert(0, os.path.dirname(__file__))
 
 from input.video_capture import VideoCapture, CameraNotFoundError
@@ -43,8 +43,13 @@ def main() -> None:
     )
     facemap_detector = FaceMap3DMMDetector()
     logger.info("FaceMap 3DMM landmark detector loaded")
-
-
+    # Load MobileNetV2 head pose model directly
+    head_pose = mobilenet_v2(pretrained=False, num_classes=6)
+    state_dict = torch.load("models/mobilenetv2.pt", map_location=device, weights_only=True)
+    load_filtered_state_dict(head_pose, state_dict)
+    head_pose.to(device)
+    head_pose.eval()
+    logger.info("MobileNetV2 head pose model loaded")
     video_writer = None
 
     try:
@@ -89,7 +94,7 @@ def main() -> None:
                         facemap_lmks = facemap_detector.detect(frame, (x1, y1, x2, y2))
                         if facemap_lmks:
                             facemap_detector.draw_full_mesh(frame, facemap_lmks)
-
+            
                         # Expand bbox for better head pose estimation
                         ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
                         h, w = frame.shape[:2]
@@ -101,6 +106,14 @@ def main() -> None:
                         if face_crop.size > 0:
                             image = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
                             image = preprocess(image).unsqueeze(0).to(device)
+
+                            rotation_matrix = head_pose(image)
+                            euler = np.degrees(compute_euler_angles_from_rotation_matrices(rotation_matrix))
+                            pitch = float(euler[:, 0].cpu())
+                            yaw = float(euler[:, 1].cpu())
+                            roll = float(euler[:, 2].cpu())
+
+                            draw_axis(frame, yaw, pitch, roll, [x1, y1, x2, y2])                            
 
 
                 fps = capture.get_fps()
