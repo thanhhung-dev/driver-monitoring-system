@@ -1,14 +1,23 @@
 camera:
   # Use device_id (int) for camera, or source (string path) for video file
-  source: "data/in_video.mp4"
-  # source: 0
+  source: "data/daraset.mp4"
+  #source: 0
   device_id: 0
   resolution:
     width: 640
     height: 480
   fps: 15
   frame_timeout_ms: 2000
+analysis:
+  ear_threshold: 0.21
+  mar_threshold: 0.65
+  yaw_threshold: 30.0
+  perclos_window_sec: 60.0
+  distracted_dur_sec: 2.0
+  drowsy_score_low: 0.3
+  drowsy_score_high: 0.7
+  perclos_sleeping: 80.0
+  ema_alpha: 0.3
 system:
   log_level: INFO
   log_file: logs/dms.log
-    

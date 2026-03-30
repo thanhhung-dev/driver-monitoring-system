@@ -192,7 +192,7 @@ class FaceMap3DMMDetector:
         image: np.ndarray,
         landmarks: List[Tuple[int, int]],
         color: Tuple[int, int, int] = (255, 255, 0),
-        radius: int = 1,
+        radius: int = 3,
     ) -> np.ndarray:
         """Draw eye mesh only: left eye + right eye connections.
 
