@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 import torch
+import yaml
 from torchvision import transforms
 
 from detection.face_detector import FaceDetector
@@ -11,6 +12,7 @@ from detection.mobilenetv2 import mobilenet_v2
 sys.path.insert(0, os.path.dirname(__file__))
 
 from input.video_capture import VideoCapture, CameraNotFoundError
+from analysis.drowsiness_analyzer import DrowsinessAnalyzer, DriverState, STATE_COLORS
 from utils.logger import setup_logger
 from utils.helpers import draw_bbox, draw_axis, expand_bbox
 from utils.general import compute_euler_angles_from_rotation_matrices
@@ -34,6 +36,18 @@ def main() -> None:
     logger.info("Driver Monitoring System starting")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load analysis config
+    with open(CONFIG_PATH, "r") as f:
+        cfg = yaml.safe_load(f)
+    analysis_cfg = cfg.get("analysis", {})
+    cam_fps = cfg["camera"]["fps"]
+
+    analyzer = DrowsinessAnalyzer(
+        fps=cam_fps,
+        **{k: v for k, v in analysis_cfg.items() if v is not None},
+    )
+    logger.info("Drowsiness analyzer initialized")
 
     capture = VideoCapture(config_path=CONFIG_PATH)
     detector = FaceDetector(
@@ -103,6 +117,7 @@ def main() -> None:
 
                         # Crop & preprocess face
                         face_crop = frame[ey1:ey2, ex1:ex2]
+                        pitch, yaw, roll = 0.0, 0.0, 0.0
                         if face_crop.size > 0:
                             image = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
                             image = preprocess(image).unsqueeze(0).to(device)
@@ -113,8 +128,24 @@ def main() -> None:
                             yaw = float(euler[:, 1].cpu())
                             roll = float(euler[:, 2].cpu())
 
-                            draw_axis(frame, yaw, pitch, roll, [x1, y1, x2, y2])                            
+                            draw_axis(frame, yaw, pitch, roll, [x1, y1, x2, y2])
 
+                        # ── Analysis pipeline ──
+                        if facemap_lmks:
+                            state = analyzer.update(facemap_lmks, pitch, yaw)
+                            color = STATE_COLORS[state]
+
+                            # HUD overlay
+                            cv2.putText(frame, f"State: {state.value}", (20, 80),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+                            cv2.putText(frame, f"EAR: {analyzer.ear:.2f}", (20, 120),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+                            cv2.putText(frame, f"MAR: {analyzer.mar:.2f}", (20, 150),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+                            cv2.putText(frame, f"PERCLOS: {analyzer.perclos:.1f}%", (20, 180),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+                            cv2.putText(frame, f"Score: {analyzer.drowsy_score:.2f}", (20, 210),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 1)
 
                 fps = capture.get_fps()
                 cv2.putText(
