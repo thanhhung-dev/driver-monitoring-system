@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 [2026-03-27 21:26:22] [INFO] [Main] Driver Monitoring System starting
 [2026-03-27 21:26:22] [INFO] [Main] FaceMap 3DMM landmark detector loaded
 [2026-03-27 21:26:22] [INFO] [VideoCapture] Opening video source: data/in_video.mp4 ...
@@ -3830,3 +3832,4 @@
 [2026-04-12 08:52:51] [INFO] [Main] Output saved to dataset.mp4
 [2026-04-12 08:52:51] [INFO] [VideoCapture] Camera released.
 [2026-04-12 08:52:51] [INFO] [Main] System shutdown
+>>>>>>> develop

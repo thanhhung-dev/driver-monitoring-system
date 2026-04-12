@@ -192,7 +192,11 @@ class FaceMap3DMMDetector:
         image: np.ndarray,
         landmarks: List[Tuple[int, int]],
         color: Tuple[int, int, int] = (255, 255, 0),
+<<<<<<< HEAD
+        radius: int = 3,
+=======
         radius: int = 1,
+>>>>>>> develop
     ) -> np.ndarray:
         """Draw eye mesh only: left eye + right eye connections.
 
@@ -263,4 +267,8 @@ class FaceMap3DMMDetector:
             cv2.circle(image, [x,y], radius, color, -1 ,lineType=cv2.LINE_AA)
         # draw chin
         cv2.circle(image, landmarks[self.CHIN_END], radius, color, -1, lineType=cv2.LINE_AA)
+<<<<<<< HEAD
         
+=======
+        
+>>>>>>> develop
