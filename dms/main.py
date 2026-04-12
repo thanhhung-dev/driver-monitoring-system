@@ -8,6 +8,7 @@ from torchvision import transforms
 
 from detection.face_detector import FaceDetector
 from detection.facemap_3dmm import FaceMap3DMMDetector
+from detection.face_attrib_detector import FaceAttribDetector
 from detection.mobilenetv2 import mobilenet_v2
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -19,8 +20,12 @@ from utils.general import compute_euler_angles_from_rotation_matrices
 from detection.common import load_filtered_state_dict
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "output.mp4")
 MIN_FPS = 15
+<<<<<<< HEAD
+=======
 
+>>>>>>> 75e08322a3ef2e5089eeae90e3b15a7f65d4fefa
 # Preprocessing transform (ImageNet normalization)
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
@@ -56,6 +61,8 @@ def main() -> None:
     )
     facemap_detector = FaceMap3DMMDetector()
     logger.info("FaceMap 3DMM landmark detector loaded")
+    attrib_detector = FaceAttribDetector()
+    logger.info("Facial Attribute detector loaded")
     # Load MobileNetV2 head pose model directly
     head_pose = mobilenet_v2(pretrained=False, num_classes=6)
     state_dict = torch.load("models/mobilenetv2.pt", map_location=device, weights_only=True)
@@ -110,6 +117,37 @@ def main() -> None:
                         if facemap_lmks:
                             facemap_detector.draw_full_mesh(frame, facemap_lmks)
             
+                        # Facial attribute detection
+                        attribs = attrib_detector.detect(frame, (x1, y1, x2, y2))
+                        if attribs:
+                            info_x = x2 + 10
+                            cv2.putText(frame, f"L-Eye: {attribs['left_eye_open']:.2f}", (info_x, y1 + 20),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+                            cv2.putText(frame, f"R-Eye: {attribs['right_eye_open']:.2f}", (info_x, y1 + 40),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+                            cv2.putText(frame, f"Glasses: {attribs['glasses']:.2f}", (info_x, y1 + 60),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+                            cv2.putText(frame, f"Mask: {attribs['mask']:.2f}", (info_x, y1 + 80),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+                            cv2.putText(frame, f"Sunglasses: {attribs['sunglasses']:.2f}", (info_x, y1 + 100),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+                            attrib_y = y1 - 10
+                            labels = []
+                            if attribs["left_eye_open"] < 0.5:
+                                labels.append("L-Eye Closed")
+                            if attribs["right_eye_open"] < 0.5:
+                                labels.append("R-Eye Closed")
+                            if attribs["glasses"] > 0.5:
+                                labels.append("Glasses")
+                            if attribs["sunglasses"] > 0.5:
+                                labels.append("Sunglasses")
+                            if attribs["mask"] > 0.5:
+                                labels.append("Mask")
+                            if labels:
+                                text = " | ".join(labels)
+                                cv2.putText(frame, text, (x1, max(attrib_y, 20)),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+
                         # Expand bbox for better head pose estimation
                         ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
                         h, w = frame.shape[:2]
