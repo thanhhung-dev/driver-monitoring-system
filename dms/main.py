@@ -18,7 +18,6 @@ from detection.common import load_filtered_state_dict
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
 MIN_FPS = 15
-OUTPUT_PATH = "dataset.mp4"
 
 # Preprocessing transform (ImageNet normalization)
 preprocess = transforms.Compose([
@@ -64,12 +63,6 @@ def main() -> None:
                 if not capture._is_video_file:
                     frame = cv2.flip(frame, 1)
 
-                # Initialize video writer on first frame
-                if video_writer is None:
-                    h, w = frame.shape[:2]
-                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                    video_writer = cv2.VideoWriter(OUTPUT_PATH, fourcc, 15, (w, h))
-                    logger.info(f"Saving output to {OUTPUT_PATH}")
 
                 det, _ = detector.detect(frame)
 
@@ -127,7 +120,6 @@ def main() -> None:
                     2,
                 )
 
-                video_writer.write(frame)
                 cv2.imshow("Driver Monitoring", frame)
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):

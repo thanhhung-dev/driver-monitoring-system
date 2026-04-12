@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.so
 *.egg-info/
+*.pyc
 dist/
 build/
 *.egg
@@ -26,6 +27,7 @@ Thumbs.db
 
 # Logs
 logs/
+dms.log
 
 # Model weights
 *.onnx
