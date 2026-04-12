@@ -22,6 +22,10 @@ from detection.common import load_filtered_state_dict
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "output.mp4")
 MIN_FPS = 15
+<<<<<<< HEAD
+=======
+
+>>>>>>> 75e08322a3ef2e5089eeae90e3b15a7f65d4fefa
 # Preprocessing transform (ImageNet normalization)
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
@@ -80,12 +84,6 @@ def main() -> None:
                 if not capture._is_video_file:
                     frame = cv2.flip(frame, 1)
 
-                # Initialize video writer on first frame
-                if video_writer is None:
-                    h, w = frame.shape[:2]
-                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                    video_writer = cv2.VideoWriter(OUTPUT_PATH, fourcc, 15, (w, h))
-                    logger.info(f"Saving output to {OUTPUT_PATH}")
 
                 det, _ = detector.detect(frame)
 
@@ -105,8 +103,17 @@ def main() -> None:
                         x1, y1, x2, y2 = box[:4].astype(int)
                         bbox_width = x2 - x1
                         draw_bbox(frame, (x1, y1, x2, y2))
+
+                        # Pad bbox slightly for better landmark fit
+                        pad = int(0.05 * bbox_width)
+                        h_frame, w_frame = frame.shape[:2]
+                        lx1 = max(0, x1 - pad)
+                        ly1 = max(0, y1 - pad)
+                        lx2 = min(w_frame, x2 + pad)
+                        ly2 = min(h_frame, y2 + pad)
+
                         # FaceMap 3DMM landmarks (68-point, Qualcomm)
-                        facemap_lmks = facemap_detector.detect(frame, (x1, y1, x2, y2))
+                        facemap_lmks = facemap_detector.detect(frame, (lx1, ly1, lx2, ly2))
                         if facemap_lmks:
                             facemap_detector.draw_full_mesh(frame, facemap_lmks)
             
@@ -190,7 +197,6 @@ def main() -> None:
                     2,
                 )
 
-                video_writer.write(frame)
                 cv2.imshow("Driver Monitoring", frame)
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):
