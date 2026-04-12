@@ -18,7 +18,7 @@ from detection.common import load_filtered_state_dict
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
 MIN_FPS = 15
-OUTPUT_PATH = "output.mp4"
+OUTPUT_PATH = "dataset.mp4"
 
 # Preprocessing transform (ImageNet normalization)
 preprocess = transforms.Compose([
