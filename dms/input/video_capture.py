@@ -9,9 +9,6 @@ from utils.logger import setup_logger
 
 class CameraNotFoundError(Exception):
     """Raised when the camera cannot be opened or is not connected."""
-
-
-
 class FPSCounter:
     """
     Measures real-time FPS over a sliding window of recent frames.
