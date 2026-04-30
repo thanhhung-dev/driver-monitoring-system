@@ -8,16 +8,15 @@ camera:
     height: 480
   fps: 15
   frame_timeout_ms: 2000
-analysis:
-  ear_threshold: 0.21
-  mar_threshold: 0.65
-  yaw_threshold: 30.0
-  perclos_window_sec: 60.0
-  distracted_dur_sec: 2.0
-  drowsy_score_low: 0.3
-  drowsy_score_high: 0.7
-  perclos_sleeping: 80.0
-  ema_alpha: 0.3
 system:
   log_level: INFO
   log_file: logs/dms.log
+
+# Bật/tắt từng model trong pipeline.
+# face_detector luôn bắt buộc (các model khác phụ thuộc bbox của nó).
+models:
+  facemap: false          # FaceMap 3DMM landmark
+  attrib: false           # Facial attribute (eyes/glasses/mask...)
+  head_pose: true       # MobileNetV2 head pose
+  analyzer: false         # Drowsiness analyzer
+  visualizer: true       # Hiển thị cửa sổ OpenCV
