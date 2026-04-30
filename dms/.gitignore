@@ -30,7 +30,6 @@ logs/
 dms.log
 
 # Model weights
-*.onnx
 *.pth
 *.pt
 
