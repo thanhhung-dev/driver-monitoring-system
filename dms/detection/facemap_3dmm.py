@@ -15,7 +15,7 @@ class FaceMap3DMMDetector:
     into 2D landmark coordinates using pre-computed basis matrices.
     """
 
-    INPUT_SIZE = 224           # network feeding size (depends on ONNX file)
+    INPUT_SIZE = 128           # network feeding size (depends on ONNX file)
     PROJECTION_SIZE = 128      # canonical 3DMM space for landmark projection
     VERTEX_NUM = 68
     LEFT_EYE_INDICES = [36, 37, 38, 39, 40, 41]
@@ -95,67 +95,62 @@ class FaceMap3DMMDetector:
         """Decode 265 3DMM params into 68 (x, y) landmark coordinates."""
         out = torch.from_numpy(output)
 
-        alpha_id = out[0:219] * 3
+        # 1. Scaling coefficients (chuẩn theo Qualcomm facemap_3dmm)
+        alpha_id = out[0:219] * 3.0
         alpha_exp = out[219:258] * 0.5 + 0.5
-        pitch = out[258] * np.pi / 2
-        yaw = out[259] * np.pi / 2
-        roll = out[260] * np.pi / 2
-        tX = out[261] * 60
-        tY = out[262] * 60
-        tZ = 500
-        f = out[263] * 150 + 450
 
-        p_matrix = torch.tensor(
-            [
-                [1, 0, 0],
-                [0, torch.cos(-torch.tensor(np.pi)), -torch.sin(-torch.tensor(np.pi))],
-                [0, torch.sin(-torch.tensor(np.pi)), torch.cos(-torch.tensor(np.pi))],
-            ]
-        )
+        # Pose angles (radians)
+        pitch = out[258] * (np.pi / 2)
+        yaw   = out[259] * (np.pi / 2)
+        roll  = out[260] * (np.pi / 2)
 
-        roll_matrix = torch.tensor(
-            [
-                [torch.cos(-roll), -torch.sin(-roll), 0],
-                [torch.sin(-roll), torch.cos(-roll), 0],
-                [0, 0, 1],
-            ]
-        )
+        tX = out[261] * 60.0
+        tY = out[262] * 60.0
+        tZ = 500.0
+        f  = out[263] * 150.0 + 450.0
 
-        yaw_matrix = torch.tensor(
-            [
-                [torch.cos(-yaw), 0, torch.sin(-yaw)],
-                [0, 1, 0],
-                [-torch.sin(-yaw), 0, torch.cos(-yaw)],
-            ]
-        )
+        # 2. Ma trận xoay và lật trục
+        # P lật trục Y và Z để khớp với hệ tọa độ ảnh (Y hướng xuống)
+        P = torch.tensor([
+            [1,  0,  0],
+            [0, -1,  0],
+            [0,  0, -1]
+        ], dtype=torch.float32)
 
-        pitch_matrix = torch.tensor(
-            [
-                [1, 0, 0],
-                [0, torch.cos(-pitch), -torch.sin(-pitch)],
-                [0, torch.sin(-pitch), torch.cos(-pitch)],
-            ]
-        )
+        cp, sp = torch.cos(pitch), torch.sin(pitch)
+        rx = torch.tensor([[1, 0, 0], [0, cp, -sp], [0, sp, cp]])
 
-        r_matrix = torch.mm(
-            yaw_matrix, torch.mm(pitch_matrix, torch.mm(p_matrix, roll_matrix))
-        )
+        cy, sy = torch.cos(yaw), torch.sin(yaw)
+        ry = torch.tensor([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]])
 
-        vertices = torch.mm(
-            (
-                self.mean_face
-                + torch.mm(self.basis_id, alpha_id.view(self.ALPHA_ID_SIZE, 1))
-                + torch.mm(self.basis_exp, alpha_exp.view(self.ALPHA_EXP_SIZE, 1))
-            ).view([self.VERTEX_NUM, 3]),
-            r_matrix.transpose(0, 1),
-        )
+        cr, sr = torch.cos(roll), torch.sin(roll)
+        rz = torch.tensor([[cr, -sr, 0], [sr, cr, 0], [0, 0, 1]])
 
+        # Thứ tự nhân chuẩn của model này: Yaw * Pitch * P * Roll
+        r_matrix = torch.mm(ry, torch.mm(rx, torch.mm(P, rz)))
+
+        # 3. Reconstruct 3D Shape
+        shape = (
+            self.mean_face
+            + torch.mm(self.basis_id, alpha_id.view(-1, 1))
+            + torch.mm(self.basis_exp, alpha_exp.view(-1, 1))
+        ).view(self.VERTEX_NUM, 3)
+
+        # 4. Transform: V' = R * V + T
+        vertices = torch.mm(shape, r_matrix.t())
+
+        # Điều chỉnh tịnh tiến để khớp hoàn toàn với ảnh:
+        # - tX, tY từ model thường có scale khoảng 60-64
+        # - Thêm offset +45.0 vào Y để đưa landmark từ trán xuống đúng mắt/miệng
         vertices[:, 0] += tX
-        vertices[:, 1] += tY
+        vertices[:, 1] += tY + 45.0
         vertices[:, 2] += tZ
 
-        f_vec = torch.tensor([f, f]).float()
-        return vertices[:, 0:2] * f_vec / tZ
+        # 5. Weak Perspective Projection
+        # f/tZ đóng vai trò là scale factor. f khoảng 450-600, tZ=500 -> scale ~1.0-1.2
+        landmarks_2d = vertices[:, 0:2] * f / tZ
+
+        return landmarks_2d
 
     def detect(
         self,
@@ -206,8 +201,10 @@ class FaceMap3DMMDetector:
 
         landmark = self._project_landmark(output)
 
-        # Transform từ canonical 3DMM space (PROJECTION_SIZE) về frame space.
-        # Vì crop đã vuông nên crop_w == crop_h == crop_size, không bị méo.
+        # Transform từ canonical space (centered at 0,0) về frame space.
+        # landmarks_2d ở bước trước đã được tính dựa trên f, tX, tY, tZ.
+        # Nếu model output landmarks đã nằm trong range [-64, 64], ta cộng thêm 64
+        # để về range [0, 128], sau đó scale lên crop_size thực tế.
         proj = self.PROJECTION_SIZE
         landmark[:, 0] = (landmark[:, 0] + proj / 2) * crop_size / proj + sx1
         landmark[:, 1] = (landmark[:, 1] + proj / 2) * crop_size / proj + sy1
