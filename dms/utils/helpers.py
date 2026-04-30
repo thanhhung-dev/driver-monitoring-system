@@ -1,5 +1,5 @@
 from typing import Optional, Tuple
-
+import math
 import cv2
 import numpy as np
 from skimage.transform import SimilarityTransform
@@ -244,54 +244,82 @@ def draw_bbox_info(
 # Head pose visualization
 # ─────────────────────────────────────────────────────────────────────────────
 
-def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float, bbox: list, size_ratio: float = 0.5) -> None:
+def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
+              bbox: list, size_ratio: float = 0.5,
+              corner: str = "top-right", corner_size: int = 60, margin: int = 20) -> None:
     """
-    Draws 3D coordinate axes on a 2D image based on yaw, pitch, and roll angles.
+    Vẽ hệ trục 3D (X-red yaw, Y-green pitch, Z-blue roll) bằng phép chiếu
+    chuẩn từ rotation matrix R = Rz @ Ry @ Rx.
 
-    Args:
-        image: The image to draw on.
-        yaw: Yaw angle in degrees.
-        pitch: Pitch angle in degrees.
-        roll: Roll angle in degrees.
-        bbox: Bounding box [x_min, y_min, x_max, y_max].
-        size_ratio: Scaling factor for the axis length.
+    Sửa các lỗi cũ:
+      1. Có phép chiếu 3D→2D đầy đủ (lấy cả thành phần Z, không bị "dẹt").
+      2. Đúng thứ tự rotation: R = Rz @ Ry @ Rx.
+      3. Convert độ → radian bằng np.deg2rad.
+      4. Flip dấu yaw để khớp hệ toạ độ image (x→phải, y→xuống, z→ra ngoài).
+      5. Z scale bằng X, Y nên không bị "invisible".
     """
-    import math
+    h, w = image.shape[:2]
 
-    # Convert angles from degrees to radians
-    yaw, pitch, roll = math.radians(-yaw), math.radians(pitch), math.radians(roll)
+    # ── Origin & size ──
+    if corner is None:
+        x_min, y_min, x_max, y_max = bbox
+        tdx = int(x_min + (x_max - x_min) * 0.5)
+        tdy = int(y_min + (y_max - y_min) * 0.5)
+        bbox_size = min(x_max - x_min, y_max - y_min)
+        size = int(bbox_size * size_ratio)
+    else:
+        if corner == "top-right":
+            tdx, tdy = w - margin - corner_size, margin + corner_size
+        elif corner == "top-left":
+            tdx, tdy = margin + corner_size,     margin + corner_size
+        elif corner == "bottom-right":
+            tdx, tdy = w - margin - corner_size, h - margin - corner_size
+        else:
+            tdx, tdy = margin + corner_size,     h - margin - corner_size
+        size = corner_size
 
-    # Bounding box calculations
-    x_min, y_min, x_max, y_max = bbox
-    tdx = int(x_min + (x_max - x_min) * 0.5)
-    tdy = int(y_min + (y_max - y_min) * 0.5)
+    # ── (3) degree → radian, (4) flip dấu yaw cho khớp image-space ──
+    y = np.deg2rad(-yaw)
+    p = np.deg2rad(pitch)
+    r = np.deg2rad(roll)
 
-    bbox_size = min(x_max - x_min, y_max - y_min)
-    size = int(bbox_size * size_ratio)
+    # ── (2) Rotation matrices đúng thứ tự R = Rz @ Ry @ Rx ──
+    Rx = np.array([[1, 0, 0],
+                   [0, np.cos(p), -np.sin(p)],
+                   [0, np.sin(p),  np.cos(p)]])
+    Ry = np.array([[ np.cos(y), 0, np.sin(y)],
+                   [ 0,         1, 0       ],
+                   [-np.sin(y), 0, np.cos(y)]])
+    Rz = np.array([[np.cos(r), -np.sin(r), 0],
+                   [np.sin(r),  np.cos(r), 0],
+                   [0,          0,         1]])
+    R = Rz @ Ry @ Rx
 
-    # Pre-compute trigonometric values
-    cos_yaw = math.cos(yaw)
-    sin_yaw = math.sin(yaw)
-    cos_pitch = math.cos(pitch)
-    sin_pitch = math.sin(pitch)
-    cos_roll = math.cos(roll)
-    sin_roll = math.sin(roll)
+    # ── (5) 3 trục đơn vị cùng scale = size ──
+    axes_3d = np.array([[size, 0,    0   ],   # X
+                        [0,    size, 0   ],   # Y
+                        [0,    0,    size]]).T  # 3×3, mỗi cột là 1 trục
 
-    # X-Axis (red)
-    x1 = int(size * (cos_yaw * cos_roll) + tdx)
-    y1 = int(size * (cos_pitch * sin_roll + cos_roll * sin_pitch * sin_yaw) + tdy)
+    rotated = R @ axes_3d  # 3×3
 
-    # Y-Axis (green)
-    x2 = int(size * (-cos_yaw * sin_roll) + tdx)
-    y2 = int(size * (cos_pitch * cos_roll - sin_pitch * sin_yaw * sin_roll) + tdy)
+    # ── (1) Phép chiếu 3D→2D: lấy x, y; image y hướng xuống nên đảo dấu ──
+    def project(col):
+        return (int(tdx + rotated[0, col]),
+                int(tdy - rotated[1, col]))   # flip y trục image
 
-    # Z-Axis (blue)
-    x3 = int(size * sin_yaw + tdx)
-    y3 = int(size * (-cos_yaw * sin_pitch) + tdy)
+    x_end = project(0)
+    y_end = project(1)
+    z_end = project(2)
 
-    cv2.line(image, (tdx, tdy), (x1, y1), (0, 0, 255), 2)  # Red (X-axis)
-    cv2.line(image, (tdx, tdy), (x2, y2), (0, 255, 0), 2)  # Green (Y-axis)
-    cv2.line(image, (tdx, tdy), (x3, y3), (255, 0, 0), 2)  # Blue (Z-axis)
+    # Painter's algorithm: vẽ trục có Z nhỏ trước (xa hơn) để trục gần đè lên
+    axes = [
+        (x_end, (0, 0, 255), rotated[2, 0]),   # Red   - X (yaw)
+        (y_end, (0, 255, 0), rotated[2, 1]),   # Green - Y (pitch)
+        (z_end, (255, 0, 0), rotated[2, 2]),   # Blue  - Z (roll)
+    ]
+    for end, color, _ in sorted(axes, key=lambda a: a[2]):
+        cv2.line(image, (tdx, tdy), end, color, 2, cv2.LINE_AA)
+
 
 
 def expand_bbox(x_min: int, y_min: int, x_max: int, y_max: int, factor: float = 0.2) -> Tuple[int, int, int, int]:

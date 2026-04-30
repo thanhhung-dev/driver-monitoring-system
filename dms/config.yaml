@@ -11,3 +11,12 @@ camera:
 system:
   log_level: INFO
   log_file: logs/dms.log
+
+# Bật/tắt từng model trong pipeline.
+# face_detector luôn bắt buộc (các model khác phụ thuộc bbox của nó).
+models:
+  facemap: false          # FaceMap 3DMM landmark
+  attrib: false           # Facial attribute (eyes/glasses/mask...)
+  head_pose: true       # MobileNetV2 head pose
+  analyzer: false         # Drowsiness analyzer
+  visualizer: true       # Hiển thị cửa sổ OpenCV
