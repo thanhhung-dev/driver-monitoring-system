@@ -148,7 +148,7 @@ class DMSPipeline:
 
                         driver_state = None
                         if landmarks:
-                            self.facemap.draw_full_mesh(frame, landmarks)
+                            self.visualizer.draw_full_mesh(frame, landmarks)
                             if self.analyzer is not None:
                                 yaw_in   = head_pose_angles[0] if head_pose_angles else 0
                                 pitch_in = head_pose_angles[1] if head_pose_angles else 0

@@ -312,16 +312,6 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
 
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Physically-correct head-pose estimation via solvePnP
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Generic 3D face model (in millimeters), origin at nose tip.
-# Coordinate convention:
-#   +X : to the subject's left  (image right)
-#   +Y : upward
-#   +Z : out of the face toward the camera
-# Values are the de-facto reference numbers used in OpenCV head-pose tutorials.
 _FACE_MODEL_3D = np.array([
     (  0.0,    0.0,    0.0),    # 0: nose tip
     (  0.0, -330.0,  -65.0),    # 1: chin
