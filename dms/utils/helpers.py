@@ -250,13 +250,6 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
     """
     Vẽ hệ trục 3D (X-red yaw, Y-green pitch, Z-blue roll) bằng phép chiếu
     chuẩn từ rotation matrix R = Rz @ Ry @ Rx.
-
-    Sửa các lỗi cũ:
-      1. Có phép chiếu 3D→2D đầy đủ (lấy cả thành phần Z, không bị "dẹt").
-      2. Đúng thứ tự rotation: R = Rz @ Ry @ Rx.
-      3. Convert độ → radian bằng np.deg2rad.
-      4. Flip dấu yaw để khớp hệ toạ độ image (x→phải, y→xuống, z→ra ngoài).
-      5. Z scale bằng X, Y nên không bị "invisible".
     """
     h, w = image.shape[:2]
 
@@ -278,12 +271,10 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
             tdx, tdy = margin + corner_size,     h - margin - corner_size
         size = corner_size
 
-    # ── (3) degree → radian, (4) flip dấu yaw cho khớp image-space ──
     y = np.deg2rad(-yaw)
-    p = np.deg2rad(pitch)
+    p = np.deg2rad(-pitch)
     r = np.deg2rad(roll)
 
-    # ── (2) Rotation matrices đúng thứ tự R = Rz @ Ry @ Rx ──
     Rx = np.array([[1, 0, 0],
                    [0, np.cos(p), -np.sin(p)],
                    [0, np.sin(p),  np.cos(p)]])
@@ -295,31 +286,177 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
                    [0,          0,         1]])
     R = Rz @ Ry @ Rx
 
-    # ── (5) 3 trục đơn vị cùng scale = size ──
-    axes_3d = np.array([[size, 0,    0   ],   # X
-                        [0,    size, 0   ],   # Y
-                        [0,    0,    size]]).T  # 3×3, mỗi cột là 1 trục
+    axes_3d = np.array([[size, 0,    0   ], 
+                        [0,    size, 0   ],   
+                        [0,    0,    size]]).T 
 
     rotated = R @ axes_3d  # 3×3
 
-    # ── (1) Phép chiếu 3D→2D: lấy x, y; image y hướng xuống nên đảo dấu ──
     def project(col):
         return (int(tdx + rotated[0, col]),
-                int(tdy - rotated[1, col]))   # flip y trục image
+                int(tdy - rotated[1, col]))   
 
     x_end = project(0)
     y_end = project(1)
     z_end = project(2)
 
-    # Painter's algorithm: vẽ trục có Z nhỏ trước (xa hơn) để trục gần đè lên
     axes = [
-        (x_end, (0, 0, 255), rotated[2, 0]),   # Red   - X (yaw)
-        (y_end, (0, 255, 0), rotated[2, 1]),   # Green - Y (pitch)
-        (z_end, (255, 0, 0), rotated[2, 2]),   # Blue  - Z (roll)
+        (x_end, (0, 255, 0), rotated[2, 0]),   
+        (y_end, (255, 0, 0), rotated[2, 1]),   
+        (z_end, (0, 0, 255), rotated[2, 2]),  
     ]
     for end, color, _ in sorted(axes, key=lambda a: a[2]):
+        if(color == (0,0,255)):
+            cv2.arrowedLine(image,(tdx,tdy), end, color,2,cv2.LINE_AA, tipLength=0.25)
         cv2.line(image, (tdx, tdy), end, color, 2, cv2.LINE_AA)
 
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Physically-correct head-pose estimation via solvePnP
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Generic 3D face model (in millimeters), origin at nose tip.
+# Coordinate convention:
+#   +X : to the subject's left  (image right)
+#   +Y : upward
+#   +Z : out of the face toward the camera
+# Values are the de-facto reference numbers used in OpenCV head-pose tutorials.
+_FACE_MODEL_3D = np.array([
+    (  0.0,    0.0,    0.0),    # 0: nose tip
+    (  0.0, -330.0,  -65.0),    # 1: chin
+    (-225.0, 170.0, -135.0),    # 2: left eye outer corner
+    ( 225.0, 170.0, -135.0),    # 3: right eye outer corner
+    (-150.0,-150.0, -125.0),    # 4: left mouth corner
+    ( 150.0,-150.0, -125.0),    # 5: right mouth corner
+], dtype=np.float64)
+
+
+def estimate_head_pose_pnp(image_points: np.ndarray,
+                           image_shape: Tuple[int, int]
+                           ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray],
+                                      Optional[np.ndarray], np.ndarray, np.ndarray]:
+    """Estimate head pose from 6 facial landmarks using cv2.solvePnP.
+
+    Args:
+        image_points: (6, 2) float array of pixel coordinates in the order
+            [nose tip, chin, left-eye outer, right-eye outer,
+             left-mouth, right-mouth].
+        image_shape:  (height, width) of the source image.
+
+    Returns:
+        rvec:           Rodrigues rotation vector (3, 1)  or None on failure.
+        tvec:           Translation vector       (3, 1)   or None on failure.
+        rot_matrix:     3x3 rotation matrix              or None on failure.
+        camera_matrix:  3x3 pinhole intrinsics used.
+        dist_coeffs:    (4, 1) zero distortion (assumed).
+    """
+    image_points = np.asarray(image_points, dtype=np.float64).reshape(-1, 2)
+    if image_points.shape[0] < 6:
+        raise ValueError(f"Need 6 landmarks, got {image_points.shape[0]}.")
+
+    h, w = image_shape[:2]
+
+    # (4) Pinhole camera intrinsics:
+    #     focal length ≈ image width, principal point at image center.
+    focal_length = float(w)
+    center = (w * 0.5, h * 0.5)
+    camera_matrix = np.array([
+        [focal_length, 0,            center[0]],
+        [0,            focal_length, center[1]],
+        [0,            0,            1.0     ],
+    ], dtype=np.float64)
+
+    # Assume no lens distortion (good enough for visualization).
+    dist_coeffs = np.zeros((4, 1), dtype=np.float64)
+
+    # (3) solvePnP: 3D model points  ↔  2D image points  →  rvec, tvec.
+    ok, rvec, tvec = cv2.solvePnP(
+        _FACE_MODEL_3D,
+        image_points[:6],
+        camera_matrix,
+        dist_coeffs,
+        flags=cv2.SOLVEPNP_SQPNP,
+    )
+    if not ok:
+        return None, None, None, camera_matrix, dist_coeffs
+
+    # Convert rotation vector → 3x3 rotation matrix.
+    rot_matrix, _ = cv2.Rodrigues(rvec)
+    return rvec, tvec, rot_matrix, camera_matrix, dist_coeffs
+
+
+def draw_axis_pnp(image: np.ndarray,
+                  image_points: np.ndarray,
+                  axis_length: float = 100.0) -> bool:
+    """Draw 3D head-pose axes on `image` using a real perspective projection.
+
+    Pipeline:
+      1. Build a generic 3D face model (6 points).
+      2. solvePnP with the matching 2D landmarks → rvec, tvec.
+      3. Define the 3 unit axes in 3D (scaled by `axis_length` mm).
+      4. cv2.projectPoints  → pixel coords for the axis tips.
+      5. Draw red=X, green=Y, blue=Z lines from the nose tip.
+
+    Args:
+        image:        BGR frame (modified in-place).
+        image_points: (6, 2) landmarks in the order documented in
+                      `estimate_head_pose_pnp`.
+        axis_length:  Length of each axis in millimeters (model units).
+
+    Returns:
+        True if pose was estimated and axes were drawn, False otherwise.
+    """
+    rvec, tvec, _, camera_matrix, dist_coeffs = estimate_head_pose_pnp(
+        image_points, image.shape[:2]
+    )
+    if rvec is None:
+        return False
+
+    # (5) 3D axes in the face's local frame, anchored at the nose tip.
+    # Convention chosen for an intuitive head-pose visualization
+    # (axes follow where the head "looks"):
+    #
+    #   +X (red)   : ra phía bên phải mặt
+    #   +Y (green) : hướng XUỐNG dưới trong ảnh
+    #                (model có +Y up nên ta vẽ endpoint dọc -Y)
+    #   +Z (blue)  : hướng RA KHỎI mặt cùng chiều gaze
+    #                (model có +Z out-of-face; sau R_align từ solvePnP
+    #                 chiều +Z ánh xạ thành "into screen" trong camera,
+    #                 nên cúi đầu → Z đi XUỐNG ảnh, quay phải → Z sang PHẢI ảnh)
+    axes_3d = np.float64([
+        [ axis_length,  0,            0          ],   # +X (right of face)
+        [ 0,           -axis_length,  0          ],   # +Y (down in image)
+        [ 0,            0,            axis_length],   # +Z (along gaze direction)
+    ])
+
+    # (6) Perspective projection of the axis endpoints.
+    projected, _ = cv2.projectPoints(
+        axes_3d, rvec, tvec, camera_matrix, dist_coeffs
+    )
+    projected = projected.reshape(-1, 2)
+
+    # Origin on the image = projected nose tip (1st landmark).
+    origin = tuple(np.int32(image_points[0]))
+    x_pt = tuple(np.int32(projected[0]))
+    y_pt = tuple(np.int32(projected[1]))
+    z_pt = tuple(np.int32(projected[2]))
+
+    # (7) Draw axes — note OpenCV uses BGR.
+    cv2.line(image, origin, x_pt, (255, 0, 0), 3, cv2.LINE_AA)   # X – red
+    cv2.line(image, origin, y_pt, (0, 0, 255), 3, cv2.LINE_AA)   # Y – green
+    cv2.line(image, origin, z_pt, (0, 255, 0), 3, cv2.LINE_AA)   # Z – blue
+    return True
+
+
+def landmarks68_to_pnp_points(landmarks68) -> np.ndarray:
+    """Pick the 6 PnP landmarks from a 68-point (dlib/iBUG) landmark set.
+
+    Indices (0-based): 30 nose tip, 8 chin, 36 left-eye outer,
+    45 right-eye outer, 48 left-mouth, 54 right-mouth.
+    """
+    lm = np.asarray(landmarks68, dtype=np.float64).reshape(-1, 2)
+    return np.stack([lm[30], lm[8], lm[36], lm[45], lm[48], lm[54]], axis=0)
 
 
 def expand_bbox(x_min: int, y_min: int, x_max: int, y_max: int, factor: float = 0.2) -> Tuple[int, int, int, int]:

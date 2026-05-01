@@ -36,7 +36,7 @@ class FaceMap3DMMDetector:
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         model_dir = os.path.join(base_dir, model_dir)
 
-        onnx_path = os.path.join(model_dir, "dms_3dmm.onnx")
+        onnx_path = os.path.join(model_dir, "facemap_3dmm.onnx")
         if not os.path.exists(onnx_path):
             raise FileNotFoundError(f"ONNX model not found: {onnx_path}")
 

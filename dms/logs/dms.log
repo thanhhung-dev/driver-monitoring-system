@@ -6318,3 +6318,307 @@
 [2026-04-30 17:35:46] [INFO] [VideoCapture] Camera released.
 [2026-04-30 17:35:46] [INFO] [DMSPipeline] System shutdown
 [2026-04-30 17:35:46] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:16:54] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:16:55] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:16:55] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 13:16:55] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 13:16:55] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:16:55] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:16:56] [WARNING] [DMSPipeline] FPS dropped below requirement: 4.72
+[2026-05-01 13:16:56] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.43
+[2026-05-01 13:16:56] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.08
+[2026-05-01 13:16:56] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.54
+[2026-05-01 13:16:56] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.76
+[2026-05-01 13:18:16] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:18:16] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:18:16] [INFO] [Main] Người dùng đã dừng chương trình.
+[2026-05-01 13:18:16] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:19:32] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:19:32] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:19:32] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 13:19:32] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 13:19:32] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:19:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:19:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 5.44
+[2026-05-01 13:19:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.29
+[2026-05-01 13:19:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.93
+[2026-05-01 13:19:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.51
+[2026-05-01 13:20:22] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:20:22] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:20:22] [INFO] [Main] Người dùng đã dừng chương trình.
+[2026-05-01 13:20:22] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:20:32] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:20:32] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:20:32] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:20:35] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:20:35] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:20:35] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:20:35] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.35
+[2026-05-01 13:20:36] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.25
+[2026-05-01 13:20:36] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.86
+[2026-05-01 13:20:36] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.68
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.83
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.75
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.76
+[2026-05-01 13:20:39] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.17
+[2026-05-01 13:20:40] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:20:40] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:20:40] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:20:43] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:20:44] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:20:44] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:20:45] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:20:45] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:20:45] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:20:45] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.17
+[2026-05-01 13:20:45] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.19
+[2026-05-01 13:22:46] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:22:46] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:22:46] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:39:04] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:39:05] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:39:05] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:39:07] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:39:07] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:39:07] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:39:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 5.02
+[2026-05-01 13:39:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.70
+[2026-05-01 13:39:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.42
+[2026-05-01 13:39:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.55
+[2026-05-01 13:39:11] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:39:11] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:39:11] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:39:14] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:39:15] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:39:15] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:39:16] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:39:16] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 6.63
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.41
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.19
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.53
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.20
+[2026-05-01 13:39:16] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.51
+[2026-05-01 13:39:17] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.65
+[2026-05-01 13:39:17] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.67
+[2026-05-01 13:39:44] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:39:44] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:39:44] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:39:58] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:39:58] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:39:58] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:39:59] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:39:59] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 3.95
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 6.85
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.25
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.72
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.20
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.79
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.63
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.03
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.87
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.65
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.33
+[2026-05-01 13:40:00] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.01
+[2026-05-01 13:40:01] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.13
+[2026-05-01 13:40:01] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.68
+[2026-05-01 13:40:01] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.18
+[2026-05-01 13:40:01] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.21
+[2026-05-01 13:40:01] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.70
+[2026-05-01 13:41:59] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:41:59] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:41:59] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:42:16] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:42:16] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:42:16] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:42:18] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:42:18] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 5.16
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.81
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.06
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.32
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.77
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.59
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.05
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.08
+[2026-05-01 13:42:18] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.92
+[2026-05-01 13:42:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.57
+[2026-05-01 13:42:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.28
+[2026-05-01 13:42:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.90
+[2026-05-01 13:42:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.94
+[2026-05-01 13:42:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.51
+[2026-05-01 13:42:30] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:42:30] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:42:30] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:45:30] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 13:45:31] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 13:45:31] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 13:45:32] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 13:45:32] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 13:45:32] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 13:45:32] [WARNING] [DMSPipeline] FPS dropped below requirement: 4.11
+[2026-05-01 13:45:32] [WARNING] [DMSPipeline] FPS dropped below requirement: 6.55
+[2026-05-01 13:45:32] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.83
+[2026-05-01 13:45:32] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.77
+[2026-05-01 13:45:32] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.57
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.79
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.67
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.61
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.46
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.67
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.37
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.01
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.07
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.63
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.28
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.73
+[2026-05-01 13:45:33] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.73
+[2026-05-01 13:45:36] [INFO] [VideoCapture] Camera released.
+[2026-05-01 13:45:36] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 13:45:36] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:02:18] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:02:18] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:02:18] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 14:02:19] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 14:02:19] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:02:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:02:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.87
+[2026-05-01 14:02:19] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.82
+[2026-05-01 14:02:30] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:02:30] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:02:30] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:06:02] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:06:02] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:06:02] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 14:06:03] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 14:06:03] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:06:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:06:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 7.11
+[2026-05-01 14:06:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.51
+[2026-05-01 14:06:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.46
+[2026-05-01 14:06:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.67
+[2026-05-01 14:06:58] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:06:58] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:06:58] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:07:42] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:07:42] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:07:42] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 14:07:44] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 14:07:44] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:07:44] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:07:44] [WARNING] [DMSPipeline] FPS dropped below requirement: 7.13
+[2026-05-01 14:07:44] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.51
+[2026-05-01 14:07:44] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.45
+[2026-05-01 14:07:49] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:07:49] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:07:49] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:08:58] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:08:58] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:08:58] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 14:08:59] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 14:08:59] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:08:59] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:08:59] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.63
+[2026-05-01 14:08:59] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.70
+[2026-05-01 14:09:19] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:09:19] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:09:19] [INFO] [Main] Người dùng đã dừng chương trình.
+[2026-05-01 14:09:19] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:09:21] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:09:21] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:09:21] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 14:09:22] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 14:09:22] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:09:22] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:09:22] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.83
+[2026-05-01 14:09:22] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.12
+[2026-05-01 14:09:51] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:09:51] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:09:51] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:13:27] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:13:27] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:13:27] [INFO] [VideoCapture] Opening video source: 0 ...
+[2026-05-01 14:13:29] [INFO] [VideoCapture] Source opened successfully: 0
+[2026-05-01 14:13:29] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:13:29] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:13:29] [WARNING] [DMSPipeline] FPS dropped below requirement: 6.66
+[2026-05-01 14:13:29] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.39
+[2026-05-01 14:13:29] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.28
+[2026-05-01 14:13:29] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.56
+[2026-05-01 14:13:40] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:13:40] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:13:40] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:14:04] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:14:04] [INFO] [Main] Models enabled → facemap=False, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:14:04] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 14:14:04] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 14:14:04] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:14:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:14:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 8.15
+[2026-05-01 14:14:04] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.90
+[2026-05-01 14:17:59] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:17:59] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:17:59] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:19:26] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:19:26] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:19:26] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 14:19:26] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 14:19:26] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:19:27] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:19:27] [WARNING] [DMSPipeline] FPS dropped below requirement: 5.88
+[2026-05-01 14:19:27] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.36
+[2026-05-01 14:19:27] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.79
+[2026-05-01 14:19:27] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.59
+[2026-05-01 14:19:37] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:19:37] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:19:37] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:28:02] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:28:02] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:28:02] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 14:28:02] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 14:28:02] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:28:02] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:28:02] [WARNING] [DMSPipeline] FPS dropped below requirement: 5.14
+[2026-05-01 14:28:02] [WARNING] [DMSPipeline] FPS dropped below requirement: 9.23
+[2026-05-01 14:28:02] [WARNING] [DMSPipeline] FPS dropped below requirement: 10.86
+[2026-05-01 14:28:02] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.52
+[2026-05-01 14:28:38] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:28:38] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:28:38] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:28:53] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:28:53] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:28:53] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 14:28:53] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 14:28:53] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:28:53] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:28:53] [WARNING] [DMSPipeline] FPS dropped below requirement: 6.88
+[2026-05-01 14:28:53] [WARNING] [DMSPipeline] FPS dropped below requirement: 11.97
+[2026-05-01 14:28:53] [WARNING] [DMSPipeline] FPS dropped below requirement: 13.85
+[2026-05-01 14:29:02] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:29:02] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:29:02] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:29:08] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-01 14:29:08] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-05-01 14:29:08] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-01 14:29:08] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-01 14:29:08] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-01 14:29:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 0.00
+[2026-05-01 14:29:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 6.93
+[2026-05-01 14:29:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 12.07
+[2026-05-01 14:29:08] [WARNING] [DMSPipeline] FPS dropped below requirement: 14.02
+[2026-05-01 14:29:12] [INFO] [VideoCapture] Camera released.
+[2026-05-01 14:29:12] [INFO] [DMSPipeline] System shutdown
+[2026-05-01 14:29:12] [INFO] [DMSPipeline] System shutdown

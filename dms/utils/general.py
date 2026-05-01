@@ -404,47 +404,93 @@ def draw_cube(image: np.ndarray, yaw: float, pitch: float, roll: float, bbox: Li
 
 def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float, bbox: List[int], size_ratio: float = 0.5) -> None:
     """
-    Draws 3D coordinate axes on a 2D image based on yaw, pitch, and roll angles.
+    Draws 3D coordinate axes on a 2D image using a *real perspective projection*
+    (cv2.projectPoints) instead of a flat trigonometric approximation.
+
+    The yaw/pitch/roll angles are turned into a 3x3 rotation matrix, that
+    matrix is converted to a Rodrigues rotation vector (rvec), the head is
+    placed in front of a pinhole camera at a synthetic depth, and the three
+    unit axes are projected through the camera intrinsics. This makes the
+    axes behave correctly under combined yaw, pitch, roll – including the
+    X axis tilting up/down and the Z axis collapsing toward the camera as
+    it points forward.
 
     Args:
-        image (numpy.ndarray): The image to draw on.
-        yaw (float): Yaw angle in degrees.
+        image (np.ndarray): BGR image to draw on (modified in place).
+        yaw (float):   Yaw angle in degrees.
         pitch (float): Pitch angle in degrees.
-        roll (float): Roll angle in degrees.
-        bbox (List[int]): Bounding box [x_min, y_min, x_max, y_max].
-        size_ratio (float, optional): Scaling factor for the axis length. Defaults to 0.5.
+        roll (float):  Roll angle in degrees.
+        bbox (List[int]): Bounding box [x_min, y_min, x_max, y_max] – used
+                          to anchor the axis origin and pick a sensible scale.
+        size_ratio (float): Length of each drawn axis as a fraction of the
+                            shorter bbox side. Defaults to 0.5.
     """
-    # Convert angles from degrees to radians
-    yaw, pitch, roll = np.radians([-yaw, pitch, roll])
-
-    # Bounding box calculations
+    h, w = image.shape[:2]
     x_min, y_min, x_max, y_max = bbox
-    tdx = int(x_min + (x_max - x_min) * 0.5)
-    tdy = int(y_min + (y_max - y_min) * 0.5)
 
+    # ── Origin on the image: bbox center ─────────────────────────────────────
+    cx_img = int(x_min + (x_max - x_min) * 0.5)
+    cy_img = int(y_min + (y_max - y_min) * 0.5)
+
+    # Desired drawn length of an axis in pixels.
     bbox_size = min(x_max - x_min, y_max - y_min)
-    size = bbox_size * size_ratio
+    pixel_size = float(bbox_size) * float(size_ratio)
 
-    # Pre-compute trigonometric values
-    cos_yaw = np.cos(yaw)
-    sin_yaw = np.sin(yaw)
-    cos_pitch = np.cos(pitch)
-    sin_pitch = np.sin(pitch)
-    cos_roll = np.cos(roll)
-    sin_roll = np.sin(roll)
+    # ── Rotation matrix from yaw / pitch / roll ─────────────────────────────
+    # Negate yaw so a "look right" angle moves the +X axis to image right
+    # (standard image-space convention: +x right, +y down, +z into screen).
+    R = get_rotation_matrix(np.deg2rad(pitch),
+                            np.deg2rad(-yaw),
+                            np.deg2rad(roll))
 
-    # X-Axis | drawn in red
-    x1 = int(size * (cos_yaw * cos_roll) + tdx)
-    y1 = int(size * (cos_pitch * sin_roll + cos_roll * sin_pitch * sin_yaw) + tdy)
+    # cv2.projectPoints expects a Rodrigues rotation vector.
+    rvec, _ = cv2.Rodrigues(R.astype(np.float64))
 
-    # Y-Axis | drawn in green
-    x2 = int(size * (-cos_yaw * sin_roll) + tdx)
-    y2 = int(size * (cos_pitch * cos_roll - sin_pitch * sin_yaw * sin_roll) + tdy)
+    # ── Pinhole camera intrinsics: focal = image width, principal point = center ──
+    focal_length = float(w)
+    camera_matrix = np.array([
+        [focal_length, 0,            w * 0.5],
+        [0,            focal_length, h * 0.5],
+        [0,            0,            1.0    ],
+    ], dtype=np.float64)
+    dist_coeffs = np.zeros((4, 1), dtype=np.float64)
 
-    # Z-Axis | drawn in blue
-    x3 = int(size * sin_yaw + tdx)
-    y3 = int(size * (-cos_yaw * sin_pitch) + tdy)
+    # ── Synthetic translation: place the head at depth Z so a unit axis
+    # of length `axis_len_3d` projects to ~`pixel_size` pixels:
+    #   pixel_size = focal_length * axis_len_3d / Z
+    axis_len_3d = 1.0
+    depth = focal_length * axis_len_3d / max(pixel_size, 1.0)
+    tvec = np.array([[0.0], [0.0], [depth]], dtype=np.float64)
 
-    cv2.line(image, (tdx, tdy), (x1, y1), (0, 0, 255), 2)  # Red (X-axis)
-    cv2.line(image, (tdx, tdy), (x2, y2), (0, 255, 0), 2)  # Green (Y-axis)
-    cv2.line(image, (tdx, tdy), (x3, y3), (255, 0, 0), 2)  # Blue (Z-axis)
+    # ── 3D axis endpoints (and origin) in the head's local frame ────────────
+    # Convention chosen to match common head-pose demos and to be visually
+    # intuitive (axes follow where the head "looks"):
+    #   +X (red)   : ra phía bên phải mặt
+    #   +Y (green) : hướng xuống dưới (theo chiều image y)
+    #   +Z (blue)  : hướng RA KHỎI mặt về phía camera  →  do đó endpoint
+    #                trong head frame là -Z. Nhờ vậy:
+    #                  - Cúi đầu (pitch > 0)  → Z xoay xuống dưới ảnh
+    #                  - Quay đầu phải (yaw > 0) → Z xoay sang phải ảnh
+    points_3d = np.float64([
+        [0.0,          0.0,          0.0        ],   # origin
+        [axis_len_3d,  0.0,          0.0        ],   # +X (right of face)
+        [0.0,          axis_len_3d,  0.0        ],   # +Y (down in image)
+        [0.0,          0.0,         -axis_len_3d],   # +Z (out of face toward camera)
+    ])
+
+    # Perspective projection through the pinhole model.
+    projected, _ = cv2.projectPoints(points_3d, rvec, tvec,
+                                     camera_matrix, dist_coeffs)
+    projected = projected.reshape(-1, 2)
+
+    # Shift the projected origin to the bbox center on the image plane.
+    offset = np.array([cx_img, cy_img], dtype=np.float64) - projected[0]
+    pts = (projected + offset).astype(int)
+
+    origin = tuple(pts[0])
+    x_end, y_end, z_end = tuple(pts[1]), tuple(pts[2]), tuple(pts[3])
+
+    # ── Draw axes (BGR) ──────────────────────────────────────────────────────
+    cv2.line(image, origin, x_end, (0, 0, 255), 2, cv2.LINE_AA)   # X – red
+    cv2.line(image, origin, y_end, (0, 255, 0), 2, cv2.LINE_AA)   # Y – green
+    cv2.line(image, origin, z_end, (255, 0, 0), 2, cv2.LINE_AA)   # Z – blue
