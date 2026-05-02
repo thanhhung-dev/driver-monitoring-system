@@ -18,7 +18,11 @@ class FaceMap3DMMDetector:
     def __init__(
         self,
         model_dir: str = "models/face-lanmark-detection",
+        bbox_pad_ratio_x: float = 0.5,  
+        bbox_pad_ratio_y: float = 0.10,  
     ) -> None:
+        self.bbox_pad_ratio_x = bbox_pad_ratio_x
+        self.bbox_pad_ratio_y = bbox_pad_ratio_y
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         model_dir = os.path.join(base_dir, model_dir)
 
@@ -26,7 +30,6 @@ class FaceMap3DMMDetector:
         if not os.path.exists(onnx_path):
             raise FileNotFoundError(f"ONNX model not found: {onnx_path}")
 
-        # Model uses external data file (model.data) — must load from directory
 
         onnx_model = onnx.load(onnx_path, load_external_data=False)
         load_external_data_for_model(onnx_model, model_dir)
@@ -43,7 +46,6 @@ class FaceMap3DMMDetector:
         )
         input_meta = self.session.get_inputs()[0]
         self.input_name = input_meta.name
-        # Auto-detect spatial input size from the model (NCHW: [N, C, H, W]).
         shape = input_meta.shape
         if len(shape) == 4 and isinstance(shape[2], int) and isinstance(shape[3], int):
             self.input_size = int(shape[2])
@@ -80,11 +82,8 @@ class FaceMap3DMMDetector:
     def _project_landmark(self, output: np.ndarray) -> torch.Tensor:
         """Decode 265 3DMM params into 68 (x, y) landmark coordinates."""
         out = torch.from_numpy(output)
-
-        # Calculate scale ratio relative to baseline 128x128
         ratio = self.input_size / 128.0
 
-        # 1. Scaling coefficients (chuẩn theo Qualcomm facemap_3dmm)
         alpha_id = out[0:219] * 3.0
         alpha_exp = out[219:258] * 0.5 + 0.5
 
@@ -97,17 +96,12 @@ class FaceMap3DMMDetector:
         tY = out[262] * 60.0 * ratio
         tZ = 500.0
         f  = (out[263] * 150.0 + 450.0) * ratio
-
-        # 2. Ma trận xoay và lật trục
-        # P lật trục Y và Z để khớp với hệ tọa độ ảnh (Y hướng xuống)
-        # Tương đương xoay quanh trục X một góc -pi (theo reference Qualcomm).
         P = torch.tensor([
             [1,  0,  0],
             [0, -1,  0],
             [0,  0, -1]
         ], dtype=torch.float32)
 
-        # Reference Qualcomm dùng GÓC ÂM cho cả pitch / yaw / roll
         cp, sp = torch.cos(-pitch), torch.sin(-pitch)
         rx = torch.tensor([[1, 0, 0], [0, cp, -sp], [0, sp, cp]])
 
@@ -116,27 +110,19 @@ class FaceMap3DMMDetector:
 
         cr, sr = torch.cos(-roll), torch.sin(-roll)
         rz = torch.tensor([[cr, -sr, 0], [sr, cr, 0], [0, 0, 1]])
-
-        # Thứ tự nhân chuẩn của model này: Yaw * Pitch * P * Roll
         r_matrix = torch.mm(ry, torch.mm(rx, torch.mm(P, rz)))
 
-        # 3. Reconstruct 3D Shape
         shape = (
             self.mean_face
             + torch.mm(self.basis_id, alpha_id.view(-1, 1))
             + torch.mm(self.basis_exp, alpha_exp.view(-1, 1))
         ).view(fc.VERTEX_NUM, 3)
 
-        # 4. Transform: V' = R * V + T
         vertices = torch.mm(shape, r_matrix.t())
 
-        # Tịnh tiến theo đúng reference Qualcomm (KHÔNG cộng thêm offset nào)
         vertices[:, 0] += tX
         vertices[:, 1] += tY
         vertices[:, 2] += tZ
-
-        # 5. Weak Perspective Projection
-        # f/tZ đóng vai trò là scale factor. f khoảng 450-600, tZ=500 -> scale ~1.0-1.2
         landmarks_2d = vertices[:, 0:2] * f / tZ
 
         return landmarks_2d
@@ -145,12 +131,14 @@ class FaceMap3DMMDetector:
         self,
         frame: np.ndarray,
         bbox: Tuple[int, int, int, int],
+        landmarks_5: Optional[np.ndarray] = None,
     ) -> Optional[List[Tuple[int, int]]]:
         """Detect 68 facial landmarks given a frame and face bounding box.
 
         Args:
             frame: Full BGR image.
-            bbox: Face bounding box as (x1, y1, x2, y2).
+            bbox: Face bounding box as (x1, y1, x2, y2). Đã được detector pad sẵn.
+            landmarks_5: Không sử dụng (giữ để tương thích interface).
 
         Returns:
             List of 68 (x, y) pixel coordinates in full-frame space,
@@ -158,39 +146,30 @@ class FaceMap3DMMDetector:
         """
         x1, y1, x2, y2 = bbox
         h_frame, w_frame = frame.shape[:2]
-        cx = (x1 + x2) / 2.0
-        cy = (y1 + y2) / 2.0
-        side = max(x2 - x1, y2 - y1)
-        half = side / 2.0
+        bw = x2 - x1
+        bh = y2 - y1
+        px = bw * self.bbox_pad_ratio_x
+        py = bh * self.bbox_pad_ratio_y
+        x1 = x1 - px
+        y1 = y1 - py
+        x2 = x2 + px
+        y2 = y2 + py
 
-        sx1 = int(round(cx - half))
-        sy1 = int(round(cy - half))
-        sx2 = sx1 + int(round(side))
-        sy2 = sy1 + int(round(side))
-
-        # Vùng giao với frame
-        ix1, iy1 = max(sx1, 0), max(sy1, 0)
-        ix2, iy2 = min(sx2, w_frame), min(sy2, h_frame)
+        # Clamp bbox vào trong frame
+        ix1 = max(int(round(x1)), 0)
+        iy1 = max(int(round(y1)), 0)
+        ix2 = min(int(round(x2)), w_frame)
+        iy2 = min(int(round(y2)), h_frame)
         if ix2 <= ix1 or iy2 <= iy1:
             return None
-
-        # Tạo canvas vuông và copy phần ảnh thực vào đúng offset
-        crop_size = sx2 - sx1
-        face_crop = np.zeros((crop_size, crop_size, 3), dtype=frame.dtype)
-        face_crop[iy1 - sy1: iy2 - sy1, ix1 - sx1: ix2 - sx1] = frame[iy1:iy2, ix1:ix2]
-
+        face_crop = frame[iy1:iy2, ix1:ix2]
+        crop_h, crop_w = face_crop.shape[:2]
         blob = self._preprocess(face_crop)
         output = self.session.run(None, {self.input_name: blob})[0][0]  # (265,)
-
         landmark = self._project_landmark(output)
-
-        # Transform từ canonical space (centered at 0,0) về frame space.
-        # Reference Qualcomm: cộng (input_size / 2) rồi scale theo (crop_size / input_size).
-        # Vì pipeline preprocess đã resize crop_size -> input_size, nên dùng đúng input_size
-        # của model (vd: 224) thay vì hardcode 128 mới đúng tỉ lệ.
         proj = float(self.input_size)
-        landmark[:, 0] = (landmark[:, 0] + proj / 2) * crop_size / proj + sx1
-        landmark[:, 1] = (landmark[:, 1] + proj / 2) * crop_size / proj + sy1
+        landmark[:, 0] = (landmark[:, 0] + proj / 2) * crop_w / proj + ix1
+        landmark[:, 1] = (landmark[:, 1] + proj / 2) * crop_h / proj + iy1
 
         return [(int(lm[0].item()), int(lm[1].item())) for lm in landmark]
 

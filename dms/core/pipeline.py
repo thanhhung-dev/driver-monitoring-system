@@ -89,29 +89,23 @@ class DMSPipeline:
                 if not self.capture._is_video_file:
                     frame = cv2.flip(frame, 1)
 
-                det, _ = self.detector.detect(frame)
+                det, kpss = self.detector.detect(frame)
 
                 if det is None or len(det) == 0:
                     if self.visualizer is not None:
                         self.visualizer.draw_no_face_warning(frame)
                 else:
-                    for box in det:
+                    for i, box in enumerate(det):
                         x1, y1, x2, y2 = box[:4].astype(int)
                         bbox = (x1, y1, x2, y2)
-                        bbox_width = x2 - x1
-
-                        # Pad bbox slightly for better landmark fit
-                        pad = int(0.05 * bbox_width)
-                        h_frame, w_frame = frame.shape[:2]
-                        lx1 = max(0, x1 - pad)
-                        ly1 = max(0, y1 - pad)
-                        lx2 = min(w_frame, x2 + pad)
-                        ly2 = min(h_frame, y2 + pad)
+                        
+                        # Get 5-point landmarks for this face
+                        face_kpss = kpss[i] if kpss is not None else None
 
                         # FaceMap 3DMM landmarks (chỉ chạy nếu được bật)
                         landmarks = None
                         if self.facemap is not None:
-                            landmarks = self.facemap.detect(frame, (lx1, ly1, lx2, ly2))
+                            landmarks = self.facemap.detect(frame, bbox, face_kpss)
 
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
