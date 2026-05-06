@@ -14,6 +14,7 @@ from core.visualizer import Visualizer
 from utils.logger import setup_logger
 from utils.helpers import expand_bbox
 from utils.general import compute_euler_angles_from_rotation_matrices
+from detection.eye_gaze import EyeGazeEstimation
 
 MIN_FPS = 15
 
@@ -31,6 +32,7 @@ class DMSPipeline:
         facemap: FaceMap3DMMDetector | None = None,
         attrib_detector: FaceAttribDetector | None = None,
         head_pose=None,
+        eye_gaze: EyeGazeEstimation | None = None,
         analyzer: DrowsinessAnalyzer | None = None,
         visualizer: Visualizer | None = None,
         device: torch.device = None,
@@ -38,6 +40,7 @@ class DMSPipeline:
         self.capture = capture
         self.detector = detector
         self.facemap = facemap
+        self.eye_gaze = eye_gaze
         self.attrib_detector = attrib_detector
         self.head_pose = head_pose
         self.analyzer = analyzer
@@ -107,6 +110,21 @@ class DMSPipeline:
                         if self.facemap is not None:
                             landmarks = self.facemap.detect(frame, bbox, face_kpss)
 
+                        if self.eye_gaze is not None and landmarks is not None:
+                            gaze_l, gaze_r, eye_center_l, eye_center_r = self.eye_gaze.detect(frame, landmarks)
+
+
+                            if gaze_l is not None and eye_center_l is not None:
+                                frame = self.visualizer.draw_gaze_3d(
+                                    frame, eye_center_l, gaze_l.flatten(),
+                                    length_px=110, thickness=2, draw_axes=True,
+                                )
+
+                            if gaze_r is not None and eye_center_r is not None:
+                                frame = self.visualizer.draw_gaze_3d(
+                                    frame, eye_center_r, gaze_r.flatten(),
+                                    length_px=110, thickness=2, draw_axes=True,
+                                )
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
                         if self.attrib_detector is not None:

@@ -11,6 +11,7 @@ from detection.common import load_filtered_state_dict
 from analysis.drowsiness_analyzer import DrowsinessAnalyzer
 from core.pipeline import DMSPipeline
 from core.visualizer import Visualizer
+from detection.eye_gaze import EyeGazeEstimation
 
 CONFIG_PATH = "config.yaml"
 
@@ -37,6 +38,7 @@ def main():
 
     facemap = FaceMap3DMMDetector() if model_cfg.get("facemap", True) else None
     attrib_detector = FaceAttribDetector() if model_cfg.get("attrib", True) else None
+    eye_gaze = EyeGazeEstimation() if model_cfg.get("eye_gaze", False) else None
 
     head_pose = None
     if model_cfg.get("head_pose", False):
@@ -63,6 +65,7 @@ def main():
         capture=capture,
         detector=face_detector,
         facemap=facemap,
+        eye_gaze=eye_gaze,
         attrib_detector=attrib_detector,
         head_pose=head_pose,
         analyzer=analyzer,
