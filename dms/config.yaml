@@ -17,3 +17,4 @@ models:
   head_pose: true       # MobileNetV2 head pose
   analyzer: false         # Drowsiness analyzer
   visualizer: true       # Hiển thị cửa sổ OpenCV
+  eye_gaze: true

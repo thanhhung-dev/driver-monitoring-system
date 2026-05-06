@@ -6,6 +6,7 @@ import torch
 from typing import Optional, Tuple, List
 import onnx
 from utils import facial_constants as fc
+from utils.onnx_providers import make_session
 from onnx.external_data_helper import load_external_data_for_model
 
 class FaceMap3DMMDetector:
@@ -35,15 +36,7 @@ class FaceMap3DMMDetector:
         load_external_data_for_model(onnx_model, model_dir)
         model_bytes = onnx_model.SerializeToString()
 
-        sess_options = onnxruntime.SessionOptions()
-        sess_options.graph_optimization_level = (
-            onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-        )
-        self.session = onnxruntime.InferenceSession(
-            model_bytes,
-            sess_options=sess_options,
-            providers=["CoreMLExecutionProvider", "CPUExecutionProvider"],
-        )
+        self.session = make_session(model_bytes)
         input_meta = self.session.get_inputs()[0]
         self.input_name = input_meta.name
         shape = input_meta.shape

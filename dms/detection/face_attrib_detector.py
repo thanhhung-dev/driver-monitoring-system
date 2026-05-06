@@ -3,7 +3,8 @@ import cv2
 import numpy as np
 import onnxruntime
 from typing import Dict, Optional, Tuple
-
+import onnx
+from onnx.external_data_helper import load_external_data_for_model
 
 ATTRIB_NAMES = [
     "left_eye_open",
@@ -33,9 +34,6 @@ class FaceAttribDetector:
         onnx_path = os.path.join(model_dir, "model.onnx")
         if not os.path.exists(onnx_path):
             raise FileNotFoundError(f"ONNX model not found: {onnx_path}")
-
-        import onnx
-        from onnx.external_data_helper import load_external_data_for_model
 
         onnx_model = onnx.load(onnx_path, load_external_data=False)
 
