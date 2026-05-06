@@ -13,7 +13,7 @@ from analysis.drowsiness_analyzer import DrowsinessAnalyzer
 from core.visualizer import Visualizer
 from utils.logger import setup_logger
 from utils.helpers import expand_bbox
-from utils.general import compute_euler_angles_from_rotation_matrices
+from utils.general import compute_euler_angles_from_rotation_matrices, get_gaze_world_vector
 from detection.eye_gaze import EyeGazeEstimation
 
 MIN_FPS = 15
@@ -56,6 +56,11 @@ class DMSPipeline:
                 std=[0.229, 0.224, 0.225],
             ),
         ])
+
+        # EMA filters cho Gaze để giảm rung
+        self._gaze_ema_alpha = 0.2
+        self._gaze_pitch = None
+        self._gaze_yaw = None
 
         # Throttle head_pose: chỉ chạy mỗi N frame để tránh lag, frame còn
         # lại tái sử dụng kết quả gần nhất (head pose ít đổi giữa 2 frame).
@@ -107,32 +112,62 @@ class DMSPipeline:
 
                         # FaceMap 3DMM landmarks (chỉ chạy nếu được bật)
                         landmarks = None
+                        head_pose_3dmm = None # (pitch, yaw, roll) rad
                         if self.facemap is not None:
-                            landmarks = self.facemap.detect(frame, bbox, face_kpss)
+                            res = self.facemap.detect(frame, bbox, face_kpss)
+                            if res is not None:
+                                landmarks, head_pose_3dmm = res
 
                         if self.eye_gaze is not None and landmarks is not None:
                             gaze_l, gaze_r, eye_center_l, eye_center_r = self.eye_gaze.detect(frame, landmarks)
 
+                            # ── Gaze Fusion & Smoothing ──────────────────
+                            fused_gaze = None
+                            if gaze_l is not None and gaze_r is not None:
+                                fused_gaze = (gaze_l + gaze_r) / 2.0
+                            elif gaze_l is not None:
+                                fused_gaze = gaze_l
+                            elif gaze_r is not None:
+                                fused_gaze = gaze_r
 
-                            if gaze_l is not None and eye_center_l is not None:
-                                frame = self.visualizer.draw_gaze_3d(
-                                    frame, eye_center_l, gaze_l.flatten(),
-                                    length_px=110, thickness=2, draw_axes=True,
-                                )
+                            if fused_gaze is not None:
+                                # Apply EMA filtering
+                                gp, gy = fused_gaze[0], fused_gaze[1]
+                                if self._gaze_pitch is None:
+                                    self._gaze_pitch, self._gaze_yaw = gp, gy
+                                else:
+                                    self._gaze_pitch = self._gaze_ema_alpha * gp + (1 - self._gaze_ema_alpha) * self._gaze_pitch
+                                    self._gaze_yaw   = self._gaze_ema_alpha * gy + (1 - self._gaze_ema_alpha) * self._gaze_yaw
+                                
+                                # Compensate with head pose
+                                if head_pose_3dmm is not None:
+                                    hp_p, hp_y, hp_r = head_pose_3dmm
+                                    v_world = get_gaze_world_vector(self._gaze_pitch, self._gaze_yaw, hp_p, hp_y, hp_r)
+                                    
+                                    # Vẽ cả hai mắt sử cùng một vector đã fusion (đảm bảo song song, đồng đều)
+                                    if eye_center_l is not None:
+                                        frame = self.visualizer.draw_gaze_3d(frame, eye_center_l, v_world, color=(0, 255, 255))
+                                    if eye_center_r is not None:
+                                        frame = self.visualizer.draw_gaze_3d(frame, eye_center_r, v_world, color=(0, 255, 255))
+                                else:
+                                    # Fallback 2D visualization (song song)
+                                    fused_angle = np.array([self._gaze_pitch, self._gaze_yaw])
+                                    if eye_center_l is not None:
+                                        frame = self.visualizer.draw_gaze(frame, eye_center_l, fused_angle)
+                                    if eye_center_r is not None:
+                                        frame = self.visualizer.draw_gaze(frame, eye_center_r, fused_angle)
 
-                            if gaze_r is not None and eye_center_r is not None:
-                                frame = self.visualizer.draw_gaze_3d(
-                                    frame, eye_center_r, gaze_r.flatten(),
-                                    length_px=110, thickness=2, draw_axes=True,
-                                )
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
                         if self.attrib_detector is not None:
                             attribs = self.attrib_detector.detect(frame, bbox)
 
                         # Head pose estimation — throttle mỗi N frame để tránh lag.
-                        head_pose_angles = self._last_head_pose
-                        if self.head_pose is not None:
+                        # Nếu đã có head_pose_3dmm, ta có thể bỏ qua model head_pose rời hoặc dùng 3DMM ghi đè.
+                        if head_pose_3dmm is not None:
+                            p_rad, y_rad, r_rad = head_pose_3dmm
+                            head_pose_angles = (np.rad2deg(y_rad), np.rad2deg(p_rad), np.rad2deg(r_rad))
+                        elif self.head_pose is not None:
                             self._head_pose_counter += 1
                             if self._head_pose_counter >= self._head_pose_interval:
                                 self._head_pose_counter = 0
@@ -162,8 +197,15 @@ class DMSPipeline:
                         if landmarks:
                             self.visualizer.draw_full_mesh(frame, landmarks)
                             if self.analyzer is not None:
-                                yaw_in   = head_pose_angles[0] if head_pose_angles else 0
-                                pitch_in = head_pose_angles[1] if head_pose_angles else 0
+                                # Prioritize 3DMM pose for analyzer if available
+                                if head_pose_3dmm is not None:
+                                    p_rad, y_rad, r_rad = head_pose_3dmm
+                                    pitch_in = np.rad2deg(p_rad)
+                                    yaw_in   = np.rad2deg(y_rad)
+                                else:
+                                    yaw_in   = head_pose_angles[0] if head_pose_angles else 0
+                                    pitch_in = head_pose_angles[1] if head_pose_angles else 0
+                                
                                 driver_state = self.analyzer.update(landmarks, pitch=pitch_in, yaw=yaw_in)
 
                         if self.visualizer is not None:

@@ -322,6 +322,28 @@ def get_rotation_matrix(x, y, z):
     return R
 
 
+def get_gaze_world_vector(eye_pitch, eye_yaw, head_pitch, head_yaw, head_roll):
+    """
+    Combines eye-relative gaze with head pose to get a world-space gaze vector.
+    """
+    # 1. Gaze vector in face-local space
+    # +X right, +Y down, +Z into screen (negative Z is forward)
+    # Pitch > 0 is down, Yaw > 0 is right
+    v_face = np.array([
+        -np.sin(eye_yaw),
+         np.sin(eye_pitch),
+        -np.cos(eye_pitch) * np.cos(eye_yaw)
+    ])
+
+    # 2. Rotation matrix for head (consistent with draw_axis)
+    # We use negative yaw because image X increases to the right.
+    R_head = get_rotation_matrix(head_pitch, -head_yaw, head_roll)
+
+    # 3. Rotate face-space vector to world space
+    v_world = R_head.dot(v_face)
+    return v_world
+
+
 def draw_cube(image: np.ndarray, yaw: float, pitch: float, roll: float, bbox: List[int], size: int = 150) -> None:
     """
     Plots a 3D pose cube on a given image based on yaw, pitch, and roll angles.
