@@ -72,8 +72,8 @@ class FaceMap3DMMDetector:
         rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
         return np.transpose(rgb, (2, 0, 1))[np.newaxis, ...]  # (1, 3, H, W)
 
-    def _project_landmark(self, output: np.ndarray) -> torch.Tensor:
-        """Decode 265 3DMM params into 68 (x, y) landmark coordinates."""
+    def _project_landmark(self, output: np.ndarray) -> Tuple[torch.Tensor, Tuple[float, float, float]]:
+        """Decode 265 3DMM params into 68 (x, y) landmark coordinates and head pose."""
         out = torch.from_numpy(output)
         ratio = self.input_size / 128.0
 
@@ -81,9 +81,9 @@ class FaceMap3DMMDetector:
         alpha_exp = out[219:258] * 0.5 + 0.5
 
         # Pose angles (radians)
-        pitch = out[258] * (np.pi / 2)
-        yaw   = out[259] * (np.pi / 2)
-        roll  = out[260] * (np.pi / 2)
+        pitch = float(out[258].item()) * (np.pi / 2)
+        yaw   = float(out[259].item()) * (np.pi / 2)
+        roll  = float(out[260].item()) * (np.pi / 2)
 
         tX = out[261] * 60.0 * ratio
         tY = out[262] * 60.0 * ratio
@@ -95,13 +95,13 @@ class FaceMap3DMMDetector:
             [0,  0, -1]
         ], dtype=torch.float32)
 
-        cp, sp = torch.cos(-pitch), torch.sin(-pitch)
+        cp, sp = torch.cos(torch.tensor(-pitch)), torch.sin(torch.tensor(-pitch))
         rx = torch.tensor([[1, 0, 0], [0, cp, -sp], [0, sp, cp]])
 
-        cy, sy = torch.cos(-yaw), torch.sin(-yaw)
+        cy, sy = torch.cos(torch.tensor(-yaw)), torch.sin(torch.tensor(-yaw))
         ry = torch.tensor([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]])
 
-        cr, sr = torch.cos(-roll), torch.sin(-roll)
+        cr, sr = torch.cos(torch.tensor(-roll)), torch.sin(torch.tensor(-roll))
         rz = torch.tensor([[cr, -sr, 0], [sr, cr, 0], [0, 0, 1]])
         r_matrix = torch.mm(ry, torch.mm(rx, torch.mm(P, rz)))
 
@@ -118,15 +118,15 @@ class FaceMap3DMMDetector:
         vertices[:, 2] += tZ
         landmarks_2d = vertices[:, 0:2] * f / tZ
 
-        return landmarks_2d
+        return landmarks_2d, (pitch, yaw, roll)
 
     def detect(
         self,
         frame: np.ndarray,
         bbox: Tuple[int, int, int, int],
         landmarks_5: Optional[np.ndarray] = None,
-    ) -> Optional[List[Tuple[int, int]]]:
-        """Detect 68 facial landmarks given a frame and face bounding box.
+    ) -> Optional[Tuple[List[Tuple[int, int]], Tuple[float, float, float]]]:
+        """Detect 68 facial landmarks and head pose given a frame and face bounding box.
 
         Args:
             frame: Full BGR image.
@@ -134,8 +134,10 @@ class FaceMap3DMMDetector:
             landmarks_5: Không sử dụng (giữ để tương thích interface).
 
         Returns:
-            List of 68 (x, y) pixel coordinates in full-frame space,
-            or None if the crop is invalid.
+            Tuple containing:
+              - List of 68 (x, y) pixel coordinates in full-frame space.
+              - Tuple of (pitch, yaw, roll) in radians.
+            Returns None if the crop is invalid.
         """
         x1, y1, x2, y2 = bbox
         h_frame, w_frame = frame.shape[:2]
@@ -159,11 +161,12 @@ class FaceMap3DMMDetector:
         crop_h, crop_w = face_crop.shape[:2]
         blob = self._preprocess(face_crop)
         output = self.session.run(None, {self.input_name: blob})[0][0]  # (265,)
-        landmark = self._project_landmark(output)
+        landmark, head_pose = self._project_landmark(output)
         proj = float(self.input_size)
         landmark[:, 0] = (landmark[:, 0] + proj / 2) * crop_w / proj + ix1
         landmark[:, 1] = (landmark[:, 1] + proj / 2) * crop_h / proj + iy1
 
-        return [(int(lm[0].item()), int(lm[1].item())) for lm in landmark]
+        landmarks_list = [(int(lm[0].item()), int(lm[1].item())) for lm in landmark]
+        return landmarks_list, head_pose
 
         

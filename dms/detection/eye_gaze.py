@@ -7,10 +7,16 @@ from onnx.external_data_helper import load_external_data_for_model
 from utils.onnx_providers import make_session
 
 # ── Landmark index (auto-detect format) ───────────────────────────────────
+# Trả về (left_eye_idx, right_eye_idx) theo perspective của SUBJECT (người).
+#   - dlib 68-point:  36–41 = subject's RIGHT eye, 42–47 = subject's LEFT eye
+#   - MediaPipe 468:  33/133/… nằm bên trái ảnh = subject's RIGHT eye;
+#                     362/263/… nằm bên phải ảnh = subject's LEFT eye
+# Quy ước trên đảm bảo flip ngang chỉ áp dụng cho mắt PHẢI (subject) —
+# đúng như input mà model EyeGaze (Qualcomm) yêu cầu (trained trên left eye).
 _IDX = {
-    468: ([33, 160, 158, 133, 153, 144], [362, 385, 387, 263, 373, 380]),
-    68:  ([36, 37, 38, 39, 40, 41],      [42, 43, 44, 45, 46, 47]),
-    5:   ([0],                            [1]),
+    468: ([362, 385, 387, 263, 373, 380], [33, 160, 158, 133, 153, 144]),
+    68:  ([42, 43, 44, 45, 46, 47],       [36, 37, 38, 39, 40, 41]),
+    5:   ([1],                             [0]),
 }
 
 def _eye_indices(n: int):
@@ -35,7 +41,13 @@ class EyeGazeEstimation:
     def __init__(
         self,
         model_dir: str = "models/eye-gaze-dectecion",
+        smooth_alpha: float = 0.35,
     ) -> None:
+        # EMA smoothing: gaze_out = alpha * raw + (1-alpha) * prev.
+        # alpha nhỏ => mượt hơn nhưng trễ; 0.3–0.5 là vùng cân bằng tốt.
+        self.smooth_alpha = float(smooth_alpha)
+        self._prev_gaze_l: np.ndarray | None = None
+        self._prev_gaze_r: np.ndarray | None = None
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         model_dir = os.path.join(base_dir, model_dir)
 
@@ -102,25 +114,40 @@ class EyeGazeEstimation:
         frame: np.ndarray,
         landmarks: np.ndarray,
         indices: list[int],
-        pad_ratio: float = 0.35,
+        scale: float = 2.2,
     ) -> tuple[np.ndarray | None, np.ndarray]:
         """
-        Crop vùng mắt; trả về (crop_bgr | None, center_xy).
-        pad_ratio: padding tương đối theo chiều rộng bbox.
+        Crop vùng mắt với tỉ lệ 5:3 (= INPUT_W:INPUT_H = 160:96) để khớp đúng
+        format input của EyeGaze model. Mở rộng đủ rộng để bao gồm mí mắt + vùng
+        xung quanh — model cần ngữ cảnh này để xác định iris position so với eye
+        boundary (thiếu ngữ cảnh -> output không nhạy với eye motion -> arrow
+        nhìn như đang follow head).
+
+        scale: hệ số nhân kích thước bbox eye-corner để có crop rộng hơn.
         """
         h, w = frame.shape[:2]
         pts = landmarks[indices, :2].astype(np.float32)
         center = pts.mean(axis=0)
 
-        x1, y1 = pts.min(axis=0).astype(int)
-        x2, y2 = pts.max(axis=0).astype(int)
+        # Lấy khoảng cách 2 corner ngang (eye width) làm chuẩn.
+        x_min, y_min = pts.min(axis=0)
+        x_max, y_max = pts.max(axis=0)
+        eye_w = max(float(x_max - x_min), 4.0)
 
-        pw = max(int((x2 - x1) * pad_ratio), 6)
-        ph = max(int((y2 - y1) * pad_ratio * 2), 6)   # mắt dẹt → pad dọc nhiều hơn
-        x1 = max(0, x1 - pw);  y1 = max(0, y1 - ph)
-        x2 = min(w, x2 + pw);  y2 = min(h, y2 + ph)
+        # Crop width = scale * eye_w; height giữ aspect 5:3 ⇒ h = w * 96/160.
+        crop_w = max(eye_w * scale, 24.0)
+        crop_h = crop_w * (EyeGazeEstimation.INPUT_H / EyeGazeEstimation.INPUT_W)
 
-        if x2 <= x1 or y2 <= y1:
+        cx, cy = float(center[0]), float(center[1])
+        x1 = int(round(cx - crop_w / 2.0))
+        y1 = int(round(cy - crop_h / 2.0))
+        x2 = int(round(cx + crop_w / 2.0))
+        y2 = int(round(cy + crop_h / 2.0))
+
+        x1 = max(0, x1); y1 = max(0, y1)
+        x2 = min(w, x2); y2 = min(h, y2)
+
+        if x2 - x1 < 8 or y2 - y1 < 6:
             return None, center
         return frame[y1:y2, x1:x2], center
 
@@ -153,18 +180,29 @@ class EyeGazeEstimation:
         landmarks = np.asarray(landmarks, dtype=np.float32)
         left_idx, right_idx = _eye_indices(len(landmarks))
         gaze_l = gaze_r = center_l = center_r = None
+        a = self.smooth_alpha
 
         # ── Mắt trái ──────────────────────────────────────────────────────
         crop_l, center_l = self._crop(frame, landmarks, left_idx)
         if crop_l is not None:
-            gaze_l = self._infer(self._preprocess(crop_l, flip=False))
+            raw_l = self._infer(self._preprocess(crop_l, flip=False))
+            if self._prev_gaze_l is None:
+                gaze_l = raw_l
+            else:
+                gaze_l = a * raw_l + (1.0 - a) * self._prev_gaze_l
+            self._prev_gaze_l = gaze_l
 
         # ── Mắt phải — flip về left-eye space trước khi inference ─────────
         crop_r, center_r = self._crop(frame, landmarks, right_idx)
         if crop_r is not None:
-            gaze_r = self._infer(self._preprocess(crop_r, flip=True))
+            raw_r = self._infer(self._preprocess(crop_r, flip=True))
             # Sau inference: negate yaw để convert ngược lại về world coords
             # (flip ngang ↔ yaw đổi dấu, pitch giữ nguyên)
-            gaze_r = gaze_r * np.array([1.0, -1.0], dtype=np.float32)
+            raw_r = raw_r * np.array([1.0, -1.0], dtype=np.float32)
+            if self._prev_gaze_r is None:
+                gaze_r = raw_r
+            else:
+                gaze_r = a * raw_r + (1.0 - a) * self._prev_gaze_r
+            self._prev_gaze_r = gaze_r
 
         return gaze_l, gaze_r, center_l, center_r

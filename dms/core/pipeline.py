@@ -107,24 +107,37 @@ class DMSPipeline:
 
                         # FaceMap 3DMM landmarks (chỉ chạy nếu được bật)
                         landmarks = None
+                        facemap_pose = None
                         if self.facemap is not None:
-                            landmarks = self.facemap.detect(frame, bbox, face_kpss)
+                            facemap_out = self.facemap.detect(frame, bbox, face_kpss)
+                            if facemap_out is not None:
+                                landmarks, facemap_pose = facemap_out
 
                         if self.eye_gaze is not None and landmarks is not None:
                             gaze_l, gaze_r, eye_center_l, eye_center_r = self.eye_gaze.detect(frame, landmarks)
 
+                            def _pitchyaw_to_vec(g: np.ndarray) -> np.ndarray:
+                                pitch, yaw = float(g[0]), float(g[1])
+                                # Bỏ normalize 2D để tránh việc nhiễu nhỏ bị phóng đại 
+                                # thành mũi tên dài khi nhìn thẳng (gây hiện tượng xoè/chéo).
+                                # Dùng trực tiếp sin() để chiều dài mũi tên tự nhiên theo góc nhìn.
+                                dx = -np.sin(yaw)
+                                dy =  np.sin(pitch)
+                                return np.array([dx, dy, 0.0], dtype=np.float32)
 
-                            if gaze_l is not None and eye_center_l is not None:
-                                frame = self.visualizer.draw_gaze_3d(
-                                    frame, eye_center_l, gaze_l.flatten(),
-                                    length_px=110, thickness=2, draw_axes=True,
-                                )
-
-                            if gaze_r is not None and eye_center_r is not None:
-                                frame = self.visualizer.draw_gaze_3d(
-                                    frame, eye_center_r, gaze_r.flatten(),
-                                    length_px=110, thickness=2, draw_axes=True,
-                                )
+                            # Tính gaze trung bình của 2 mắt để đảm bảo luôn song song (thẳng hàng)
+                            if gaze_l is not None and gaze_r is not None:
+                                gaze_avg = (gaze_l + gaze_r) / 2.0
+                                vec = _pitchyaw_to_vec(gaze_avg)
+                                if eye_center_l is not None:
+                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_l, vec, length=200, thickness=2)
+                                if eye_center_r is not None:
+                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_r, vec, length=200, thickness=2)
+                            else:
+                                if gaze_l is not None and eye_center_l is not None:
+                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_l, _pitchyaw_to_vec(gaze_l), length=200, thickness=2)
+                                if gaze_r is not None and eye_center_r is not None:
+                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_r, _pitchyaw_to_vec(gaze_r), length=200, thickness=2)
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
                         if self.attrib_detector is not None:
