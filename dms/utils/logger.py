@@ -2,7 +2,7 @@ import logging
 import os
 import yaml
 
-def setup_logger(name:str, config_path:str = "dms\config.yaml") -> logging.Logger:
+def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
     """
     Khoi Tao Logger tu file Config.yaml
     Tham So
@@ -14,10 +14,10 @@ def setup_logger(name:str, config_path:str = "dms\config.yaml") -> logging.Logge
     
     if os.path.exists(config_path):
         with open(config_path, "r") as f:
-            config = yaml.safe_load(f)
-    log_level_str = config.get("system", {}).get("log_level", "INFO")
-    log_level = getattr(logging, log_level_str, logging.INFO)
-    log_file = config.get("system", {}).get("log_file")
+            config = yaml.safe_load(f) or {}
+        log_level_str = config.get("system", {}).get("log_level", "INFO")
+        log_level = getattr(logging, log_level_str, logging.INFO)
+        log_file = config.get("system", {}).get("log_file")
     
     logger = logging.getLogger(name)
     logger.setLevel(log_level)

@@ -1,234 +1,162 @@
-import cv2
 import logging
+import os
+from typing import Tuple
+
+import cv2
 import numpy as np
 import onnxruntime
-from typing import Tuple
-from utils.helpers import distance2bbox, distance2kps
+
+
+def _distance2bbox(points: np.ndarray, distance: np.ndarray) -> np.ndarray:
+    x1 = points[:, 0] - distance[:, 0]
+    y1 = points[:, 1] - distance[:, 1]
+    x2 = points[:, 0] + distance[:, 2]
+    y2 = points[:, 1] + distance[:, 3]
+    return np.stack([x1, y1, x2, y2], axis=-1)
+
+
+def _distance2kps(points: np.ndarray, distance: np.ndarray) -> np.ndarray:
+    preds = []
+    for i in range(0, distance.shape[1], 2):
+        px = points[:, i % 2] + distance[:, i]
+        py = points[:, i % 2 + 1] + distance[:, i + 1]
+        preds.append(px)
+        preds.append(py)
+    return np.stack(preds, axis=-1)
 
 
 class FaceDetector:
     """
-    SCRFD ONNX face detector.
-    Supported models: det_2.5g.onnx, det_10g.onnx, det_500m.onnx
+    InsightFace SCRFD ONNX detector (e.g. det_2.5g.onnx).
+
+    Anchor-based, 3 FPN strides (8, 16, 32), 2 anchors per location,
+    RGB input normalized with mean=127.5, std=128.
     """
+
+    DEFAULT_INPUT_SHAPE = (480, 640)  # (H, W)
+
+    # SCRFD constants
+    _FEAT_STRIDE_FPN = [8, 16, 32]
+    _NUM_ANCHORS = 2
+    _INPUT_MEAN = 127.5
+    _INPUT_STD = 128.0
+
     def __init__(
         self,
         model_path: str,
-        input_size: Tuple[int, int] = (320, 320),
+        metadata_path: str | None = None,  # kept for backward compatibility (unused)
         conf_thres: float = 0.5,
         iou_thres: float = 0.4,
+        input_shape: Tuple[int, int] | None = None,
     ) -> None:
-        """SCRFD initialization
+        """Initialize the SCRFD face detector.
 
         Args:
-            model_path (str): Path to .onnx model file.
-            input_size (Tuple[int, int]): Input image size as (width, height). Defaults to (640, 640).
-            conf_thres (float, optional): Confidence threshold. Defaults to 0.5.
-            iou_thres (float, optional): Non-max suppression (NMS) threshold. Defaults to 0.4.
+            model_path:    Path to det_2.5g.onnx (or any SCRFD ONNX).
+            metadata_path: Unused (kept for backward compat).
+            conf_thres:    Confidence threshold.
+            iou_thres:     IoU threshold for NMS.
+            input_shape:   (H, W) override; defaults to DEFAULT_INPUT_SHAPE.
         """
-
-        self.input_size = input_size
         self.conf_thres = conf_thres
         self.iou_thres = iou_thres
 
-        # SCRFD model params --------------
-        self.fmc = 3
-        self._feat_stride_fpn = [8, 16, 32]
-        self._num_anchors = 2
-        self.use_kps = True
+        h, w = input_shape if input_shape is not None else self.DEFAULT_INPUT_SHAPE
+        self.input_h = int(h)
+        self.input_w = int(w)
 
-        self.mean = 127.5
-        self.std = 128.0
+        self._initialize_model(model_path)
+        self._anchor_cache: dict[tuple, np.ndarray] = {}
 
-        self.center_cache = {}
-        # ---------------------------------
-
-        self._initialize_model(model_path=model_path)
-        
+    # --------------------------------------------------------------------- #
+    # Model loading
+    # --------------------------------------------------------------------- #
     def _initialize_model(self, model_path: str) -> None:
-        """Initialize the ONNX inference session.
-
-        Args:
-            model_path (str): Path to .onnx model.
-        """
         try:
-            # Session options for better performance
             sess_options = onnxruntime.SessionOptions()
-            sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+            sess_options.graph_optimization_level = (
+                onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+            )
 
-            # Use CoreML on Mac, CPU otherwise
-            providers = ["CoreMLExecutionProvider", "CPUExecutionProvider"]
+            preferred = [
+                "CUDAExecutionProvider",
+                "DirectMLExecutionProvider",
+                "CoreMLExecutionProvider",
+                "CPUExecutionProvider",
+            ]
+            available = onnxruntime.get_available_providers()
+            providers = [p for p in preferred if p in available]
 
             self.session = onnxruntime.InferenceSession(
-                model_path,
-                sess_options=sess_options,
-                providers=providers
+                model_path, sess_options=sess_options, providers=providers
             )
-            # Get model info
-            self.output_names = [x.name for x in self.session.get_outputs()]
-            self.input_names = [x.name for x in self.session.get_inputs()]
-            logging.info(f"Successfully loaded SCRFD model from {model_path}")
-            logging.info(f"Using providers: {self.session.get_providers()}")
+            self.input_name = self.session.get_inputs()[0].name
+            self.output_names = [o.name for o in self.session.get_outputs()]
+
+            # Heuristic: SCRFD has 9 outputs (3 strides × {score, bbox, kps})
+            if len(self.output_names) != 9:
+                logging.warning(
+                    f"Expected 9 outputs for SCRFD, got {len(self.output_names)}. "
+                    "Detection may not work correctly."
+                )
+
+            logging.info(
+                f"Loaded SCRFD model from {model_path} "
+                f"(providers={providers}, input={self.input_h}x{self.input_w})"
+            )
         except Exception as e:
-            logging.error(f"Failed to load the model: {e}")
+            logging.error(f"Failed to load SCRFD model: {e}")
             raise
-    def forward(
-        self, image: np.ndarray, threshold: float
-    ) -> Tuple[list[np.ndarray], list[np.ndarray], list[np.ndarray]]:
-        """Run a single forward pass through the detection model.
 
-        Args:
-            image: Preprocessed input image (already resized / padded).
-            threshold: Score threshold for filtering detections.
+    # --------------------------------------------------------------------- #
+    # Pre-processing (letterbox + normalize)
+    # --------------------------------------------------------------------- #
+    def _letterbox(self, image: np.ndarray) -> Tuple[np.ndarray, float, int, int]:
+        h, w = image.shape[:2]
+        scale = min(self.input_w / w, self.input_h / h)
+        new_w, new_h = int(round(w * scale)), int(round(h * scale))
+        resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
 
-        Returns:
-            Tuple of (scores_list, bboxes_list, kpss_list) per FPN stride.
-        """
-        scores_list = []
-        bboxes_list = []
-        kpss_list = []
-        input_size = tuple(image.shape[0:2][::-1])
+        canvas = np.zeros((self.input_h, self.input_w, 3), dtype=image.dtype)
+        top = (self.input_h - new_h) // 2
+        left = (self.input_w - new_w) // 2
+        canvas[top:top + new_h, left:left + new_w, :] = resized
+        return canvas, scale, top, left
 
-        blob = cv2.dnn.blobFromImage(
-            image,
-            1.0 / self.std,
-            input_size,
-            (self.mean, self.mean, self.mean),
-            swapRB=True
-        )
-        outputs = self.session.run(self.output_names, {self.input_names[0]: blob})
+    def _preprocess(self, image: np.ndarray) -> Tuple[np.ndarray, float, int, int]:
+        if image.ndim == 2:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
-        input_height = blob.shape[2]
-        input_width = blob.shape[3]
+        letter, scale, top, left = self._letterbox(image)
+        rgb = cv2.cvtColor(letter, cv2.COLOR_BGR2RGB)
+        blob = (rgb.astype(np.float32) - self._INPUT_MEAN) / self._INPUT_STD
+        blob = np.transpose(blob, (2, 0, 1))[None, ...]  # NCHW
+        return blob, scale, top, left
 
-        fmc = self.fmc
-        for idx, stride in enumerate(self._feat_stride_fpn):
-            scores = outputs[idx]
-            bbox_preds = outputs[idx + fmc]
-            bbox_preds = bbox_preds * stride
-            if self.use_kps:
-                kps_preds = outputs[idx + fmc * 2] * stride
+    # --------------------------------------------------------------------- #
+    # Anchor centers cache
+    # --------------------------------------------------------------------- #
+    def _get_anchor_centers(self, h: int, w: int, stride: int) -> np.ndarray:
+        key = (h, w, stride)
+        if key in self._anchor_cache:
+            return self._anchor_cache[key]
 
-            height = input_height // stride
-            width = input_width // stride
-            key = (height, width, stride)
-            if key in self.center_cache:
-                anchor_centers = self.center_cache[key]
-            else:
-                anchor_centers = np.stack(np.mgrid[:height, :width][::-1], axis=-1).astype(np.float32)
-                anchor_centers = (anchor_centers * stride).reshape((-1, 2))
-                if self._num_anchors > 1:
-                    anchor_centers = np.stack([anchor_centers] * self._num_anchors, axis=1).reshape((-1, 2))
-                if len(self.center_cache) < 100:
-                    self.center_cache[key] = anchor_centers
+        ax, ay = np.meshgrid(np.arange(w), np.arange(h))
+        centers = np.stack([ax, ay], axis=-1).astype(np.float32) * stride
+        centers = centers.reshape(-1, 2)
+        if self._NUM_ANCHORS > 1:
+            centers = np.repeat(centers, self._NUM_ANCHORS, axis=0)
+        self._anchor_cache[key] = centers
+        return centers
 
-            pos_inds = np.where(scores >= threshold)[0]
-            bboxes = distance2bbox(anchor_centers, bbox_preds)
-            pos_scores = scores[pos_inds]
-            pos_bboxes = bboxes[pos_inds]
-            scores_list.append(pos_scores)
-            bboxes_list.append(pos_bboxes)
-            if self.use_kps:
-                kpss = distance2kps(anchor_centers, kps_preds)
-                kpss = kpss.reshape((kpss.shape[0], -1, 2))
-                pos_kpss = kpss[pos_inds]
-                kpss_list.append(pos_kpss)
-        return scores_list, bboxes_list, kpss_list
-
-    def detect(
-        self, image: np.ndarray, max_num: int = 0, metric: str = "max"
-    ) -> Tuple[np.ndarray, np.ndarray | None]:
-        """Detect faces in an image.
-
-        Args:
-            image: Input BGR image.
-            max_num: Maximum detections to return (0 = unlimited).
-            metric: Selection metric when capping detections ("max" for area, otherwise area-offset).
-
-        Returns:
-            Tuple of (detections, keypoints) where detections has shape (N, 5)
-            with columns [x1, y1, x2, y2, score] and keypoints has shape (N, 5, 2).
-        """
-        width, height = self.input_size
-
-        im_ratio = float(image.shape[0]) / image.shape[1]
-        model_ratio = height / width
-        if im_ratio > model_ratio:
-            new_height = height
-            new_width = int(new_height / im_ratio)
-        else:
-            new_width = width
-            new_height = int(new_width * im_ratio)
-
-        det_scale = float(new_height) / image.shape[0]
-        resized_image = cv2.resize(image, (new_width, new_height))
-
-        det_image = np.zeros((height, width, 3), dtype=np.uint8)
-        det_image[:new_height, :new_width, :] = resized_image
-
-        scores_list, bboxes_list, kpss_list = self.forward(det_image, self.conf_thres)
-
-        # Handle case when no faces detected
-        if len(scores_list) == 0 or all(len(s) == 0 for s in scores_list):
-            return np.empty((0, 5), dtype=np.float32), None
-
-        scores = np.vstack(scores_list)
-        scores_ravel = scores.ravel()
-        order = scores_ravel.argsort()[::-1]
-        bboxes = np.vstack(bboxes_list) / det_scale
-
-        if self.use_kps:
-            kpss = np.vstack(kpss_list) / det_scale
-
-        pre_det = np.hstack((bboxes, scores)).astype(np.float32, copy=False)
-        pre_det = pre_det[order, :]
-        keep = self.nms(pre_det, iou_thres=self.iou_thres)
-        det = pre_det[keep, :]
-        if self.use_kps:
-            kpss = kpss[order, :, :]
-            kpss = kpss[keep, :, :]
-        else:
-            kpss = None
-        if 0 < max_num < det.shape[0]:
-            area = (det[:, 2] - det[:, 0]) * (det[:, 3] - det[:, 1])
-            image_center = image.shape[0] // 2, image.shape[1] // 2
-            offsets = np.vstack(
-                [
-                    (det[:, 0] + det[:, 2]) / 2 - image_center[1],
-                    (det[:, 1] + det[:, 3]) / 2 - image_center[0],
-                ]
-            )
-            offset_dist_squared = np.sum(np.power(offsets, 2.0), 0)
-            if metric == "max":
-                values = area
-            else:
-                values = (area - offset_dist_squared * 2.0)  # some extra weight on the centering
-            bindex = np.argsort(values)[::-1]
-            bindex = bindex[0:max_num]
-            det = det[bindex, :]
-            if kpss is not None:
-                kpss = kpss[bindex, :]
-        return det, kpss
-
-    def nms(self, dets: np.ndarray, iou_thres: float) -> list[int]:
-        """Greedy non-maximum suppression.
-
-        Args:
-            dets: Detections array of shape (N, 5) with columns [x1, y1, x2, y2, score].
-            iou_thres: IoU threshold above which overlapping boxes are suppressed.
-
-        Returns:
-            List of kept detection indices.
-        """
+    # --------------------------------------------------------------------- #
+    # NMS
+    # --------------------------------------------------------------------- #
+    @staticmethod
+    def _nms(dets: np.ndarray, iou_thres: float) -> list[int]:
         if dets.shape[0] == 0:
             return []
-
-        x1 = dets[:, 0]
-        y1 = dets[:, 1]
-        x2 = dets[:, 2]
-        y2 = dets[:, 3]
-        scores = dets[:, 4]
-
+        x1, y1, x2, y2, scores = dets[:, 0], dets[:, 1], dets[:, 2], dets[:, 3], dets[:, 4]
         areas = (x2 - x1 + 1) * (y2 - y1 + 1)
         order = scores.argsort()[::-1]
 
@@ -236,28 +164,118 @@ class FaceDetector:
         while order.size > 0:
             i = order[0]
             keep.append(i)
-
             if order.size == 1:
                 break
-
             xx1 = np.maximum(x1[i], x1[order[1:]])
             yy1 = np.maximum(y1[i], y1[order[1:]])
             xx2 = np.minimum(x2[i], x2[order[1:]])
             yy2 = np.minimum(y2[i], y2[order[1:]])
-
             w = np.maximum(0.0, xx2 - xx1 + 1)
             h = np.maximum(0.0, yy2 - yy1 + 1)
             inter = w * h
             ovr = inter / (areas[i] + areas[order[1:]] - inter)
-
-            indices = np.where(ovr <= iou_thres)[0]
-            order = order[indices + 1]
-
+            order = order[np.where(ovr <= iou_thres)[0] + 1]
         return keep
 
+    # --------------------------------------------------------------------- #
+    # Detect
+    # --------------------------------------------------------------------- #
+    def detect(
+        self, image: np.ndarray, max_num: int = 0, metric: str = "max"
+    ) -> Tuple[np.ndarray, np.ndarray | None]:
+        if image is None or image.size == 0:
+            return np.empty((0, 5), dtype=np.float32), None
 
+        h_orig, w_orig = image.shape[:2]
+        blob, scale, pad_top, pad_left = self._preprocess(image)
 
+        outputs = self.session.run(self.output_names, {self.input_name: blob})
 
+        # SCRFD output ordering (InsightFace convention):
+        #   first  N: scores  (per stride)
+        #   middle N: bbox    (per stride, in stride units)
+        #   last   N: kps     (per stride, in stride units)
+        n = len(self._FEAT_STRIDE_FPN)
+        scores_list = outputs[0:n]
+        bboxes_list = outputs[n:2 * n]
+        kpss_list = outputs[2 * n:3 * n]
 
-        
-    
+        all_scores, all_bboxes, all_kpss = [], [], []
+
+        for idx, stride in enumerate(self._FEAT_STRIDE_FPN):
+            scores = scores_list[idx]
+            bbox_preds = bboxes_list[idx] * stride
+            kps_preds = kpss_list[idx] * stride
+
+            # Flatten (1, A*H*W, C) or (A*H*W, C) → (N, C)
+            scores = scores.reshape(-1)
+            bbox_preds = bbox_preds.reshape(-1, 4)
+            kps_preds = kps_preds.reshape(-1, 10)
+
+            # Derive feature map size
+            feat_h = self.input_h // stride
+            feat_w = self.input_w // stride
+            anchor_centers = self._get_anchor_centers(feat_h, feat_w, stride)
+
+            # Safety: if shapes mismatch (dynamic), recompute anchors from count
+            if anchor_centers.shape[0] != scores.shape[0]:
+                # Recompute using actual count
+                total = scores.shape[0]
+                feat_size = total // self._NUM_ANCHORS
+                # assume square-ish feat: use input_h / stride
+                feat_h = self.input_h // stride
+                feat_w = feat_size // feat_h
+                anchor_centers = self._get_anchor_centers(feat_h, feat_w, stride)
+
+            keep = scores >= self.conf_thres
+            if not np.any(keep):
+                continue
+
+            anchors_k = anchor_centers[keep]
+            bboxes = _distance2bbox(anchors_k, bbox_preds[keep])
+            kpss = _distance2kps(anchors_k, kps_preds[keep]).reshape(-1, 5, 2)
+
+            all_scores.append(scores[keep])
+            all_bboxes.append(bboxes)
+            all_kpss.append(kpss)
+
+        if not all_scores:
+            return np.empty((0, 5), dtype=np.float32), None
+
+        scores = np.concatenate(all_scores)
+        bboxes = np.concatenate(all_bboxes)
+        kpss = np.concatenate(all_kpss)
+
+        # Undo letterbox
+        bboxes[:, [0, 2]] = (bboxes[:, [0, 2]] - pad_left) / scale
+        bboxes[:, [1, 3]] = (bboxes[:, [1, 3]] - pad_top) / scale
+        kpss[..., 0] = (kpss[..., 0] - pad_left) / scale
+        kpss[..., 1] = (kpss[..., 1] - pad_top) / scale
+
+        # Clip
+        bboxes[:, 0] = np.clip(bboxes[:, 0], 0, w_orig - 1)
+        bboxes[:, 1] = np.clip(bboxes[:, 1], 0, h_orig - 1)
+        bboxes[:, 2] = np.clip(bboxes[:, 2], 0, w_orig - 1)
+        bboxes[:, 3] = np.clip(bboxes[:, 3], 0, h_orig - 1)
+
+        dets = np.hstack([bboxes, scores[:, None]]).astype(np.float32)
+
+        # NMS
+        order = scores.argsort()[::-1]
+        dets, kpss = dets[order], kpss[order]
+        keep = self._nms(dets, self.iou_thres)
+        dets, kpss = dets[keep], kpss[keep]
+
+        if 0 < max_num < dets.shape[0]:
+            area = (dets[:, 2] - dets[:, 0]) * (dets[:, 3] - dets[:, 1])
+            cy, cx = h_orig // 2, w_orig // 2
+            offsets = np.vstack([
+                (dets[:, 0] + dets[:, 2]) / 2 - cx,
+                (dets[:, 1] + dets[:, 3]) / 2 - cy,
+            ])
+            offset_dist_sq = np.sum(offsets ** 2, axis=0)
+            values = area if metric == "max" else (area - offset_dist_sq * 2.0)
+            bindex = np.argsort(values)[::-1][:max_num]
+            dets, kpss = dets[bindex], kpss[bindex]
+
+        return dets, (kpss if kpss.shape[0] > 0 else None)
