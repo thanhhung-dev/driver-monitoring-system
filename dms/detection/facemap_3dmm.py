@@ -45,22 +45,17 @@ class FaceMap3DMMDetector:
         else:
             self.input_size = fc.INPUT_SIZE
 
-        # Load 3DMM basis matrices
-        self.mean_face = torch.from_numpy(
-            np.load(os.path.join(model_dir, "meanFace.npy")).reshape(
-                3 * fc.VERTEX_NUM, 1
-            )
-        )
-        self.basis_id = torch.from_numpy(
-            np.load(os.path.join(model_dir, "shapeBasis.npy")).reshape(
-                3 * fc.VERTEX_NUM, fc.ALPHA_ID_SIZE
-            )
-        )
-        self.basis_exp = torch.from_numpy(
-            np.load(os.path.join(model_dir, "blendShape.npy")).reshape(
-                3 * fc.VERTEX_NUM, fc.ALPHA_EXP_SIZE
-            )
-        )
+        # Load 3DMM basis matrices (numpy float32 — nhanh hơn torch CPU vì không
+        # tạo autograd graph + tránh overhead chuyển đổi mỗi frame).
+        self.mean_face = np.load(os.path.join(model_dir, "meanFace.npy")).reshape(
+            3 * fc.VERTEX_NUM, 1
+        ).astype(np.float32)
+        self.basis_id = np.load(os.path.join(model_dir, "shapeBasis.npy")).reshape(
+            3 * fc.VERTEX_NUM, fc.ALPHA_ID_SIZE
+        ).astype(np.float32)
+        self.basis_exp = np.load(os.path.join(model_dir, "blendShape.npy")).reshape(
+            3 * fc.VERTEX_NUM, fc.ALPHA_EXP_SIZE
+        ).astype(np.float32)
 
     def _preprocess(self, face_crop: np.ndarray) -> np.ndarray:
         """Resize to model input size, convert BGR->RGB, normalize to [0,1], NCHW."""
@@ -72,47 +67,50 @@ class FaceMap3DMMDetector:
         rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
         return np.transpose(rgb, (2, 0, 1))[np.newaxis, ...]  # (1, 3, H, W)
 
-    def _project_landmark(self, output: np.ndarray) -> Tuple[torch.Tensor, Tuple[float, float, float]]:
-        """Decode 265 3DMM params into 68 (x, y) landmark coordinates and head pose."""
-        out = torch.from_numpy(output)
+    def _project_landmark(self, output: np.ndarray) -> Tuple[np.ndarray, Tuple[float, float, float]]:
+        """Decode 265 3DMM params into 68 (x, y) landmark coordinates and head pose.
+
+        Triển khai bằng numpy thay vì torch CPU → giảm overhead 5-10× trên Windows
+        (không tạo autograd graph, không round-trip torch↔numpy)."""
+        out = np.asarray(output, dtype=np.float32)
         ratio = self.input_size / 128.0
 
         alpha_id = out[0:219] * 3.0
         alpha_exp = out[219:258] * 0.5 + 0.5
 
         # Pose angles (radians)
-        pitch = float(out[258].item()) * (np.pi / 2)
-        yaw   = float(out[259].item()) * (np.pi / 2)
-        roll  = float(out[260].item()) * (np.pi / 2)
+        pitch = float(out[258]) * (np.pi / 2)
+        yaw   = float(out[259]) * (np.pi / 2)
+        roll  = float(out[260]) * (np.pi / 2)
 
-        tX = out[261] * 60.0 * ratio
-        tY = out[262] * 60.0 * ratio
+        tX = float(out[261]) * 60.0 * ratio
+        tY = float(out[262]) * 60.0 * ratio
         tZ = 500.0
-        f  = (out[263] * 150.0 + 450.0) * ratio
-        P = torch.tensor([
+        f  = (float(out[263]) * 150.0 + 450.0) * ratio
+
+        P = np.array([
             [1,  0,  0],
             [0, -1,  0],
-            [0,  0, -1]
-        ], dtype=torch.float32)
+            [0,  0, -1],
+        ], dtype=np.float32)
 
-        cp, sp = torch.cos(torch.tensor(-pitch)), torch.sin(torch.tensor(-pitch))
-        rx = torch.tensor([[1, 0, 0], [0, cp, -sp], [0, sp, cp]])
+        cp, sp = np.cos(-pitch), np.sin(-pitch)
+        rx = np.array([[1, 0, 0], [0, cp, -sp], [0, sp, cp]], dtype=np.float32)
 
-        cy, sy = torch.cos(torch.tensor(-yaw)), torch.sin(torch.tensor(-yaw))
-        ry = torch.tensor([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]])
+        cy, sy = np.cos(-yaw), np.sin(-yaw)
+        ry = np.array([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]], dtype=np.float32)
 
-        cr, sr = torch.cos(torch.tensor(-roll)), torch.sin(torch.tensor(-roll))
-        rz = torch.tensor([[cr, -sr, 0], [sr, cr, 0], [0, 0, 1]])
-        r_matrix = torch.mm(ry, torch.mm(rx, torch.mm(P, rz)))
+        cr, sr = np.cos(-roll), np.sin(-roll)
+        rz = np.array([[cr, -sr, 0], [sr, cr, 0], [0, 0, 1]], dtype=np.float32)
+        r_matrix = ry @ rx @ P @ rz
 
         shape = (
             self.mean_face
-            + torch.mm(self.basis_id, alpha_id.view(-1, 1))
-            + torch.mm(self.basis_exp, alpha_exp.view(-1, 1))
-        ).view(fc.VERTEX_NUM, 3)
+            + self.basis_id @ alpha_id.reshape(-1, 1)
+            + self.basis_exp @ alpha_exp.reshape(-1, 1)
+        ).reshape(fc.VERTEX_NUM, 3)
 
-        vertices = torch.mm(shape, r_matrix.t())
-
+        vertices = shape @ r_matrix.T
         vertices[:, 0] += tX
         vertices[:, 1] += tY
         vertices[:, 2] += tZ
@@ -166,7 +164,7 @@ class FaceMap3DMMDetector:
         landmark[:, 0] = (landmark[:, 0] + proj / 2) * crop_w / proj + ix1
         landmark[:, 1] = (landmark[:, 1] + proj / 2) * crop_h / proj + iy1
 
-        landmarks_list = [(int(lm[0].item()), int(lm[1].item())) for lm in landmark]
+        landmarks_list = [(int(x), int(y)) for x, y in landmark]
         return landmarks_list, head_pose
 
         

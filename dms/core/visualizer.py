@@ -1,4 +1,6 @@
 # core/visualizer.py
+from collections import deque
+
 import cv2
 import numpy as np
 from utils import facial_constants as fc
@@ -11,6 +13,10 @@ class Visualizer:
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.color_warning = (0, 0, 255)
         self.color_normal = (0, 255, 0)
+        self.gaze_history = deque(maxlen=8)
+        # Tách history riêng cho từng mắt để vệt không bị nhảy qua lại
+        self.gaze_history_l = deque(maxlen=8)
+        self.gaze_history_r = deque(maxlen=8)
 
 
     def draw_fps(self, frame, fps):
@@ -40,189 +46,119 @@ class Visualizer:
 
         return frame
     
-    def draw_full_mesh(self, image, landmarks, color=(255,255,0), radius=2):
-
+    def draw_full_mesh(self, image, landmarks, color=(255, 255, 0), radius=2):
+        """Vẽ trực tiếp lên frame (không upscale/downscale) → nhanh hơn ~10× so
+        với phiên bản cũ (vốn resize 640×480 ↔ 1280×960 mỗi frame)."""
         if landmarks is None:
             return image
 
-        scale = 2
-        h, w = image.shape[:2]
-        big = cv2.resize(image, (w * scale, h * scale))
         CYAN = (255, 255, 0)
+        lm = np.asarray(landmarks, dtype=np.int32)
 
-        def pt(i):
-            x, y = landmarks[i]
-            return (int(x * scale), int(y * scale))
+        def poly(idxs, closed=True, thickness=1):
+            cv2.polylines(image, [lm[idxs]], closed, CYAN, thickness, cv2.LINE_AA)
 
-        def pts(idxs):
-            return np.array([pt(i) for i in idxs], dtype=np.int32)
+        def dots(idxs):
+            for i in idxs:
+                cv2.circle(image, (int(lm[i, 0]), int(lm[i, 1])), radius, color, -1, cv2.LINE_AA)
 
-        cv2.polylines(big, [pts(fc.LEFT_EYE_INDICES)], True, CYAN, 2, cv2.LINE_AA)
-        for i in fc.LEFT_EYE_INDICES:
-            cv2.circle(big, pt(i), radius*scale, color, -1, cv2.LINE_AA)
-        cv2.polylines(big, [pts(fc.RIGHT_EYE_INDICES)], True, CYAN, 2, cv2.LINE_AA)
-        for i in fc.RIGHT_EYE_INDICES:
-            cv2.circle(big, pt(i), radius*scale, color, -1, cv2.LINE_AA)
-            cv2.polylines(big, [pts(fc.EYE_BROW_LEFT)], False, CYAN, 2, cv2.LINE_AA)
-        for i in fc.EYE_BROW_LEFT:
-            cv2.circle(big, pt(i), radius*scale, color, -1, cv2.LINE_AA)
+        # Mắt + lông mày
+        poly(fc.LEFT_EYE_INDICES, closed=True, thickness=1)
+        dots(fc.LEFT_EYE_INDICES)
+        poly(fc.RIGHT_EYE_INDICES, closed=True, thickness=1)
+        dots(fc.RIGHT_EYE_INDICES)
+        poly(fc.EYE_BROW_LEFT, closed=False, thickness=1)
+        dots(fc.EYE_BROW_LEFT)
+        poly(fc.EYE_BROW_RIGHT, closed=False, thickness=1)
+        dots(fc.EYE_BROW_RIGHT)
 
-        cv2.polylines(big, [pts(fc.EYE_BROW_RIGHT)], False, CYAN, 2, cv2.LINE_AA)
-        for i in fc.EYE_BROW_RIGHT:
-            cv2.circle(big, pt(i), radius*scale, color, -1, cv2.LINE_AA)
+        # Mũi
+        poly([27, 28, 29, 30], closed=False, thickness=1)
+        dots(fc.NOISE_INDICES)
+        poly([31, 30, 35], closed=False, thickness=1)
+        poly([31, 33, 35], closed=False, thickness=1)
+        dots(fc.NOISE_TRIANGLE_INDICES)
 
-        # Ve mui
-        cv2.polylines(big, [pts([27, 28, 29, 30])], False, CYAN, 2, cv2.LINE_AA)
-
-        for idx in fc.NOISE_INDICES:
-            cv2.circle(big, pt(idx), radius*scale, color, -1, lineType=cv2.LINE_AA)
-
-
-        # Ve Mui Tam Giac
-        v_shape = np.array([pt(31), pt(30), pt(35)], dtype=np.int32)
-        cv2.polylines(big, [v_shape], isClosed=False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
-
-        w_shape = np.array([pt(31), pt(33), pt(35)], dtype=np.int32)
-        cv2.polylines(big, [w_shape], isClosed=False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
-
-        for idx in fc.NOISE_TRIANGLE_INDICES:
-            cv2.circle(big, pt(idx), radius*scale, color, -1, lineType=cv2.LINE_AA)
-
-
-        # Ve moi ngoai
-        outer_lips_pts = np.array([pt(i) for i in fc.OUTER_LIPS_INDICES], dtype=np.int32)
-        cv2.polylines(big, [outer_lips_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
-
-        for idx in fc.OUTER_LIPS_INDICES:
-            cv2.circle(big, pt(idx), radius*scale, color, -1, lineType=cv2.LINE_AA)
-
-
-        # Ve moi trong
-        inner_lips_pts = np.array([pt(i) for i in fc.INNER_LIPS_INDICES], dtype=np.int32)
-        cv2.polylines(big, [inner_lips_pts], isClosed=True, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
-
-        for idx in fc.INNER_LIPS_INDICES:
-            cv2.circle(big, pt(idx), radius*scale, color, -1, lineType=cv2.LINE_AA)
-
-
-        # Ve Long May Trai
-        brow_pts = np.array([pt(i) for i in fc.EYE_BROW_LEFT], dtype=np.int32)
-        cv2.polylines(big, [brow_pts], isClosed=False, color=CYAN, thickness=1, lineType=cv2.LINE_AA)
-
-        for idx in fc.EYE_BROW_LEFT:
-            cv2.circle(big, pt(idx), radius*scale, color, -1, lineType=cv2.LINE_AA)
-        image[:] = cv2.resize(big, (w, h))
+        # Môi
+        poly(fc.OUTER_LIPS_INDICES, closed=True, thickness=1)
+        dots(fc.OUTER_LIPS_INDICES)
+        poly(fc.INNER_LIPS_INDICES, closed=True, thickness=1)
+        dots(fc.INNER_LIPS_INDICES)
 
         return image
     
-
-    def draw_gaze(
-        self,image_in: np.ndarray,
-        eye_pos: np.ndarray,
-        pitchyaw: np.ndarray,
-        length: float | None = None,
-        thickness: int = 2,
-        color: tuple[int, int, int] = (255, 0, 0),
-    ) -> np.ndarray:
-        """
-        Draw gaze angle on given image with specified eye positions.
-
-        - Adaptive arrow length based on image size if length is None.
-        - Normalizes direction vector so arrow length is consistent regardless of angle magnitude.
-        - Keeps the arrow endpoint within image bounds.
-
-        Parameters
-        ----------
-        image_in
-            Input image (grayscale or BGR).
-        eye_pos
-            Eye position coordinates [x, y].
-        pitchyaw
-            Gaze angles [pitch, yaw].
-        length
-            Length of the gaze arrow. If None, computed as 0.35 * min(H, W).
-        thickness
-            Thickness of the gaze arrow.
-        color
-            Color of the gaze arrow in RGB format.
-
-        Returns
-        -------
-        output_image : np.ndarray
-            Image with gaze arrow drawn.
-        """
-        image_out = image_in
-        if len(image_out.shape) == 2 or image_out.shape[2] == 1:
-            image_out = cv2.cvtColor(image_out, cv2.COLOR_GRAY2BGR)
-
-        H, W = image_out.shape[:2]
-        # Adaptive length based on image size
-        if length is None:
-            length = 0.35 * float(min(H, W))
-
-        # 2D direction from pitch/yaw
-        dx = -np.sin(float(pitchyaw[1]))
-        dy = np.sin(float(pitchyaw[0]))
-
-        # Normalize to unit length to keep arrow length consistent
-        norm = np.hypot(dx, dy)
-        if norm > 1e-6:
-            dx /= norm
-            dy /= norm
-
-        dx *= length
-        dy *= length
-
-        start_pt = np.round(eye_pos).astype(np.int32)
-        end_pt = np.array([eye_pos[0] + dx, eye_pos[1] + dy], dtype=np.float32)
-
-        # Keep endpoint inside image bounds
-        end_pt[0] = np.clip(end_pt[0], 0, W - 1)
-        end_pt[1] = np.clip(end_pt[1], 0, H - 1)
-        end_pt_int = tuple(np.round(end_pt).astype(np.int32))
-
-        cv2.arrowedLine(
-            image_out,
-            tuple(start_pt),
-            end_pt_int,
-            color,
-            thickness,
-            cv2.LINE_AA,
-            tipLength=0.2,
-        )
-        return image_out
-
     def draw_gaze_3d(
         self,
         image: np.ndarray,
         eye_pos: np.ndarray,
         v_world: np.ndarray,
         length: float | None = None,
-        color: tuple[int, int, int] = (0, 255, 255),
+        color: tuple[int, int, int] = (255, 255, 0),
         thickness: int = 2,
+        eye_side: str = 'l',
+        num_dots: int = 6,
+        draw_eye_marker: bool = True,
+        min_radius: int = 1,
+        max_radius: int = 12,
+        glow_size: int = 4,
     ) -> np.ndarray:
         """
-        Draws a 3D gaze vector projected onto the 2D image.
+        Vẽ vector gaze 3D dưới dạng một chuỗi hình tròn nối từ mắt đến endpoint.
+        - Opacity giảm dần khi gaze ở gần trung tâm (giữa mắt).
+        - Hình tròn ở gần mắt nhỏ và mờ, càng xa càng to và rõ.
         """
         H, W = image.shape[:2]
-        if length is None:
-            length = 0.35 * float(min(H, W))
 
-        # In our world space: +X is right, +Y is down, +Z is into screen
-        # So dx and dy are simply the X and Y components of the vector.
-        dx = v_world[0] * length
-        dy = v_world[1] * length
+        # World space: +X phải, +Y xuống → chiếu thẳng lên ảnh
+        dx = float(v_world[0]) * length
+        dy = float(v_world[1]) * length
 
-        start_pt = tuple(np.round(eye_pos).astype(int))
-        end_pt = (int(round(eye_pos[0] + dx)), int(round(eye_pos[1] + dy)))
+        x0, y0 = float(eye_pos[0]), float(eye_pos[1])
 
-        # Clamp to image bounds
-        end_pt = (
-            max(0, min(W - 1, end_pt[0])),
-            max(0, min(H - 1, end_pt[1]))
-        )
+        # Tính độ mạnh của gaze (độ lệch khỏi trung tâm)
+        gaze_strength = np.sqrt(v_world[0]**2 + v_world[1]**2)
+        min_opacity = 0.05
+        max_opacity = 0.8
 
-        cv2.arrowedLine(image, start_pt, end_pt, color, thickness, cv2.LINE_AA, tipLength=0.2)
+        # Alpha global tỉ lệ thuận với gaze_strength (giảm khi ở giữa mắt)
+        alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
+        alpha_global = np.clip(alpha_global, min_opacity, max_opacity)
+
+        # Vẽ num_dots hình tròn dọc theo đoạn từ (x0,y0) đến (x1,y1)
+        for i in range(1, num_dots + 1):
+            t = i / num_dots
+            # Dùng bình phương (t**2) để chấm ở gần mắt nhỏ lâu hơn
+            t_s = t**2.0
+            px = int(round(x0 + dx * t_s))
+            py = int(round(y0 + dy * t_s))
+
+            if not (0 <= px < W and 0 <= py < H):
+                continue
+
+            r = int(min_radius + (max_radius - min_radius) * t_s)
+            alpha = (0.2 + 0.6 * t) * alpha_global
+
+            # Sử dụng overlay tạm thời cho từng dot để tránh tích tụ opacity
+            overlay = image.copy()
+            # Glow cũng nhỏ dần về phía mắt
+            curr_glow = int(glow_size * t)
+            if curr_glow > 0:
+                cv2.circle(overlay, (px, py), r + curr_glow, color, -1, cv2.LINE_AA)
+            cv2.circle(overlay, (px, py), r, color, -1, cv2.LINE_AA)
+            cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
+
+        # Vẽ Endpoint (điểm cuối) cũng với alpha_global
+        end_x = int(x0 + dx)
+        end_y = int(y0 + dy)
+        if 0 <= end_x < W and 0 <= end_y < H:
+            overlay_end = image.copy()
+            # Vòng tròn to ở cuối
+            cv2.circle(overlay_end, (end_x, end_y), 6, color, -1, cv2.LINE_AA)
+            # Dấu + trắng ở giữa
+            cv2.line(overlay_end, (end_x - 6, end_y), (end_x + 6, end_y), (0, 255, 255), 2)
+            cv2.line(overlay_end, (end_x, end_y - 6), (end_x, end_y + 6), (0, 255, 255), 2)
+            cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
+
         return image
 
     def show(self, window_name, frame):

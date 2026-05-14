@@ -72,15 +72,10 @@ class EyeGazeEstimation:
         load_external_data_for_model(onnx_model, model_dir)
         model_bytes = onnx_model.SerializeToString()
 
-        sess_options = onnxruntime.SessionOptions()
-        sess_options.graph_optimization_level = (
-            onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-        )
-        self.session = onnxruntime.InferenceSession(
-            model_bytes,
-            sess_options=sess_options,
-            providers=["CPUExecutionProvider"],
-        )
+        # Dùng make_session() để ưu tiên CUDA → DirectML → CoreML → CPU,
+        # giống các module ONNX khác. Trước đây bị hard-code CPU gây bottleneck
+        # (EyeGaze chạy 2 lần/frame cho 2 mắt → ăn hết FPS trên máy có GPU).
+        self.session = make_session(model_bytes)
 
         self.input_name   = self.session.get_inputs()[0].name
         # Model có 3 output: [heatmaps, landmarks, gaze_pitchyaw]

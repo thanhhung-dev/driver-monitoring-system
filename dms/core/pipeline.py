@@ -63,6 +63,16 @@ class DMSPipeline:
         self._head_pose_counter = 0
         self._last_head_pose = None  # (yaw, pitch, roll) độ
 
+        # Offset hiệu chuẩn gaze (Radians)
+        self.pitch_offset = -0.08
+        self.yaw_offset = 0.0
+
+        # Lưu trạng thái gaze cuối cùng để tránh bị mất khi nháy mắt
+        self._last_gaze_l = None
+        self._last_gaze_r = None
+        self._last_center_l = None
+        self._last_center_r = None
+
     def start(self) -> None:
         """Open the capture source and run the main processing loop."""
         try:
@@ -80,6 +90,15 @@ class DMSPipeline:
         self.capture.release()
         cv2.destroyAllWindows()
         self.logger.info("System shutdown")
+
+    def _pitchyaw_to_vec(self, g: np.ndarray) -> np.ndarray:
+        pitch, yaw = float(g[0]) + self.pitch_offset, float(g[1]) + self.yaw_offset
+
+        x = -np.cos(pitch) * np.sin(yaw)
+        y =  np.sin(pitch)
+        z = -np.cos(pitch) * np.cos(yaw)
+
+        return np.array([x, y, z], dtype=np.float32)
 
     def _run_loop(self) -> None:
         """Core frame-processing loop."""
@@ -101,7 +120,7 @@ class DMSPipeline:
                     for i, box in enumerate(det):
                         x1, y1, x2, y2 = box[:4].astype(int)
                         bbox = (x1, y1, x2, y2)
-                        
+
                         # Get 5-point landmarks for this face
                         face_kpss = kpss[i] if kpss is not None else None
 
@@ -116,28 +135,52 @@ class DMSPipeline:
                         if self.eye_gaze is not None and landmarks is not None:
                             gaze_l, gaze_r, eye_center_l, eye_center_r = self.eye_gaze.detect(frame, landmarks)
 
-                            def _pitchyaw_to_vec(g: np.ndarray) -> np.ndarray:
-                                pitch, yaw = float(g[0]), float(g[1])
-                                # Bỏ normalize 2D để tránh việc nhiễu nhỏ bị phóng đại 
-                                # thành mũi tên dài khi nhìn thẳng (gây hiện tượng xoè/chéo).
-                                # Dùng trực tiếp sin() để chiều dài mũi tên tự nhiên theo góc nhìn.
-                                dx = -np.sin(yaw)
-                                dy =  np.sin(pitch)
-                                return np.array([dx, dy, 0.0], dtype=np.float32)
+                            # Cập nhật bộ nhớ gaze cuối cùng nếu detect thành công
+                            if gaze_l is not None: self._last_gaze_l = gaze_l
+                            if gaze_r is not None: self._last_gaze_r = gaze_r
+                            if eye_center_l is not None: self._last_center_l = eye_center_l
+                            if eye_center_r is not None: self._last_center_r = eye_center_r
 
-                            # Tính gaze trung bình của 2 mắt để đảm bảo luôn song song (thẳng hàng)
-                            if gaze_l is not None and gaze_r is not None:
-                                gaze_avg = (gaze_l + gaze_r) / 2.0
-                                vec = _pitchyaw_to_vec(gaze_avg)
-                                if eye_center_l is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_l, vec, length=200, thickness=2)
-                                if eye_center_r is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_r, vec, length=200, thickness=2)
+                            # Sử dụng lại dữ liệu cũ nếu nhắm mắt (detect trả về None)
+                            display_gaze_l = gaze_l if gaze_l is not None else self._last_gaze_l
+                            display_gaze_r = gaze_r if gaze_r is not None else self._last_gaze_r
+                            display_center_l = eye_center_l if eye_center_l is not None else self._last_center_l
+                            display_center_r = eye_center_r if eye_center_r is not None else self._last_center_r
+
+                            # Tính toán length động dựa trên khoảng cách 2 mắt (pixel)
+                            gaze_length = 200 # Mặc định
+                            if display_center_l is not None and display_center_r is not None:
+                                eye_dist = np.linalg.norm(display_center_l - display_center_r)
+                                gaze_length = 200 * (100.0 / max(eye_dist, 1.0))
+                                gaze_length = np.clip(gaze_length, 80, 300)
+
+                            # Tính gaze trung bình
+                            if display_gaze_l is not None and display_gaze_r is not None:
+                                gaze_avg = (display_gaze_l + display_gaze_r) / 2.0
+                                
+                                # Điều chỉnh length theo hướng nhìn (Yaw)
+                                yaw_val = np.abs(float(gaze_avg[1]))
+                                side_factor = np.clip(yaw_val / 0.3, 0.7, 1.0)
+                                gaze_length *= side_factor
+                                
+                                vec = self._pitchyaw_to_vec(gaze_avg)
+                                if display_center_l is not None:
+                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_l, vec, length=gaze_length, eye_side='l')
+                                if display_center_r is not None:
+                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_r, vec, length=gaze_length, eye_side='r')
                             else:
-                                if gaze_l is not None and eye_center_l is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_l, _pitchyaw_to_vec(gaze_l), length=200, thickness=2)
-                                if gaze_r is not None and eye_center_r is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, eye_center_r, _pitchyaw_to_vec(gaze_r), length=200, thickness=2)
+                                # Trường hợp chỉ có 1 mắt hoặc dùng dữ liệu cũ của 1 mắt
+                                current_gaze = display_gaze_l if display_gaze_l is not None else display_gaze_r
+                                current_center = display_center_l if display_gaze_l is not None else display_center_r
+                                
+                                if current_gaze is not None:
+                                    yaw_val = np.abs(float(current_gaze[1]))
+                                    side_factor = np.clip(yaw_val / 0.3, 0.7, 1.0)
+                                    gaze_length *= side_factor
+                                    
+                                    if current_center is not None:
+                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, self._pitchyaw_to_vec(current_gaze), length=gaze_length, eye_side='l')
+
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
                         if self.attrib_detector is not None:
@@ -172,7 +215,7 @@ class DMSPipeline:
                                     self._last_head_pose = head_pose_angles
 
                         driver_state = None
-                        if landmarks:
+                        if landmarks is not None:
                             self.visualizer.draw_full_mesh(frame, landmarks)
                             if self.analyzer is not None:
                                 yaw_in   = head_pose_angles[0] if head_pose_angles else 0
@@ -191,6 +234,3 @@ class DMSPipeline:
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
-
-                if fps < MIN_FPS:
-                    self.logger.warning(f"FPS dropped below requirement: {fps:.2f}")
