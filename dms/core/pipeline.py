@@ -136,6 +136,34 @@ class DMSPipeline:
                             if facemap_out is not None:
                                 landmarks, facemap_pose = facemap_out
 
+                        # Tính head_pose trước eye_gaze để có thể truyền vào visualizer
+                        head_pose_angles = self._last_head_pose
+                        if self.head_pose is not None:
+                            self._head_pose_counter += 1
+                            if self._head_pose_counter >= self._head_pose_interval:
+                                self._head_pose_counter = 0
+
+                                ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
+                                h, w = frame.shape[:2]
+                                ex1 = max(0, ex1)
+                                ey1 = max(0, ey1)
+                                ex2 = min(ex2, w)
+                                ey2 = min(ey2, h)
+
+                                head_crop = frame[ey1:ey2, ex1:ex2]
+                                if head_crop.size != 0:
+                                    rgb = cv2.cvtColor(head_crop, cv2.COLOR_BGR2RGB)
+                                    resized = cv2.resize(rgb, (224, 224))
+                                    tensor = self._head_pose_transform(resized).unsqueeze(0).to(self.device)
+
+                                    rot = self.head_pose(tensor)         # (1, 3, 3)
+                                    euler = compute_euler_angles_from_rotation_matrices(rot)
+                                    pitch_d = float(torch.rad2deg(euler[0, 0]).item())
+                                    yaw_d   = float(torch.rad2deg(euler[0, 1]).item())
+                                    roll_d  = float(torch.rad2deg(euler[0, 2]).item())
+                                    head_pose_angles = (yaw_d, pitch_d, roll_d)
+                                    self._last_head_pose = head_pose_angles
+
                         if self.eye_gaze is not None and landmarks is not None:
                             gaze_l, gaze_r, eye_center_l, eye_center_r = self.eye_gaze.detect(frame, landmarks)
 
@@ -169,9 +197,9 @@ class DMSPipeline:
                                 
                                 vec = self._pitchyaw_to_vec(gaze_avg)
                                 if display_center_l is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_l, vec, length=gaze_length, eye_side='l')
+                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_l, vec, length=gaze_length, eye_side='l', head_pose=head_pose_angles)
                                 if display_center_r is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_r, vec, length=gaze_length, eye_side='r')
+                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_r, vec, length=gaze_length, eye_side='r', head_pose=head_pose_angles)
                             else:
                                 # Trường hợp chỉ có 1 mắt hoặc dùng dữ liệu cũ của 1 mắt
                                 current_gaze = display_gaze_l if display_gaze_l is not None else display_gaze_r
@@ -183,40 +211,12 @@ class DMSPipeline:
                                     gaze_length *= side_factor
                                     
                                     if current_center is not None:
-                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, self._pitchyaw_to_vec(current_gaze), length=gaze_length, eye_side='l')
+                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, self._pitchyaw_to_vec(current_gaze), length=gaze_length, eye_side='l', head_pose=head_pose_angles)
 
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
                         if self.attrib_detector is not None:
                             attribs = self.attrib_detector.detect(frame, bbox)
-
-                        # Head pose estimation — throttle mỗi N frame để tránh lag.
-                        head_pose_angles = self._last_head_pose
-                        if self.head_pose is not None:
-                            self._head_pose_counter += 1
-                            if self._head_pose_counter >= self._head_pose_interval:
-                                self._head_pose_counter = 0
-
-                                ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
-                                h, w = frame.shape[:2]
-                                ex1 = max(0, ex1)
-                                ey1 = max(0, ey1)
-                                ex2 = min(ex2, w)
-                                ey2 = min(ey2, h)
-
-                                head_crop = frame[ey1:ey2, ex1:ex2]
-                                if head_crop.size != 0:
-                                    rgb = cv2.cvtColor(head_crop, cv2.COLOR_BGR2RGB)
-                                    resized = cv2.resize(rgb, (224, 224))
-                                    tensor = self._head_pose_transform(resized).unsqueeze(0).to(self.device)
-
-                                    rot = self.head_pose(tensor)         # (1, 3, 3)
-                                    euler = compute_euler_angles_from_rotation_matrices(rot)
-                                    pitch_d = float(torch.rad2deg(euler[0, 0]).item())
-                                    yaw_d   = float(torch.rad2deg(euler[0, 1]).item())
-                                    roll_d  = float(torch.rad2deg(euler[0, 2]).item())
-                                    head_pose_angles = (yaw_d, pitch_d, roll_d)
-                                    self._last_head_pose = head_pose_angles
 
                         driver_state = None
                         if landmarks is not None:

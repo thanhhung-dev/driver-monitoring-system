@@ -21134,3 +21134,17 @@
 [2026-05-15 23:07:43] [INFO] [VideoCapture] Camera released.
 [2026-05-15 23:07:43] [INFO] [DMSPipeline] System shutdown
 [2026-05-15 23:07:43] [INFO] [DMSPipeline] System shutdown
+[2026-05-16 00:50:35] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-16 00:50:37] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-16 00:50:37] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-16 00:50:37] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-16 00:51:00] [INFO] [VideoCapture] Camera released.
+[2026-05-16 00:51:00] [INFO] [DMSPipeline] System shutdown
+[2026-05-16 00:51:00] [INFO] [DMSPipeline] System shutdown
+[2026-05-16 00:52:16] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-05-16 00:52:18] [INFO] [VideoCapture] Opening video source: data/dataset.mp4 ...
+[2026-05-16 00:52:18] [INFO] [VideoCapture] Source opened successfully: data/dataset.mp4
+[2026-05-16 00:52:18] [INFO] [DMSPipeline] Capture loop started. Press 'q' to quit.
+[2026-05-16 00:52:34] [INFO] [VideoCapture] Camera released.
+[2026-05-16 00:52:34] [INFO] [DMSPipeline] System shutdown
+[2026-05-16 00:52:34] [INFO] [DMSPipeline] System shutdown

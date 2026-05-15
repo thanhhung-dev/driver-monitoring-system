@@ -6,6 +6,7 @@ import numpy as np
 from utils import facial_constants as fc
 from utils.helpers import draw_bbox
 from utils.helpers import draw_axis
+from utils.general import get_rotation_matrix
 from typing import Tuple, List
 
 class Visualizer:
@@ -99,25 +100,24 @@ class Visualizer:
         num_dots: int = 6,
         draw_eye_marker: bool = True,
         min_radius: int = 1,
-        max_radius: int = 12,
-        glow_size: int = 4,
+        max_radius: int = 8,       
+        glow_size: int = 2,        
+        stretch_gain: float = 1.0, 
+        stretch_grow: float = 0.2,  
         eye_depth: float = 1.0,
         focal_length: float | None = None,
+        head_pose: tuple[float, float, float] | None = None,
     ) -> np.ndarray:
         """
-        Vẽ vector gaze theo PERSPECTIVE PROJECTION (pinhole camera).
+        Vẽ vector gaze theo PERSPECTIVE PROJECTION với trail dots bị biến dạng ellipse.
 
-        Mô hình:
-          • Camera intrinsics (xấp xỉ webcam): fx = fy = max(W,H), cx = W/2, cy = H/2.
-          • Back-project tâm mắt 2D về 3D ở độ sâu Z_e = `eye_depth`.
-          • Gaze ray trong 3D: P(t) = P_eye + t·L·v_world, với t ∈ [0, 1].
-          • Project ngược về 2D: (x', y') = (fx·X/Z + cx, fy·Y/Z + cy).
-
-        Hệ quả:
-          • Nhìn thẳng vào camera (vz ≈ -1) → gaze hội tụ về (cx, cy) và "to lên"
-            do Z giảm → cảm giác đang đến gần.
-          • Nhìn ngang (vz ≈ 0) → Z giữ nguyên → gaze trượt trên image plane.
-          • Trail dots tự động foreshorten qua factor 1/Z, không cần tính tay.
+        Nếu `head_pose=(yaw, pitch, roll)` (degree) được truyền vào, ellipse sẽ
+        xoay & foreshorten theo HEAD LOCAL FRAME thay vì chỉ theo gaze 2D:
+          • angle_deg  = arctan2 của trục "phải" mắt (R @ [1,0,0]) chiếu lên ảnh
+          • minor_axis = bán kính × độ dài chiếu của trục "lên" mắt (R @ [0,1,0])
+          • major_axis = bán kính × độ dài chiếu trục "phải" × stretch (gaze depth)
+        ⇒ nghiêng đầu (roll) → ellipse nghiêng theo;
+          xoay đầu (yaw/pitch) → ellipse bẹp đúng phía bị foreshorten.
         """
         H, W = image.shape[:2]
 
@@ -132,48 +132,93 @@ class Visualizer:
         X_e = (x0 - cx) * Z_e / f
         Y_e = (y0 - cy) * Z_e / f
 
-        # Convert "length in pixels" → 3D distance sao cho ở góc nhỏ
-        # vẫn giữ độ dài quen thuộc giống code cũ:
-        #   x_proj − x0 ≈ f·L·vx / (Z_e − L)  ≈ length·vx khi L = length·Z_e/(length+f)
         L = float(length) * Z_e / (float(length) + f) if length else 0.0
 
         vx, vy, vz = float(v_world[0]), float(v_world[1]), float(v_world[2])
 
-        # Hàm project an toàn (kẹp Z để không chia 0 / âm)
+        # Hàm project an toàn
         def _project(t: float):
             X = X_e + t * L * vx
             Y = Y_e + t * L * vy
             Z = Z_e + t * L * vz
-            Z_safe = max(Z, 0.05)            # tránh đi sau camera
+            Z_safe = max(Z, 0.05)
             u = f * X / Z_safe + cx
             v = f * Y / Z_safe + cy
-            scale = Z_e / Z_safe             # >1 khi tới gần camera, <1 khi xa
+            scale = Z_e / Z_safe
             return u, v, Z_safe, scale
 
-        # ── Opacity global (như cũ, dùng độ lệch xy của vector) ──────────
+        # ── Opacity global ──────────
         gaze_strength = np.hypot(vx, vy)
         min_opacity, max_opacity = 0.05, 0.8
         alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
         alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
 
-        # ── Trail dots: project từng điểm 3D rồi áp 1/Z scaling ──────────
+        # ── ELLIPSE trail với perspective deformation ──────────
+        # Hướng & foreshorten của ellipse:
+        #   1) Nếu KHÔNG có head_pose → giữ logic cũ (xoay theo gaze 2D,
+        #      stretch theo |vz|).
+        #   2) Nếu CÓ head_pose → dựng frame mắt cục bộ từ rotation matrix
+        #      của đầu, project trục "right" và "up" lên image plane.
+        if head_pose is not None:
+            yaw_d, pitch_d, roll_d = head_pose
+            # Convention khớp draw_cube/draw_axis: yaw đảo dấu để +yaw = quay phải
+            R = get_rotation_matrix(
+                np.deg2rad(pitch_d),
+                np.deg2rad(-yaw_d),
+                np.deg2rad(roll_d),
+            )
+            # Trục "phải" và "lên" của mắt sau khi đầu xoay
+            right_3d = R @ np.array([1.0, 0.0, 0.0])
+            up_3d    = R @ np.array([0.0, 1.0, 0.0])
+
+            # Chiếu lên image plane (bỏ z) → độ dài còn lại = foreshorten factor
+            major_proj = float(np.hypot(right_3d[0], right_3d[1]))   # ∈ [0, 1]
+            minor_proj = float(np.hypot(up_3d[0],    up_3d[1]))       # ∈ [0, 1]
+            angle_deg  = float(np.degrees(np.arctan2(right_3d[1], right_3d[0])))
+            # Clamp tối thiểu 0.15 để không sụp về 0 khi đầu xoay 90°
+            major_proj = max(0.15, major_proj)
+            minor_proj = max(0.15, minor_proj)
+        else:
+            angle_deg  = float(np.degrees(np.arctan2(vy, vx)))
+            major_proj = 1.0
+            minor_proj = 1.0
+
+        # Stretch dọc theo trục mắt — tăng khi nhìn thẳng vào camera (|vz| lớn).
+        stretch_base = 1.0 + abs(vz) * stretch_gain
+
         for i in range(1, num_dots + 1):
             t = i / num_dots
-            t_s = t ** 2.0                   # gần mắt thì nhỏ lâu hơn
+            t_s = t ** 2.0
             u, v, _, scale = _project(t_s)
             px, py = int(round(u)), int(round(v))
             if not (0 <= px < W and 0 <= py < H):
                 continue
 
             r_base = min_radius + (max_radius - min_radius) * t_s
-            r = max(1, int(round(r_base * scale)))         # foreshorten 3D
+            r = max(1, int(round(r_base * scale)))
             alpha = (0.2 + 0.6 * t) * alpha_global
 
+            stretch = stretch_base * (1.0 + t * stretch_grow)
+
+            major_axis = max(1, int(round(r * major_proj * stretch)))
+            minor_axis = max(1, int(round(r * minor_proj)))
+
             overlay = image.copy()
+
             curr_glow = int(glow_size * t * scale)
             if curr_glow > 0:
-                cv2.circle(overlay, (px, py), r + curr_glow, color, -1, cv2.LINE_AA)
-            cv2.circle(overlay, (px, py), r, color, -1, cv2.LINE_AA)
+                cv2.ellipse(
+                    overlay, (px, py),
+                    (major_axis + curr_glow, minor_axis + curr_glow),
+                    angle_deg, 0, 360, color, -1, cv2.LINE_AA
+                )
+
+            cv2.ellipse(
+                overlay, (px, py),
+                (major_axis, minor_axis),
+                angle_deg, 0, 360, color, -1, cv2.LINE_AA
+            )
+
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
         # ── Endpoint + dấu "+" ───────────────────────────────────────────
@@ -188,7 +233,7 @@ class Visualizer:
             cv2.line(overlay_end, (end_x - bar, end_y), (end_x + bar, end_y), (0, 255, 255), 2)
             cv2.line(overlay_end, (end_x, end_y - bar), (end_x, end_y + bar), (0, 255, 255), 2)
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
-
+        
         return image
 
     def show(self, window_name, frame):
