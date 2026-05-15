@@ -124,6 +124,23 @@ class Visualizer:
         alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
         alpha_global = np.clip(alpha_global, min_opacity, max_opacity)
 
+        # ── Tính trục foreshortening cho cảm giác 3D ──────────────────────
+        # Tất cả "hình tròn" thực ra là ellipse:
+        #   • trục lớn  = bán kính gốc, xoay theo HƯỚNG gaze 2D (dx, dy)
+        #   • trục nhỏ  = bán kính gốc * |z|  → bẹp dần khi nhìn ngang
+        # ⇒ nhìn thẳng (z≈-1) → ellipse = hình tròn đầy đủ;
+        #   nhìn ngang  (z≈0)  → ellipse → đoạn thẳng theo trục gaze.
+        mag2 = float(np.hypot(dx, dy))
+        if mag2 > 1e-3:
+            ux, uy = dx / mag2, dy / mag2
+        else:
+            ux, uy = 1.0, 0.0
+        # Góc của trục gaze 2D (degree) cho cv2.ellipse
+        gaze_angle_deg = float(np.degrees(np.arctan2(uy, ux)))
+        z_abs = abs(float(v_world[2]))
+        # Giữ tối thiểu 0.15 để ellipse không biến mất hẳn khi nhìn ngang gắt
+        squash = max(0.15, z_abs)
+
         # Vẽ num_dots hình tròn dọc theo đoạn từ (x0,y0) đến (x1,y1)
         for i in range(1, num_dots + 1):
             t = i / num_dots
@@ -136,6 +153,7 @@ class Visualizer:
                 continue
 
             r = int(min_radius + (max_radius - min_radius) * t_s)
+            r_minor = max(1, int(round(r * squash)))
             alpha = (0.2 + 0.6 * t) * alpha_global
 
             # Sử dụng overlay tạm thời cho từng dot để tránh tích tụ opacity
@@ -143,8 +161,15 @@ class Visualizer:
             # Glow cũng nhỏ dần về phía mắt
             curr_glow = int(glow_size * t)
             if curr_glow > 0:
-                cv2.circle(overlay, (px, py), r + curr_glow, color, -1, cv2.LINE_AA)
-            cv2.circle(overlay, (px, py), r, color, -1, cv2.LINE_AA)
+                cv2.ellipse(
+                    overlay, (px, py),
+                    (r + curr_glow, max(1, int((r + curr_glow) * squash))),
+                    gaze_angle_deg, 0, 360, color, -1, cv2.LINE_AA,
+                )
+            cv2.ellipse(
+                overlay, (px, py), (r, r_minor),
+                gaze_angle_deg, 0, 360, color, -1, cv2.LINE_AA,
+            )
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
         # Vẽ Endpoint (điểm cuối) cũng với alpha_global
@@ -152,11 +177,28 @@ class Visualizer:
         end_y = int(y0 + dy)
         if 0 <= end_x < W and 0 <= end_y < H:
             overlay_end = image.copy()
-            # Vòng tròn to ở cuối
-            cv2.circle(overlay_end, (end_x, end_y), 6, color, -1, cv2.LINE_AA)
-            # Dấu + trắng ở giữa
-            cv2.line(overlay_end, (end_x - 6, end_y), (end_x + 6, end_y), (0, 255, 255), 2)
-            cv2.line(overlay_end, (end_x, end_y - 6), (end_x, end_y + 6), (0, 255, 255), 2)
+            # Endpoint cũng là ellipse foreshorten theo |z|
+            END_R = 6
+            cv2.ellipse(
+                overlay_end, (end_x, end_y),
+                (END_R, max(1, int(round(END_R * squash)))),
+                gaze_angle_deg, 0, 360, color, -1, cv2.LINE_AA,
+            )
+
+            # ── Dấu "+" có xu hướng theo trục gaze (3D) ──────────────────
+            # • thanh dọc theo HƯỚNG gaze 2D (dx, dy)  → xoay được
+            # • thanh vuông góc (foreshorten theo |z|) → cho cảm giác chiều sâu
+            BAR = 8
+            vx, vy = -uy, ux                      # vuông góc gaze
+            perp_len = BAR * z_abs
+
+            p1 = (int(end_x - ux * BAR),  int(end_y - uy * BAR))
+            p2 = (int(end_x + ux * BAR),  int(end_y + uy * BAR))
+            q1 = (int(end_x - vx * perp_len), int(end_y - vy * perp_len))
+            q2 = (int(end_x + vx * perp_len), int(end_y + vy * perp_len))
+            cv2.line(overlay_end, p1, p2, (0, 255, 255), 2, cv2.LINE_AA)
+            cv2.line(overlay_end, q1, q2, (0, 255, 255), 2, cv2.LINE_AA)
+
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
 
         return image
