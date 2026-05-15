@@ -101,104 +101,92 @@ class Visualizer:
         min_radius: int = 1,
         max_radius: int = 12,
         glow_size: int = 4,
+        eye_depth: float = 1.0,
+        focal_length: float | None = None,
     ) -> np.ndarray:
         """
-        Vẽ vector gaze 3D dưới dạng một chuỗi hình tròn nối từ mắt đến endpoint.
-        - Opacity giảm dần khi gaze ở gần trung tâm (giữa mắt).
-        - Hình tròn ở gần mắt nhỏ và mờ, càng xa càng to và rõ.
+        Vẽ vector gaze theo PERSPECTIVE PROJECTION (pinhole camera).
+
+        Mô hình:
+          • Camera intrinsics (xấp xỉ webcam): fx = fy = max(W,H), cx = W/2, cy = H/2.
+          • Back-project tâm mắt 2D về 3D ở độ sâu Z_e = `eye_depth`.
+          • Gaze ray trong 3D: P(t) = P_eye + t·L·v_world, với t ∈ [0, 1].
+          • Project ngược về 2D: (x', y') = (fx·X/Z + cx, fy·Y/Z + cy).
+
+        Hệ quả:
+          • Nhìn thẳng vào camera (vz ≈ -1) → gaze hội tụ về (cx, cy) và "to lên"
+            do Z giảm → cảm giác đang đến gần.
+          • Nhìn ngang (vz ≈ 0) → Z giữ nguyên → gaze trượt trên image plane.
+          • Trail dots tự động foreshorten qua factor 1/Z, không cần tính tay.
         """
         H, W = image.shape[:2]
 
-        # World space: +X phải, +Y xuống → chiếu thẳng lên ảnh
-        dx = float(v_world[0]) * length
-        dy = float(v_world[1]) * length
+        # ── Pinhole camera params ─────────────────────────────────────────
+        f = float(focal_length) if focal_length is not None else float(max(W, H))
+        cx, cy = W * 0.5, H * 0.5
+        Z_e = float(eye_depth)
 
         x0, y0 = float(eye_pos[0]), float(eye_pos[1])
 
-        # Tính độ mạnh của gaze (độ lệch khỏi trung tâm)
-        gaze_strength = np.sqrt(v_world[0]**2 + v_world[1]**2)
-        min_opacity = 0.05
-        max_opacity = 0.8
+        # Back-project eye position từ 2D → 3D tại Z = Z_e
+        X_e = (x0 - cx) * Z_e / f
+        Y_e = (y0 - cy) * Z_e / f
 
-        # Alpha global tỉ lệ thuận với gaze_strength (giảm khi ở giữa mắt)
+        # Convert "length in pixels" → 3D distance sao cho ở góc nhỏ
+        # vẫn giữ độ dài quen thuộc giống code cũ:
+        #   x_proj − x0 ≈ f·L·vx / (Z_e − L)  ≈ length·vx khi L = length·Z_e/(length+f)
+        L = float(length) * Z_e / (float(length) + f) if length else 0.0
+
+        vx, vy, vz = float(v_world[0]), float(v_world[1]), float(v_world[2])
+
+        # Hàm project an toàn (kẹp Z để không chia 0 / âm)
+        def _project(t: float):
+            X = X_e + t * L * vx
+            Y = Y_e + t * L * vy
+            Z = Z_e + t * L * vz
+            Z_safe = max(Z, 0.05)            # tránh đi sau camera
+            u = f * X / Z_safe + cx
+            v = f * Y / Z_safe + cy
+            scale = Z_e / Z_safe             # >1 khi tới gần camera, <1 khi xa
+            return u, v, Z_safe, scale
+
+        # ── Opacity global (như cũ, dùng độ lệch xy của vector) ──────────
+        gaze_strength = np.hypot(vx, vy)
+        min_opacity, max_opacity = 0.05, 0.8
         alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
-        alpha_global = np.clip(alpha_global, min_opacity, max_opacity)
+        alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
 
-        # ── Tính trục foreshortening cho cảm giác 3D ──────────────────────
-        # Tất cả "hình tròn" thực ra là ellipse:
-        #   • trục lớn  = bán kính gốc, xoay theo HƯỚNG gaze 2D (dx, dy)
-        #   • trục nhỏ  = bán kính gốc * |z|  → bẹp dần khi nhìn ngang
-        # ⇒ nhìn thẳng (z≈-1) → ellipse = hình tròn đầy đủ;
-        #   nhìn ngang  (z≈0)  → ellipse → đoạn thẳng theo trục gaze.
-        mag2 = float(np.hypot(dx, dy))
-        if mag2 > 1e-3:
-            ux, uy = dx / mag2, dy / mag2
-        else:
-            ux, uy = 1.0, 0.0
-        # Góc của trục gaze 2D (degree) cho cv2.ellipse
-        gaze_angle_deg = float(np.degrees(np.arctan2(uy, ux)))
-        z_abs = abs(float(v_world[2]))
-        # Giữ tối thiểu 0.15 để ellipse không biến mất hẳn khi nhìn ngang gắt
-        squash = max(0.15, z_abs)
-
-        # Vẽ num_dots hình tròn dọc theo đoạn từ (x0,y0) đến (x1,y1)
+        # ── Trail dots: project từng điểm 3D rồi áp 1/Z scaling ──────────
         for i in range(1, num_dots + 1):
             t = i / num_dots
-            # Dùng bình phương (t**2) để chấm ở gần mắt nhỏ lâu hơn
-            t_s = t**2.0
-            px = int(round(x0 + dx * t_s))
-            py = int(round(y0 + dy * t_s))
-
+            t_s = t ** 2.0                   # gần mắt thì nhỏ lâu hơn
+            u, v, _, scale = _project(t_s)
+            px, py = int(round(u)), int(round(v))
             if not (0 <= px < W and 0 <= py < H):
                 continue
 
-            r = int(min_radius + (max_radius - min_radius) * t_s)
-            r_minor = max(1, int(round(r * squash)))
+            r_base = min_radius + (max_radius - min_radius) * t_s
+            r = max(1, int(round(r_base * scale)))         # foreshorten 3D
             alpha = (0.2 + 0.6 * t) * alpha_global
 
-            # Sử dụng overlay tạm thời cho từng dot để tránh tích tụ opacity
             overlay = image.copy()
-            # Glow cũng nhỏ dần về phía mắt
-            curr_glow = int(glow_size * t)
+            curr_glow = int(glow_size * t * scale)
             if curr_glow > 0:
-                cv2.ellipse(
-                    overlay, (px, py),
-                    (r + curr_glow, max(1, int((r + curr_glow) * squash))),
-                    gaze_angle_deg, 0, 360, color, -1, cv2.LINE_AA,
-                )
-            cv2.ellipse(
-                overlay, (px, py), (r, r_minor),
-                gaze_angle_deg, 0, 360, color, -1, cv2.LINE_AA,
-            )
+                cv2.circle(overlay, (px, py), r + curr_glow, color, -1, cv2.LINE_AA)
+            cv2.circle(overlay, (px, py), r, color, -1, cv2.LINE_AA)
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
-        # Vẽ Endpoint (điểm cuối) cũng với alpha_global
-        end_x = int(x0 + dx)
-        end_y = int(y0 + dy)
+        # ── Endpoint + dấu "+" ───────────────────────────────────────────
+        u_end, v_end, _, end_scale = _project(1.0)
+        end_x, end_y = int(round(u_end)), int(round(v_end))
         if 0 <= end_x < W and 0 <= end_y < H:
             overlay_end = image.copy()
-            # Endpoint cũng là ellipse foreshorten theo |z|
-            END_R = 6
-            cv2.ellipse(
-                overlay_end, (end_x, end_y),
-                (END_R, max(1, int(round(END_R * squash)))),
-                gaze_angle_deg, 0, 360, color, -1, cv2.LINE_AA,
-            )
+            r_end = max(2, int(round(6 * end_scale)))
+            cv2.circle(overlay_end, (end_x, end_y), r_end, color, -1, cv2.LINE_AA)
 
-            # ── Dấu "+" có xu hướng theo trục gaze (3D) ──────────────────
-            # • thanh dọc theo HƯỚNG gaze 2D (dx, dy)  → xoay được
-            # • thanh vuông góc (foreshorten theo |z|) → cho cảm giác chiều sâu
-            BAR = 8
-            vx, vy = -uy, ux                      # vuông góc gaze
-            perp_len = BAR * z_abs
-
-            p1 = (int(end_x - ux * BAR),  int(end_y - uy * BAR))
-            p2 = (int(end_x + ux * BAR),  int(end_y + uy * BAR))
-            q1 = (int(end_x - vx * perp_len), int(end_y - vy * perp_len))
-            q2 = (int(end_x + vx * perp_len), int(end_y + vy * perp_len))
-            cv2.line(overlay_end, p1, p2, (0, 255, 255), 2, cv2.LINE_AA)
-            cv2.line(overlay_end, q1, q2, (0, 255, 255), 2, cv2.LINE_AA)
-
+            bar = max(3, int(round(6 * end_scale)))
+            cv2.line(overlay_end, (end_x - bar, end_y), (end_x + bar, end_y), (0, 255, 255), 2)
+            cv2.line(overlay_end, (end_x, end_y - bar), (end_x, end_y + bar), (0, 255, 255), 2)
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
 
         return image

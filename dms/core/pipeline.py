@@ -161,13 +161,13 @@ class DMSPipeline:
                             # Tính gaze trung bình
                             if display_gaze_l is not None and display_gaze_r is not None:
                                 gaze_avg = (display_gaze_l + display_gaze_r) / 2.0
+                                
+                                # Điều chỉnh length theo hướng nhìn (Yaw)
+                                yaw_val = np.abs(float(gaze_avg[1]))
+                                side_factor = np.clip(yaw_val / 0.3, 0.7, 1.0)
+                                gaze_length *= side_factor
+                                
                                 vec = self._pitchyaw_to_vec(gaze_avg)
-
-                                # Foreshorten 3D: nhìn càng ngang → đoạn càng ngắn
-                                # (giống ellipse bị bẹp theo |z|). Clamp tối thiểu
-                                # 0.25 để không biến mất hẳn khi nhìn ngang gắt.
-                                gaze_length *= max(0.25, abs(float(vec[2])))
-
                                 if display_center_l is not None:
                                     frame = self.visualizer.draw_gaze_3d(frame, display_center_l, vec, length=gaze_length, eye_side='l')
                                 if display_center_r is not None:
@@ -176,13 +176,14 @@ class DMSPipeline:
                                 # Trường hợp chỉ có 1 mắt hoặc dùng dữ liệu cũ của 1 mắt
                                 current_gaze = display_gaze_l if display_gaze_l is not None else display_gaze_r
                                 current_center = display_center_l if display_gaze_l is not None else display_center_r
-
+                                
                                 if current_gaze is not None:
-                                    vec = self._pitchyaw_to_vec(current_gaze)
-                                    gaze_length *= max(0.25, abs(float(vec[2])))
-
+                                    yaw_val = np.abs(float(current_gaze[1]))
+                                    side_factor = np.clip(yaw_val / 0.3, 0.7, 1.0)
+                                    gaze_length *= side_factor
+                                    
                                     if current_center is not None:
-                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, vec, length=gaze_length, eye_side='l')
+                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, self._pitchyaw_to_vec(current_gaze), length=gaze_length, eye_side='l')
 
                         # Facial attribute detection (chỉ chạy nếu được bật)
                         attribs = None
