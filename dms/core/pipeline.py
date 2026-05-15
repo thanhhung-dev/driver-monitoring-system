@@ -57,14 +57,12 @@ class DMSPipeline:
             ),
         ])
 
-        # Throttle head_pose: chỉ chạy mỗi N frame để tránh lag, frame còn
-        # lại tái sử dụng kết quả gần nhất (head pose ít đổi giữa 2 frame).
+
         self._head_pose_interval = 3
         self._head_pose_counter = 0
         self._last_head_pose = None  # (yaw, pitch, roll) độ
 
-        # Offset hiệu chuẩn gaze (Radians)
-        self.pitch_offset = -0.08
+        self.pitch_offset = -0.20 
         self.yaw_offset = 0.0
 
         # Lưu trạng thái gaze cuối cùng để tránh bị mất khi nháy mắt
@@ -92,6 +90,12 @@ class DMSPipeline:
         self.logger.info("System shutdown")
 
     def _pitchyaw_to_vec(self, g: np.ndarray) -> np.ndarray:
+        # Khi nhắm mắt, EyeGaze module set g=[0,0] (sentinel "nhìn vào tâm mắt").
+        # Bỏ qua offset trong trường hợp này để mũi tên đúng là hướng thẳng,
+        # không bị ngước lên do pitch_offset.
+        if float(g[0]) == 0.0 and float(g[1]) == 0.0:
+            return np.array([0.0, 0.0, -1.0], dtype=np.float32)
+
         pitch, yaw = float(g[0]) + self.pitch_offset, float(g[1]) + self.yaw_offset
 
         x = -np.cos(pitch) * np.sin(yaw)

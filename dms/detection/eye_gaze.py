@@ -42,10 +42,15 @@ class EyeGazeEstimation:
         self,
         model_dir: str = "models/eye-gaze-dectecion",
         smooth_alpha: float = 0.35,
+        ear_closed_threshold: float = 0.18,
     ) -> None:
         # EMA smoothing: gaze_out = alpha * raw + (1-alpha) * prev.
         # alpha nhỏ => mượt hơn nhưng trễ; 0.3–0.5 là vùng cân bằng tốt.
         self.smooth_alpha = float(smooth_alpha)
+        # EAR (Eye Aspect Ratio) threshold để xác định mắt nhắm.
+        # Khi EAR < ngưỡng này → coi như nhắm mắt → gaze được set về [0, 0]
+        # (nhìn thẳng vào tâm mắt) thay vì đoán bừa từ crop bị méo.
+        self.ear_closed_threshold = float(ear_closed_threshold)
         self._prev_gaze_l: np.ndarray | None = None
         self._prev_gaze_r: np.ndarray | None = None
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -101,6 +106,31 @@ class EyeGazeEstimation:
         if flip:
             tensor = np.fliplr(tensor).copy()
         return tensor[np.newaxis, :, :]                    # (1, 96, 160)
+
+    # ── EAR (eye-closed detection) ────────────────────────────────────────
+
+    @staticmethod
+    def _eye_aspect_ratio(landmarks: np.ndarray, indices: list[int]) -> float | None:
+        """
+        Tính Eye Aspect Ratio (Soukupová & Čech, 2016) từ 6 điểm mắt theo
+        convention: [outer, top1, top2, inner, bottom2, bottom1].
+
+        EAR = (|p1-p5| + |p2-p4|) / (2 * |p0-p3|)
+
+        Mắt mở: EAR ≈ 0.25–0.35.
+        Mắt nhắm: EAR < ~0.18.
+
+        Trả về None nếu không đủ điểm (vd. landmarks 5 điểm).
+        """
+        if len(indices) < 6:
+            return None
+        p = landmarks[indices, :2].astype(np.float32)
+        v1 = float(np.linalg.norm(p[1] - p[5]))
+        v2 = float(np.linalg.norm(p[2] - p[4]))
+        h  = float(np.linalg.norm(p[0] - p[3]))
+        if h < 1e-3:
+            return None
+        return (v1 + v2) / (2.0 * h)
 
     # ── Crop helper ───────────────────────────────────────────────────────
 
@@ -179,7 +209,13 @@ class EyeGazeEstimation:
 
         # ── Mắt trái ──────────────────────────────────────────────────────
         crop_l, center_l = self._crop(frame, landmarks, left_idx)
-        if crop_l is not None:
+        ear_l = self._eye_aspect_ratio(landmarks, left_idx)
+        if ear_l is not None and ear_l < self.ear_closed_threshold:
+            # Nhắm mắt → set gaze về tâm mắt (pitch=yaw=0, vector hướng thẳng).
+            # Bỏ qua inference cho hợp lý + giữ smoothing đồng bộ.
+            gaze_l = np.zeros(2, dtype=np.float32)
+            self._prev_gaze_l = gaze_l
+        elif crop_l is not None:
             raw_l = self._infer(self._preprocess(crop_l, flip=False))
             if self._prev_gaze_l is None:
                 gaze_l = raw_l
@@ -189,7 +225,11 @@ class EyeGazeEstimation:
 
         # ── Mắt phải — flip về left-eye space trước khi inference ─────────
         crop_r, center_r = self._crop(frame, landmarks, right_idx)
-        if crop_r is not None:
+        ear_r = self._eye_aspect_ratio(landmarks, right_idx)
+        if ear_r is not None and ear_r < self.ear_closed_threshold:
+            gaze_r = np.zeros(2, dtype=np.float32)
+            self._prev_gaze_r = gaze_r
+        elif crop_r is not None:
             raw_r = self._infer(self._preprocess(crop_r, flip=True))
             # Sau inference: negate yaw để convert ngược lại về world coords
             # (flip ngang ↔ yaw đổi dấu, pitch giữ nguyên)
