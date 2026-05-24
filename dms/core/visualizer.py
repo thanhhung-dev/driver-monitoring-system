@@ -87,7 +87,7 @@ class Visualizer:
         dots(fc.INNER_LIPS_INDICES)
 
         return image
-    
+    v_world_test = np.array([0.0, 0.0, -1.0])
     def draw_gaze_3d(
         self,
         image: np.ndarray,
@@ -95,8 +95,6 @@ class Visualizer:
         v_world: np.ndarray,
         length: float | None = None,
         color: tuple[int, int, int] = (255, 255, 0),
-        thickness: int = 2,
-        eye_side: str = 'l',
         num_dots: int = 6,
         draw_eye_marker: bool = True,
         min_radius: int = 1,
@@ -137,9 +135,12 @@ class Visualizer:
         vx, vy, vz = float(v_world[0]), float(v_world[1]), float(v_world[2])
 
         # Hàm project an toàn
+        # v_world dùng convention math 3D: +Y = UP. Trục Y của ảnh OpenCV +Y = DOWN
+        # → cần đảo dấu vy khi tích lũy vào Y pixel-space để chiều cao hiển thị
+        # khớp với hướng nhìn thật (pitch UP của model = mũi tên UP trên ảnh).
         def _project(t: float):
             X = X_e + t * L * vx
-            Y = Y_e + t * L * vy
+            Y = Y_e + t * L * (-vy)
             Z = Z_e + t * L * vz
             Z_safe = max(Z, 0.05)
             u = f * X / Z_safe + cx
@@ -154,11 +155,6 @@ class Visualizer:
         alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
 
         # ── ELLIPSE trail với perspective deformation ──────────
-        # Hướng & foreshorten của ellipse:
-        #   1) Nếu KHÔNG có head_pose → giữ logic cũ (xoay theo gaze 2D,
-        #      stretch theo |vz|).
-        #   2) Nếu CÓ head_pose → dựng frame mắt cục bộ từ rotation matrix
-        #      của đầu, project trục "right" và "up" lên image plane.
         if head_pose is not None:
             yaw_d, pitch_d, roll_d = head_pose
             # Convention khớp draw_cube/draw_axis: yaw đảo dấu để +yaw = quay phải
@@ -173,7 +169,7 @@ class Visualizer:
 
             # Chiếu lên image plane (bỏ z) → độ dài còn lại = foreshorten factor
             major_proj = float(np.hypot(right_3d[0], right_3d[1]))   # ∈ [0, 1]
-            minor_proj = float(np.hypot(up_3d[0],    up_3d[1]))       # ∈ [0, 1]
+            minor_proj = float(np.hypot(up_3d[0], up_3d[1]))         # ∈ [0, 1]
             angle_deg  = float(np.degrees(np.arctan2(right_3d[1], right_3d[0])))
             # Clamp tối thiểu 0.15 để không sụp về 0 khi đầu xoay 90°
             major_proj = max(0.15, major_proj)
@@ -185,6 +181,19 @@ class Visualizer:
 
         # Stretch dọc theo trục mắt — tăng khi nhìn thẳng vào camera (|vz| lớn).
         stretch_base = 1.0 + abs(vz) * stretch_gain
+
+        # Blend chỉ trong ROI nhỏ quanh dot thay vì copy() toàn frame.
+        # Trước đây image.copy() (~6 MB cho 1080p) × num_dots × 2 mắt là
+        # bottleneck CPU lớn nhất của visualizer.
+        def _blend_roi(cx_p, cy_p, radius_px, alpha_blend, draw_fn):
+            x0 = max(0, cx_p - radius_px); y0 = max(0, cy_p - radius_px)
+            x1 = min(W, cx_p + radius_px + 1); y1 = min(H, cy_p + radius_px + 1)
+            if x1 <= x0 or y1 <= y0:
+                return
+            roi = image[y0:y1, x0:x1]
+            overlay = roi.copy()
+            draw_fn(overlay, x0, y0)
+            cv2.addWeighted(overlay, alpha_blend, roi, 1 - alpha_blend, 0, roi)
 
         for i in range(1, num_dots + 1):
             t = i / num_dots
@@ -203,38 +212,31 @@ class Visualizer:
             major_axis = max(1, int(round(r * major_proj * stretch)))
             minor_axis = max(1, int(round(r * minor_proj)))
 
-            overlay = image.copy()
-
             curr_glow = int(glow_size * t * scale)
+            r = max(major_axis, minor_axis)
             if curr_glow > 0:
-                cv2.ellipse(
-                    overlay, (px, py),
-                    (major_axis + curr_glow, minor_axis + curr_glow),
-                    angle_deg, 0, 360, color, -1, cv2.LINE_AA
-                )
-
-            cv2.ellipse(
-                overlay, (px, py),
-                (major_axis, minor_axis),
-                angle_deg, 0, 360, color, -1, cv2.LINE_AA
-            )
-
-            cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
+                def _draw(ov, ox, oy, _r=r, _g=curr_glow, _ang=angle_deg, _px=px, _py=py):
+                    cv2.ellipse(ov, (_px - ox, _py - oy),
+                                (_r + _g, _r + _g), _ang, 0, 360, color, -1, cv2.LINE_AA)
+                    cv2.ellipse(ov, (_px - ox, _py - oy),
+                                (_r, _r), _ang, 0, 360, color, -1, cv2.LINE_AA)
+                _blend_roi(px, py, r + curr_glow + 1, alpha, _draw)
 
         # ── Endpoint + dấu "+" ───────────────────────────────────────────
         u_end, v_end, _, end_scale = _project(1.0)
         end_x, end_y = int(round(u_end)), int(round(v_end))
         if 0 <= end_x < W and 0 <= end_y < H:
-            overlay_end = image.copy()
             r_end = max(2, int(round(6 * end_scale)))
-            cv2.circle(overlay_end, (end_x, end_y), r_end, color, -1, cv2.LINE_AA)
-
             bar = max(3, int(round(6 * end_scale)))
-            cv2.line(overlay_end, (end_x - bar, end_y), (end_x + bar, end_y), (0, 255, 255), 2)
-            cv2.line(overlay_end, (end_x, end_y - bar), (end_x, end_y + bar), (0, 255, 255), 2)
-            cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
-        
+            radius_total = max(r_end, bar) + 1
+            def _draw_end(ov, ox, oy, _re=r_end, _b=bar, _x=end_x, _y=end_y):
+                cv2.circle(ov, (_x - ox, _y - oy), _re, color, -1, cv2.LINE_AA)
+                cv2.line(ov, (_x - _b - ox, _y - oy), (_x + _b - ox, _y - oy), (0, 255, 255), 2)
+                cv2.line(ov, (_x - ox, _y - _b - oy), (_x - ox, _y + _b - oy), (0, 255, 255), 2)
+            _blend_roi(end_x, end_y, radius_total, alpha_global, _draw_end)
+
         return image
 
     def show(self, window_name, frame):
         cv2.imshow(window_name, frame)
+        

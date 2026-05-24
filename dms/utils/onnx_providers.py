@@ -34,13 +34,19 @@ def make_session(
     model_or_bytes,
     *,
     enable_all_optim: bool = True,
+    force_cpu: bool = False,
 ) -> ort.InferenceSession:
-    """Tạo InferenceSession với provider tốt nhất + graph optim ORT_ENABLE_ALL."""
+    """Tạo InferenceSession với provider tốt nhất + graph optim ORT_ENABLE_ALL.
+
+    `force_cpu=True` cho phép module gọi (vd. EyeGaze 96×160) bỏ qua GPU
+    khi overhead launch DirectML/CUDA lớn hơn compute thực sự trên CPU.
+    """
     so = ort.SessionOptions()
     if enable_all_optim:
         so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+    providers = ["CPUExecutionProvider"] if force_cpu else best_providers()
     return ort.InferenceSession(
         model_or_bytes,
         sess_options=so,
-        providers=best_providers(),
+        providers=providers,
     )

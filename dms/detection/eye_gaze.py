@@ -53,6 +53,11 @@ class EyeGazeEstimation:
         self.ear_closed_threshold = float(ear_closed_threshold)
         self._prev_gaze_l: np.ndarray | None = None
         self._prev_gaze_r: np.ndarray | None = None
+        # Alternate eyes mỗi frame để giảm 2 ONNX call → 1 call/frame.
+        # Mỗi mắt vẫn refresh ~mỗi 2 frame (≈30 Hz @ 60 FPS source);
+        # smoothing EMA che được sự "lệch" 1 frame giữa 2 mắt.
+        self._alternate_eyes = True
+        self._eye_turn = 0   # 0 = trái, 1 = phải
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         model_dir = os.path.join(base_dir, model_dir)
 
@@ -77,15 +82,18 @@ class EyeGazeEstimation:
         load_external_data_for_model(onnx_model, model_dir)
         model_bytes = onnx_model.SerializeToString()
 
-        # Dùng make_session() để ưu tiên CUDA → DirectML → CoreML → CPU,
-        # giống các module ONNX khác. Trước đây bị hard-code CPU gây bottleneck
-        # (EyeGaze chạy 2 lần/frame cho 2 mắt → ăn hết FPS trên máy có GPU).
+        # Model EyeGaze có nhánh heatmap [1,3,34,48,80] (~391k voxels) khá nặng,
+        # nên DirectML/CUDA vẫn nhanh hơn CPU (~20 vs ~26 ms/inference đo thực tế).
+        # Dùng provider tốt nhất (CUDA → DirectML → CoreML → CPU).
         self.session = make_session(model_bytes)
 
         self.input_name   = self.session.get_inputs()[0].name
-        # Model có 3 output: [heatmaps, landmarks, gaze_pitchyaw]
-        # Lấy hết tên output để run trả về đầy đủ; gaze nằm ở index [2].
-        self.output_names = [o.name for o in self.session.get_outputs()]
+        # Model có 3 output: [heatmaps (391k voxels), landmarks, gaze_pitchyaw].
+        # Pipeline chỉ dùng gaze → chỉ yêu cầu đúng output đó để ORT có thể
+        # prune nhánh heatmap (op nặng nhất) khi chạy → nhanh hơn đáng kể.
+        all_outputs = [o.name for o in self.session.get_outputs()]
+        gaze_name = next((n for n in all_outputs if "gaze" in n.lower()), all_outputs[-1])
+        self.output_names = [gaze_name]
 
     # ── Qualcomm preprocess ───────────────────────────────────────────────
 
@@ -105,7 +113,7 @@ class EyeGazeEstimation:
         tensor = gray.astype(np.float32) / 255.0           # [0, 1]
         if flip:
             tensor = np.fliplr(tensor).copy()
-        return tensor[np.newaxis, :, :]                    # (1, 96, 160)
+        return tensor              
 
     # ── EAR (eye-closed detection) ────────────────────────────────────────
 
@@ -183,7 +191,9 @@ class EyeGazeEstimation:
         Chạy ONNX session, trả về [pitch, yaw] radians shape (2,).
         Model có 3 outputs: [heatmaps, landmarks, gaze_pitchyaw] — lấy index cuối.
         """
-        outs = self.session.run(self.output_names, {self.input_name: tensor})
+        # Model expects rank-3 input: (1, H, W) — CHW without batch dim.
+        batch = tensor[np.newaxis, :, :]
+        outs = self.session.run(self.output_names, {self.input_name: batch})
         gaze = np.asarray(outs[-1], dtype=np.float32).reshape(-1)
         return gaze[:2]   # [pitch, yaw]
 
@@ -207,37 +217,48 @@ class EyeGazeEstimation:
         gaze_l = gaze_r = center_l = center_r = None
         a = self.smooth_alpha
 
+        # Quyết định frame này chạy mắt nào (luân phiên để giảm overhead ONNX).
+        # Nếu alternate_eyes=False: chạy cả 2 mắt như cũ.
+        do_left  = (not self._alternate_eyes) or self._eye_turn == 0
+        do_right = (not self._alternate_eyes) or self._eye_turn == 1
+        if self._alternate_eyes:
+            self._eye_turn ^= 1
+
         # ── Mắt trái ──────────────────────────────────────────────────────
         crop_l, center_l = self._crop(frame, landmarks, left_idx)
-        ear_l = self._eye_aspect_ratio(landmarks, left_idx)
-        if ear_l is not None and ear_l < self.ear_closed_threshold:
-            # Nhắm mắt → set gaze về tâm mắt (pitch=yaw=0, vector hướng thẳng).
-            # Bỏ qua inference cho hợp lý + giữ smoothing đồng bộ.
-            gaze_l = np.zeros(2, dtype=np.float32)
-            self._prev_gaze_l = gaze_l
-        elif crop_l is not None:
-            raw_l = self._infer(self._preprocess(crop_l, flip=False))
-            if self._prev_gaze_l is None:
-                gaze_l = raw_l
-            else:
-                gaze_l = a * raw_l + (1.0 - a) * self._prev_gaze_l
-            self._prev_gaze_l = gaze_l
+        if do_left:
+            ear_l = self._eye_aspect_ratio(landmarks, left_idx)
+            if ear_l is not None and ear_l < self.ear_closed_threshold:
+                # Nhắm mắt → set gaze về tâm mắt (pitch=yaw=0, vector hướng thẳng).
+                # Bỏ qua inference cho hợp lý + giữ smoothing đồng bộ.
+                gaze_l = np.zeros(2, dtype=np.float32)
+                self._prev_gaze_l = gaze_l
+            elif crop_l is not None:
+                raw_l = self._infer(self._preprocess(crop_l, flip=False))
+                if self._prev_gaze_l is None:
+                    gaze_l = raw_l
+                else:
+                    gaze_l = a * raw_l + (1.0 - a) * self._prev_gaze_l
+                self._prev_gaze_l = gaze_l
+        else:
+            gaze_l = self._prev_gaze_l   # dùng giá trị cache frame trước
 
-        # ── Mắt phải — flip về left-eye space trước khi inference ─────────
         crop_r, center_r = self._crop(frame, landmarks, right_idx)
-        ear_r = self._eye_aspect_ratio(landmarks, right_idx)
-        if ear_r is not None and ear_r < self.ear_closed_threshold:
-            gaze_r = np.zeros(2, dtype=np.float32)
-            self._prev_gaze_r = gaze_r
-        elif crop_r is not None:
-            raw_r = self._infer(self._preprocess(crop_r, flip=True))
-            # Sau inference: negate yaw để convert ngược lại về world coords
-            # (flip ngang ↔ yaw đổi dấu, pitch giữ nguyên)
-            raw_r = raw_r * np.array([1.0, -1.0], dtype=np.float32)
-            if self._prev_gaze_r is None:
-                gaze_r = raw_r
-            else:
-                gaze_r = a * raw_r + (1.0 - a) * self._prev_gaze_r
-            self._prev_gaze_r = gaze_r
+        if do_right:
+            ear_r = self._eye_aspect_ratio(landmarks, right_idx)
+            if ear_r is not None and ear_r < self.ear_closed_threshold:
+                gaze_r = np.zeros(2, dtype=np.float32)
+                self._prev_gaze_r = gaze_r
+            elif crop_r is not None:
+                raw_r = self._infer(self._preprocess(crop_r, flip=True))
+                raw_r[1] = -raw_r[1]
+                # Ema Muot
+                if self._prev_gaze_r is None:
+                    gaze_r = raw_r
+                else:
+                    gaze_r = a * raw_r + (1.0 - a) * self._prev_gaze_r
+                self._prev_gaze_r = gaze_r
+        else:
+            gaze_r = self._prev_gaze_r   # dùng giá trị cache frame trước
 
         return gaze_l, gaze_r, center_l, center_r

@@ -51,11 +51,15 @@ class VideoCapture:
         cap.release()
     """
 
+    IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
+
     def __init__(self, config_path: str = "dms/config.yaml") -> None:
         self.logger = setup_logger("VideoCapture", config_path)
         self._config = self._load_config(config_path)
         self._cap: cv2.VideoCapture | None = None
         self._is_video_file = False
+        self._is_image_file = False
+        self._image_frame = None
         self.fps_counter = FPSCounter()
 
 
@@ -80,7 +84,22 @@ class VideoCapture:
         height: int = cam_cfg["resolution"]["height"]
         target_fps: int = cam_cfg["fps"]
 
-        # Use video file if source is set, otherwise use camera device
+        # Detect source type: image file / video file / camera
+        if isinstance(source, str) and source.lower().endswith(self.IMAGE_EXTS):
+            self._is_image_file = True
+            self._is_video_file = False
+            if not os.path.exists(source):
+                raise CameraNotFoundError(
+                    f"[ERROR-CAM-001] Image file not found: {source}"
+                )
+            self._image_frame = cv2.imread(source)
+            if self._image_frame is None:
+                raise CameraNotFoundError(
+                    f"[ERROR-CAM-001] Cannot read image: {source}"
+                )
+            self.logger.info(f"Image source loaded: {source} (shape={self._image_frame.shape})")
+            return
+
         self._is_video_file = bool(source)
         input_source = source if source else device_id
         self.logger.info(f"Opening video source: {input_source} ...")
@@ -112,6 +131,15 @@ class VideoCapture:
         Raises:
             CameraNotFoundError: If called before open().
         """
+        # Image mode: trả lại cùng 1 frame mỗi lần để debug vẽ overlay
+        if self._is_image_file:
+            if self._image_frame is None:
+                raise CameraNotFoundError(
+                    "[ERROR-CAM-002] Image is not loaded. Call open() first."
+                )
+            self.fps_counter.tick()
+            return True, self._image_frame.copy()
+
         if self._cap is None or not self._cap.isOpened():
             raise CameraNotFoundError(
                 "[ERROR-CAM-002] Camera is not open. Call open() first."
@@ -132,6 +160,10 @@ class VideoCapture:
 
     def release(self) -> None:
         """Release the camera resource."""
+        if self._is_image_file:
+            self._image_frame = None
+            self.logger.info("Image source released.")
+            return
         if self._cap and self._cap.isOpened():
             self._cap.release()
             self.logger.info("Camera released.")

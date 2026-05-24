@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import yaml
 
 def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
@@ -33,15 +34,19 @@ def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     
-     # Console handler
-    console_handler = logging.StreamHandler()
+     # Console handler (force UTF-8 để hỗ trợ ký tự Unicode trên Windows)
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
  
     # File handler (optional)
     if log_file:
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
-        file_handler = logging.FileHandler(log_file)
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
  
