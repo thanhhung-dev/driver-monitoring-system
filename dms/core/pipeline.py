@@ -290,6 +290,7 @@ class DMSPipeline:
                                 gaze_length = self._prev_gaze_length
 
                             _t0 = time.perf_counter()
+
                             # Tính gaze trung bình
                             if display_gaze_l is not None and display_gaze_r is not None:
                                 gaze_avg = (display_gaze_l + display_gaze_r) / 2.0
@@ -301,9 +302,9 @@ class DMSPipeline:
                                 
                                 vec = self._pitchyaw_to_vec(gaze_avg)
                                 if display_center_l is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_l, vec, length=gaze_length, head_pose=head_pose_angles)
+                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_l, vec, length=gaze_length,focal_length=1000, head_pose=head_pose_angles)
                                 if display_center_r is not None:
-                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_r, vec, length=gaze_length, head_pose=head_pose_angles)
+                                    frame = self.visualizer.draw_gaze_3d(frame, display_center_r, vec, length=gaze_length,focal_length=1000, head_pose=head_pose_angles)
                             else:
                                 # Trường hợp chỉ có 1 mắt hoặc dùng dữ liệu cũ của 1 mắt
                                 current_gaze = display_gaze_l if display_gaze_l is not None else display_gaze_r
@@ -315,7 +316,7 @@ class DMSPipeline:
                                     gaze_length *= side_factor
                                     
                                     if current_center is not None:
-                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, self._pitchyaw_to_vec(current_gaze), length=gaze_length, head_pose=head_pose_angles)
+                                        frame = self.visualizer.draw_gaze_3d(frame, current_center, self._pitchyaw_to_vec(current_gaze), length=gaze_length,  focal_length=1000,head_pose=head_pose_angles)
                             _t_acc["viz"] += time.perf_counter() - _t0
 
                         # Facial attribute detection (chỉ chạy nếu được bật)

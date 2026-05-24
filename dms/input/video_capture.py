@@ -82,7 +82,6 @@ class VideoCapture:
         device_id: int = cam_cfg["device_id"]
         width: int = cam_cfg["resolution"]["width"]
         height: int = cam_cfg["resolution"]["height"]
-        target_fps: int = cam_cfg["fps"]
 
         # Detect source type: image file / video file / camera
         if isinstance(source, str) and source.lower().endswith(self.IMAGE_EXTS):

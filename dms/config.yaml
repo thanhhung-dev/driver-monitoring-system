@@ -1,14 +1,13 @@
 camera:
   # Use device_id (int) for camera, or source (string path) for video file
   # source: "data/dataset.mp4"
-  source: "data/Dataset2.mp4"
-  # source: "data/image.png"
+  # source: "data/Dataset2.mp4"
+  source: "data/image.png"
   # source: 0
   device_id: 0
   resolution:
     width: 640
     height: 480
-  fps: 15
   frame_timeout_ms: 2000
 system:
   log_level: INFO

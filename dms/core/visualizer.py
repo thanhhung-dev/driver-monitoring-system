@@ -87,7 +87,78 @@ class Visualizer:
         dots(fc.INNER_LIPS_INDICES)
 
         return image
-    v_world_test = np.array([0.0, 0.0, -1.0])
+    def _project_circle_to_ellipse(
+        self,
+        center_3d: np.ndarray,
+        radius: float,
+        normal_3d: np.ndarray,
+        focal_length: float,
+        cx: float,
+        cy: float
+    ) -> tuple[tuple[float, float], tuple[float, float], float]:
+        """
+        Projects a small 3D circle to a 2D ellipse using the Jacobian of the projection.
+        
+        Args:
+            center_3d: (X, Y, Z) in 3D
+            radius: Radius of the 3D circle
+            normal_3d: Unit normal vector of the circle's plane
+            focal_length: Pinhole camera focal length
+            cx, cy: Principal point
+            
+        Returns:
+            (center_2d, axes_2d, angle_deg) compatible with cv2.ellipse
+        """
+        X, Y, Z = center_3d
+        Z = max(Z, 0.01)
+        
+        # 1. Projected center
+        u0 = focal_length * X / Z + cx
+        v0 = focal_length * Y / Z + cy
+        
+        # 2. Orthonormal basis in the circle's plane
+        # Find a vector not parallel to normal
+        if abs(normal_3d[0]) < 0.9:
+            ref = np.array([1.0, 0.0, 0.0])
+        else:
+            ref = np.array([0.0, 1.0, 0.0])
+        
+        u_3d = np.cross(normal_3d, ref)
+        u_3d /= np.linalg.norm(u_3d)
+        v_3d = np.cross(normal_3d, u_3d)
+        
+        # 3. Jacobian of projection [u, v] = [fX/Z + cx, fY/Z + cy]
+        # J = [[f/Z, 0, -fX/Z^2],
+        #      [0, f/Z, -fY/Z^2]]
+        f_Z = focal_length / Z
+        f_Z2 = focal_length / (Z * Z)
+        J = np.array([
+            [f_Z, 0, -X * f_Z2],
+            [0, f_Z, -Y * f_Z2]
+        ])
+        
+        # 4. Projected basis vectors in 2D
+        a = J @ (u_3d * radius)
+        b = J @ (v_3d * radius)
+        
+        # 5. Ellipse from two vectors p(theta) = p0 + a*cos(theta) + b*sin(theta)
+        # The axes are the eigenvectors of M = a*a^T + b*b^T
+        M = np.outer(a, a) + np.outer(b, b)
+        
+        # Eigenvalues and eigenvectors
+        evals, evecs = np.linalg.eigh(M)
+        
+        # eigh returns eigenvalues in ascending order
+        # Semi-major axis is sqrt(evals[1]), semi-minor is sqrt(evals[0])
+        major_axis = float(np.sqrt(max(evals[1], 1e-6)))
+        minor_axis = float(np.sqrt(max(evals[0], 1e-6)))
+        
+        # Angle of the major axis
+        angle_rad = np.arctan2(evecs[1, 1], evecs[0, 1])
+        angle_deg = float(np.degrees(angle_rad))
+        
+        return (u0, v0), (major_axis, minor_axis), angle_deg
+
     def draw_gaze_3d(
         self,
         image: np.ndarray,
@@ -107,134 +178,159 @@ class Visualizer:
         head_pose: tuple[float, float, float] | None = None,
     ) -> np.ndarray:
         """
-        Vẽ vector gaze theo PERSPECTIVE PROJECTION với trail dots bị biến dạng ellipse.
-
-        Nếu `head_pose=(yaw, pitch, roll)` (degree) được truyền vào, ellipse sẽ
-        xoay & foreshorten theo HEAD LOCAL FRAME thay vì chỉ theo gaze 2D:
-          • angle_deg  = arctan2 của trục "phải" mắt (R @ [1,0,0]) chiếu lên ảnh
-          • minor_axis = bán kính × độ dài chiếu của trục "lên" mắt (R @ [0,1,0])
-          • major_axis = bán kính × độ dài chiếu trục "phải" × stretch (gaze depth)
-        ⇒ nghiêng đầu (roll) → ellipse nghiêng theo;
-          xoay đầu (yaw/pitch) → ellipse bẹp đúng phía bị foreshorten.
+        ✅ Proper 3D perspective projection with depth-based ellipse deformation.
+        Each dot is treated as a 3D disk perpendicular to the gaze vector.
         """
         H, W = image.shape[:2]
-
-        # ── Pinhole camera params ─────────────────────────────────────────
+    
+        # Extract gaze vector components
+        vx, vy, vz = float(v_world[0]), float(v_world[1]), float(v_world[2])
+        v_unit = np.array([vx, vy, vz])
+        v_unit /= np.linalg.norm(v_unit)
+        
+        # ──────── PINHOLE CAMERA SETUP ────────
         f = float(focal_length) if focal_length is not None else float(max(W, H))
         cx, cy = W * 0.5, H * 0.5
         Z_e = float(eye_depth)
-
+        
+        # Back-project eye position from 2D image coords to 3D world
         x0, y0 = float(eye_pos[0]), float(eye_pos[1])
-
-        # Back-project eye position từ 2D → 3D tại Z = Z_e
         X_e = (x0 - cx) * Z_e / f
         Y_e = (y0 - cy) * Z_e / f
-
+        
+        # Trail length in 3D space
         L = float(length) * Z_e / (float(length) + f) if length else 0.0
+        
+        # ──────── HEAD POSE ROTATION (for trail orientation) ────────
+        # Default normal is facing camera if head_pose is missing
+        normal = np.array([0.0, 0.0, -1.0])
+        R_yaw_only = None
+        
+        if head_pose is not None:
+            yaw_d, pitch_d, roll_d = head_pose
+            # ✅ ONLY use Yaw for orientation to keep it "thẳng dọc" (vertical)
+            # ignoring Pitch and Roll prevents the "leaning" effect
+            R_yaw_only = get_rotation_matrix(
+                0,                  # No pitch
+                np.deg2rad(-yaw_d), # Only yaw
+                0                   # No roll
+            )
+            # Face normal in camera coords (pointing out of face)
+            normal = R_yaw_only @ np.array([0.0, 0.0, -1.0])
 
-        vx, vy, vz = float(v_world[0]), float(v_world[1]), float(v_world[2])
-
-        # Hàm project an toàn
-        # v_world dùng convention math 3D: +Y = UP. Trục Y của ảnh OpenCV +Y = DOWN
-        # → cần đảo dấu vy khi tích lũy vào Y pixel-space để chiều cao hiển thị
-        # khớp với hướng nhìn thật (pitch UP của model = mũi tên UP trên ảnh).
-        def _project(t: float):
-            X = X_e + t * L * vx
-            Y = Y_e + t * L * (-vy)
-            Z = Z_e + t * L * vz
-            Z_safe = max(Z, 0.05)
-            u = f * X / Z_safe + cx
-            v = f * Y / Z_safe + cy
-            scale = Z_e / Z_safe
-            return u, v, Z_safe, scale
-
-        # ── Opacity global ──────────
+        # Opacity based on gaze strength
         gaze_strength = np.hypot(vx, vy)
         min_opacity, max_opacity = 0.05, 0.8
         alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
         alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
 
-        # ── ELLIPSE trail với perspective deformation ──────────
-        if head_pose is not None:
-            yaw_d, pitch_d, roll_d = head_pose
-            # Convention khớp draw_cube/draw_axis: yaw đảo dấu để +yaw = quay phải
-            R = get_rotation_matrix(
-                np.deg2rad(pitch_d),
-                np.deg2rad(-yaw_d),
-                np.deg2rad(roll_d),
-            )
-            # Trục "phải" và "lên" của mắt sau khi đầu xoay
-            right_3d = R @ np.array([1.0, 0.0, 0.0])
-            up_3d    = R @ np.array([0.0, 1.0, 0.0])
-
-            # Chiếu lên image plane (bỏ z) → độ dài còn lại = foreshorten factor
-            major_proj = float(np.hypot(right_3d[0], right_3d[1]))   # ∈ [0, 1]
-            minor_proj = float(np.hypot(up_3d[0], up_3d[1]))         # ∈ [0, 1]
-            angle_deg  = float(np.degrees(np.arctan2(right_3d[1], right_3d[0])))
-            # Clamp tối thiểu 0.15 để không sụp về 0 khi đầu xoay 90°
-            major_proj = max(0.15, major_proj)
-            minor_proj = max(0.15, minor_proj)
-        else:
-            angle_deg  = float(np.degrees(np.arctan2(vy, vx)))
-            major_proj = 1.0
-            minor_proj = 1.0
-
-        # Stretch dọc theo trục mắt — tăng khi nhìn thẳng vào camera (|vz| lớn).
-        stretch_base = 1.0 + abs(vz) * stretch_gain
-
-        # Blend chỉ trong ROI nhỏ quanh dot thay vì copy() toàn frame.
-        # Trước đây image.copy() (~6 MB cho 1080p) × num_dots × 2 mắt là
-        # bottleneck CPU lớn nhất của visualizer.
-        def _blend_roi(cx_p, cy_p, radius_px, alpha_blend, draw_fn):
-            x0 = max(0, cx_p - radius_px); y0 = max(0, cy_p - radius_px)
-            x1 = min(W, cx_p + radius_px + 1); y1 = min(H, cy_p + radius_px + 1)
-            if x1 <= x0 or y1 <= y0:
-                return
-            roi = image[y0:y1, x0:x1]
-            overlay = roi.copy()
-            draw_fn(overlay, x0, y0)
-            cv2.addWeighted(overlay, alpha_blend, roi, 1 - alpha_blend, 0, roi)
-
+        # ──────── TRAIL WITH DEPTH-BASED DEFORMATION ────────
         for i in range(1, num_dots + 1):
             t = i / num_dots
             t_s = t ** 2.0
-            u, v, _, scale = _project(t_s)
+            
+            # 3D position of the dot
+            X = X_e + t_s * L * vx
+            Y = Y_e + t_s * L * (-vy)  # flip Y for image coords
+            Z = Z_e + t_s * L * vz
+            pos_3d = np.array([X, Y, Z])
+            
+            # Base radius in pixels, then convert to 3D units
+            r_pixel = min_radius + (max_radius - min_radius) * t_s
+            r_3d = r_pixel * Z_e / f
+            
+            # Project 3D disk (oriented with head Yaw) to 2D ellipse
+            (u, v), (major, minor), angle_deg = self._project_circle_to_ellipse(
+                pos_3d, r_3d, normal, f, cx, cy
+            )
+            
             px, py = int(round(u)), int(round(v))
             if not (0 <= px < W and 0 <= py < H):
                 continue
 
-            r_base = min_radius + (max_radius - min_radius) * t_s
-            r = max(1, int(round(r_base * scale)))
+            # ✅ Removed stretch_gain: dots stay as circles in 3D space.
+            # They only become ellipses on-screen via perspective when the head turns.
+            
+            # Opacity
             alpha = (0.2 + 0.6 * t) * alpha_global
-
-            stretch = stretch_base * (1.0 + t * stretch_grow)
-
-            major_axis = max(1, int(round(r * major_proj * stretch)))
-            minor_axis = max(1, int(round(r * minor_proj)))
-
-            curr_glow = int(glow_size * t * scale)
-            r = max(major_axis, minor_axis)
+            
+            # Glow size (scales with depth)
+            scale_factor = Z_e / max(Z, 0.1)
+            curr_glow = glow_size * t * scale_factor
+            
+            # Draw
+            overlay = image.copy()
+            
             if curr_glow > 0:
-                def _draw(ov, ox, oy, _r=r, _g=curr_glow, _ang=angle_deg, _px=px, _py=py):
-                    cv2.ellipse(ov, (_px - ox, _py - oy),
-                                (_r + _g, _r + _g), _ang, 0, 360, color, -1, cv2.LINE_AA)
-                    cv2.ellipse(ov, (_px - ox, _py - oy),
-                                (_r, _r), _ang, 0, 360, color, -1, cv2.LINE_AA)
-                _blend_roi(px, py, r + curr_glow + 1, alpha, _draw)
-
-        # ── Endpoint + dấu "+" ───────────────────────────────────────────
-        u_end, v_end, _, end_scale = _project(1.0)
+                # Glow: larger ellipse
+                cv2.ellipse(
+                    overlay, (px, py),
+                    (int(round(major + curr_glow)), int(round(minor + curr_glow))),
+                    angle_deg, 0, 360, color, -1, cv2.LINE_AA
+                )
+            
+            # Main: ellipse (oriented with face plane)
+            cv2.ellipse(
+                overlay, (px, py),
+                (int(round(major)), int(round(minor))),
+                angle_deg, 0, 360, color, -1, cv2.LINE_AA
+            )
+            
+            cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
+        
+        # ──────── ENDPOINT ────────
+        X_end = X_e + L * vx
+        Y_end = Y_e + L * (-vy)
+        Z_end = Z_e + L * vz
+        pos_end_3d = np.array([X_end, Y_end, Z_end])
+        
+        u_end = f * X_end / max(Z_end, 0.1) + cx
+        v_end = f * Y_end / max(Z_end, 0.1) + cy
         end_x, end_y = int(round(u_end)), int(round(v_end))
+        
         if 0 <= end_x < W and 0 <= end_y < H:
-            r_end = max(2, int(round(6 * end_scale)))
-            bar = max(3, int(round(6 * end_scale)))
-            radius_total = max(r_end, bar) + 1
-            def _draw_end(ov, ox, oy, _re=r_end, _b=bar, _x=end_x, _y=end_y):
-                cv2.circle(ov, (_x - ox, _y - oy), _re, color, -1, cv2.LINE_AA)
-                cv2.line(ov, (_x - _b - ox, _y - oy), (_x + _b - ox, _y - oy), (0, 255, 255), 2)
-                cv2.line(ov, (_x - ox, _y - _b - oy), (_x - ox, _y + _b - oy), (0, 255, 255), 2)
-            _blend_roi(end_x, end_y, radius_total, alpha_global, _draw_end)
-
+            overlay_end = image.copy()
+            scale_end = Z_e / max(Z_end, 0.1)
+            
+            # 1. Draw center circle (projected)
+            r_end_3d = 4.0 * Z_e / f  # radius of ~4px at eye_depth
+            (u_c, v_c), (maj_c, min_c), ang_c = self._project_circle_to_ellipse(
+                pos_end_3d, r_end_3d, normal, f, cx, cy
+            )
+            cv2.ellipse(overlay_end, (int(round(u_c)), int(round(v_c))), 
+                        (int(round(maj_c)), int(round(min_c))), ang_c, 0, 360, color, -1, cv2.LINE_AA)
+            
+            # 2. Draw crosshair (+) projected in 3D
+            # We project two 3D segments centered at pos_end_3d, 
+            # oriented with the head pose's local 'right' and 'up' vectors.
+            bar_len_3d = 8.0 * Z_e / f # length of ~8px at eye_depth
+            
+            # Length in pixels at this depth
+            bar_len_px = int(round(8.0 * scale_end))
+            
+            # 1. Draw the horizontal bar (3D projected: rotates with head Yaw only)
+            if R_yaw_only is not None:
+                # Use the pre-calculated R_yaw_only for the crosshair horizontal bar
+                vec_right = R_yaw_only @ np.array([1.0, 0.0, 0.0])
+            else:
+                vec_right = np.array([1.0, 0.0, 0.0])
+            
+            bar_len_3d = 8.0 * Z_e / f
+            p1_h = pos_end_3d - vec_right * bar_len_3d
+            p2_h = pos_end_3d + vec_right * bar_len_3d
+            
+            def _proj(p):
+                return (int(round(f * p[0] / max(p[2], 0.1) + cx)), 
+                        int(round(f * p[1] / max(p[2], 0.1) + cy)))
+            
+            cv2.line(overlay_end, _proj(p1_h), _proj(p2_h), (0, 255, 255), 2, cv2.LINE_AA)
+            
+            # 2. Draw the vertical bar (2D fixed: strictly vertical on screen)
+            # Center is (end_x, end_y), extending up and down
+            cv2.line(overlay_end, (end_x, end_y - bar_len_px), (end_x, end_y + bar_len_px), (0, 255, 255), 2, cv2.LINE_AA)
+            
+            cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
+        
         return image
 
     def show(self, window_name, frame):
