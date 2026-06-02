@@ -38,10 +38,29 @@ class EyeGazeEstimation:
     INPUT_H = 96
     INPUT_W = 160
 
+    # ── Foreshortening / validity thresholds ──────────────────────────────
+    # Khi đầu quay nghiêng, mắt phía xa camera bị "thu lại" → eye_w giảm
+    # mạnh → crop bị méo → gaze output rối loạn.
+    # 1) MIN_EYE_WIDTH_PX  : ngưỡng tuyệt đối (px) → quá nhỏ thì bỏ luôn.
+    # 2) EYE_WIDTH_RATIO_THRESHOLD : ngưỡng tương đối giữa 2 mắt →
+    #    mắt nhỏ hơn nhiều so với mắt còn lại = bị foreshorten → bỏ.
+    MIN_EYE_WIDTH_PX = 10.0
+    EYE_WIDTH_RATIO_THRESHOLD = 0.65   # tightened from 0.55 — bắt được góc 50–60°
+
+    # Adaptive EMA: khi raw nhảy mạnh so với prev (ví dụ landmark giật) →
+    # smoothing aggressive hơn để tránh arrow flicker.
+    MAX_GAZE_JUMP_RAD = 0.7    # ~40°
+    LOW_ALPHA = 0.15
+
+    # Outlier rejection giữa 2 mắt: nếu 2 mắt cho gaze quá lệch nhau
+    # (>~28°) → một mắt chắc chắn sai (foreshortened) → drop mắt có
+    # eye_w nhỏ hơn (mắt phía xa camera).
+    MAX_EYE_DISAGREEMENT_RAD = 0.5   # ~28°
+
     def __init__(
         self,
         model_dir: str = "models/eye-gaze-dectecion",
-        smooth_alpha: float = 0.35,
+        smooth_alpha: float = 0.5,
         ear_closed_threshold: float = 0.18,
     ) -> None:
         # EMA smoothing: gaze_out = alpha * raw + (1-alpha) * prev.
@@ -140,6 +159,34 @@ class EyeGazeEstimation:
             return None
         return (v1 + v2) / (2.0 * h)
 
+    # ── Eye width (foreshortening detection) ──────────────────────────────
+
+    @staticmethod
+    def _eye_width(landmarks: np.ndarray, indices: list[int]) -> float:
+        """
+        Khoảng cách 2 corner ngang của mắt (px). Dùng để phát hiện
+        foreshortening: mắt bị thu lại khi head quay nghiêng.
+        Convention 6-point: indices[0] = outer corner, indices[3] = inner.
+        """
+        if len(indices) >= 4:
+            pts = landmarks[indices, :2].astype(np.float32)
+            return float(np.linalg.norm(pts[0] - pts[3]))
+        if len(indices) >= 2:
+            pts = landmarks[indices, :2].astype(np.float32)
+            return float(np.linalg.norm(pts[0] - pts[1]))
+        return 0.0
+
+    # ── Adaptive EMA ──────────────────────────────────────────────────────
+
+    def _adaptive_alpha(self, raw: np.ndarray, prev: np.ndarray | None) -> float:
+        """Hạ alpha (smoothing mạnh hơn) khi raw nhảy đột ngột so với prev."""
+        if prev is None:
+            return self.smooth_alpha
+        diff = float(np.linalg.norm(raw - prev))
+        if diff > self.MAX_GAZE_JUMP_RAD:
+            return self.LOW_ALPHA
+        return self.smooth_alpha
+
     # ── Crop helper ───────────────────────────────────────────────────────
 
     @staticmethod
@@ -215,7 +262,18 @@ class EyeGazeEstimation:
         landmarks = np.asarray(landmarks, dtype=np.float32)
         left_idx, right_idx = _eye_indices(len(landmarks))
         gaze_l = gaze_r = center_l = center_r = None
-        a = self.smooth_alpha
+
+        # ── Validity gating dựa trên eye width ────────────────────────────
+        # Khi head quay nghiêng, mắt phía xa camera bị foreshortened →
+        # eye_w giảm mạnh. Nếu nhỏ hơn ngưỡng tuyệt đối hoặc nhỏ hơn nhiều
+        # so với mắt còn lại thì BỎ mắt đó (return None, clear prev cache).
+        ew_l = self._eye_width(landmarks, left_idx)
+        ew_r = self._eye_width(landmarks, right_idx)
+        max_ew = max(ew_l, ew_r, 1.0)
+        valid_l = (ew_l >= self.MIN_EYE_WIDTH_PX
+                   and (ew_l / max_ew) >= self.EYE_WIDTH_RATIO_THRESHOLD)
+        valid_r = (ew_r >= self.MIN_EYE_WIDTH_PX
+                   and (ew_r / max_ew) >= self.EYE_WIDTH_RATIO_THRESHOLD)
 
         # Quyết định frame này chạy mắt nào (luân phiên để giảm overhead ONNX).
         # Nếu alternate_eyes=False: chạy cả 2 mắt như cũ.
@@ -226,7 +284,12 @@ class EyeGazeEstimation:
 
         # ── Mắt trái ──────────────────────────────────────────────────────
         crop_l, center_l = self._crop(frame, landmarks, left_idx)
-        if do_left:
+        if not valid_l:
+            # Foreshortened → drop hoàn toàn + clear cache (tránh smoothing
+            # qua các sự kiện gián đoạn khi head xoay nhanh).
+            self._prev_gaze_l = None
+            gaze_l = None
+        elif do_left:
             ear_l = self._eye_aspect_ratio(landmarks, left_idx)
             if ear_l is not None and ear_l < self.ear_closed_threshold:
                 # Nhắm mắt → set gaze về tâm mắt (pitch=yaw=0, vector hướng thẳng).
@@ -235,16 +298,21 @@ class EyeGazeEstimation:
                 self._prev_gaze_l = gaze_l
             elif crop_l is not None:
                 raw_l = self._infer(self._preprocess(crop_l, flip=False))
+                alpha = self._adaptive_alpha(raw_l, self._prev_gaze_l)
                 if self._prev_gaze_l is None:
                     gaze_l = raw_l
                 else:
-                    gaze_l = a * raw_l + (1.0 - a) * self._prev_gaze_l
+                    gaze_l = alpha * raw_l + (1.0 - alpha) * self._prev_gaze_l
                 self._prev_gaze_l = gaze_l
         else:
             gaze_l = self._prev_gaze_l   # dùng giá trị cache frame trước
 
+        # ── Mắt phải ──────────────────────────────────────────────────────
         crop_r, center_r = self._crop(frame, landmarks, right_idx)
-        if do_right:
+        if not valid_r:
+            self._prev_gaze_r = None
+            gaze_r = None
+        elif do_right:
             ear_r = self._eye_aspect_ratio(landmarks, right_idx)
             if ear_r is not None and ear_r < self.ear_closed_threshold:
                 gaze_r = np.zeros(2, dtype=np.float32)
@@ -252,13 +320,26 @@ class EyeGazeEstimation:
             elif crop_r is not None:
                 raw_r = self._infer(self._preprocess(crop_r, flip=True))
                 raw_r[1] = -raw_r[1]
-                # Ema Muot
+                alpha = self._adaptive_alpha(raw_r, self._prev_gaze_r)
                 if self._prev_gaze_r is None:
                     gaze_r = raw_r
                 else:
-                    gaze_r = a * raw_r + (1.0 - a) * self._prev_gaze_r
+                    gaze_r = alpha * raw_r + (1.0 - alpha) * self._prev_gaze_r
                 self._prev_gaze_r = gaze_r
         else:
             gaze_r = self._prev_gaze_r   # dùng giá trị cache frame trước
+
+        # ── Outlier rejection giữa 2 mắt ──────────────────────────────────
+        # Nếu cả 2 mắt còn sống nhưng cho gaze mâu thuẫn nặng → drop mắt
+        # có eye_w nhỏ hơn (mắt bị foreshortened, kém tin cậy).
+        if gaze_l is not None and gaze_r is not None:
+            disagree = float(np.linalg.norm(gaze_l - gaze_r))
+            if disagree > self.MAX_EYE_DISAGREEMENT_RAD:
+                if ew_l < ew_r:
+                    gaze_l = None
+                    self._prev_gaze_l = None
+                else:
+                    gaze_r = None
+                    self._prev_gaze_r = None
 
         return gaze_l, gaze_r, center_l, center_r

@@ -1,2 +1,13 @@
 dms/data/daraset.mp4
 dms/output.mp4
+
+# Large model files (>100MB)
+*.data
+dms/models/**/*.data
+
+# Videos
+dms/data/*.mp4
+
+# Claude kit
+dms/claudekit/
+.claude/

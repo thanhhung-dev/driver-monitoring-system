@@ -271,8 +271,8 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
             tdx, tdy = margin + corner_size,     h - margin - corner_size
         size = corner_size
 
-    y = np.deg2rad(-yaw)
-    p = np.deg2rad(-pitch)
+    y = np.deg2rad(yaw)
+    p = np.deg2rad(pitch)
     r = np.deg2rad(roll)
 
     Rx = np.array([[1, 0, 0],
@@ -309,6 +309,49 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
         if(color == (0,0,255)):
             cv2.arrowedLine(image,(tdx,tdy), end, color,2,cv2.LINE_AA, tipLength=0.25)
         cv2.line(image, (tdx, tdy), end, color, 2, cv2.LINE_AA)
+
+
+def draw_head_direction_arrow(
+    image: np.ndarray,
+    landmarks: np.ndarray,
+    yaw: float,
+    pitch: float,
+    length: int = 80,
+    color: tuple[int, int, int] = (0, 0, 255),
+    thickness: int = 2,
+) -> None:
+    """Vẽ mũi tên đỏ từ mũi chỉ hướng head (yaw + pitch).
+
+    Giống Qualcomm reference: mũi tên đỏ trên mũi cho biết
+    đầu đang quay về hướng nào.
+
+    Args:
+        landmarks: (N, 2|3) pixel coords — tự detect nose tip theo N.
+        yaw, pitch: độ (head pose output).
+        length: độ dài mũi tên (px).
+    """
+    lm = np.asarray(landmarks, dtype=np.float32)
+    n = len(lm)
+    # Nose tip index theo landmark format
+    if n >= 468:
+        nose_idx = 1       # MediaPipe 468
+    elif n >= 68:
+        nose_idx = 30      # dlib 68-point
+    else:
+        nose_idx = 0       # 5-point fallback
+
+    nose = lm[nose_idx, :2]
+    nx, ny = int(round(nose[0])), int(round(nose[1]))
+
+    # Yaw > 0 = nhìn phải → mũi tên sang phải
+    # Pitch > 0 = nhìn lên → mũi tên lên trên
+    yaw_rad = np.deg2rad(yaw)
+    pitch_rad = np.deg2rad(pitch)
+    dx = length * np.sin(yaw_rad) * np.cos(pitch_rad)
+    dy = -length * np.sin(pitch_rad)
+    ex, ey = int(round(nx + dx)), int(round(ny + dy))
+
+    cv2.arrowedLine(image, (nx, ny), (ex, ey), color, thickness, cv2.LINE_AA, tipLength=0.3)
 
 
 
@@ -462,9 +505,9 @@ def expand_bbox(x_min: int, y_min: int, x_max: int, y_max: int, factor: float = 
     width = x_max - x_min
     height = y_max - y_min
 
-    x_min_new = x_min - int(factor * height)
-    y_min_new = y_min - int(factor * width)
-    x_max_new = x_max + int(factor * height)
-    y_max_new = y_max + int(factor * width)
+    x_min_new = x_min - int(factor * width)
+    y_min_new = y_min - int(factor * height)
+    x_max_new = x_max + int(factor * width)
+    y_max_new = y_max + int(factor * height)
 
     return max(0, x_min_new), max(0, y_min_new), x_max_new, y_max_new

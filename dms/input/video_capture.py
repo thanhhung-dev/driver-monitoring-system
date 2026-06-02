@@ -61,6 +61,9 @@ class VideoCapture:
         self._is_image_file = False
         self._image_frame = None
         self.fps_counter = FPSCounter()
+        # Pacing cho video file: giữ tốc độ phát đúng FPS gốc.
+        self._frame_interval: float = 0.0   # seconds per frame
+        self._next_frame_t: float = 0.0     # mốc thời gian dự kiến cho frame kế
 
 
 
@@ -115,6 +118,14 @@ class VideoCapture:
             self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
             self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
             self._cap.set(cv2.CAP_PROP_FPS, target_fps)
+        else:
+            # Video file: đọc FPS gốc để pacing đúng tốc độ thực.
+            native_fps = float(self._cap.get(cv2.CAP_PROP_FPS) or 0.0)
+            if native_fps > 1.0:
+                self._frame_interval = 1.0 / native_fps
+                self.logger.info(f"Video native FPS: {native_fps:.2f} → pacing on")
+            else:
+                self.logger.info("Video FPS unknown — no pacing")
 
         self.logger.info(
             f"Source opened successfully: {input_source}"
@@ -149,8 +160,25 @@ class VideoCapture:
             # Loop video from the beginning
             self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             ret, frame = self._cap.read()
+            self._next_frame_t = 0.0   # reset pacing khi tua lại đầu video
         if ret:
             self.fps_counter.tick()
+            # ── Pacing cho video file ─────────────────────────────────────
+            # Pipeline chạy nhanh hơn FPS gốc → sleep cho khớp realtime.
+            # Dùng schedule absolute (không drift theo thời gian xử lý).
+            if self._is_video_file and self._frame_interval > 0.0:
+                now = time.time()
+                if self._next_frame_t == 0.0:
+                    self._next_frame_t = now + self._frame_interval
+                else:
+                    delay = self._next_frame_t - now
+                    if delay > 0:
+                        time.sleep(delay)
+                    self._next_frame_t += self._frame_interval
+                    # Pipeline chậm hơn FPS gốc nhiều → reset schedule
+                    # để không tích lũy "nợ" thời gian.
+                    if self._next_frame_t < time.time() - self._frame_interval:
+                        self._next_frame_t = time.time() + self._frame_interval
         return ret, frame
 
     def get_fps(self) -> float:

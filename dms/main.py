@@ -1,17 +1,28 @@
 import sys
 import yaml
-import torch
+
 from utils.logger import setup_logger
 from input.video_capture import VideoCapture
 from detection.face_detector import FaceDetector
 from detection.facemap_3dmm import FaceMap3DMMDetector
 from detection.face_attrib_detector import FaceAttribDetector
-from detection.mobilenetv2 import mobilenet_v2
-from detection.common import load_filtered_state_dict
 from analysis.drowsiness_analyzer import DrowsinessAnalyzer
 from core.pipeline import DMSPipeline
+from core.event_bus import EventBus
 from core.visualizer import Visualizer
 from detection.eye_gaze import EyeGazeEstimation
+from core.stages import (
+    CaptureStage,
+    DetectStage,
+    LandmarkStage,
+    HeadPoseStage,
+    GazeStage,
+    AttribStage,
+    DrowsinessStage,
+    DebugStage,
+    VizStage,
+)
+from utils.gaze_debug_helper import GazeDebugLogger
 
 CONFIG_PATH = "config.yaml"
 
@@ -28,31 +39,26 @@ def main():
     config = _load_config(CONFIG_PATH)
     model_cfg = config.get("models", {})
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # 1. Khởi tạo đầu vào
+    # 1. Input
     capture = VideoCapture(config_path=CONFIG_PATH)
 
-    # 2. Khởi tạo các AI Models theo config (đặt = None để pipeline skip)
-    face_detector = FaceDetector(model_path="models/det_2.5g.onnx")  # bắt buộc
-
+    # 2. AI Models
+    face_detector = FaceDetector(model_path="models/det_2.5g.onnx")
     facemap = FaceMap3DMMDetector() if model_cfg.get("facemap", True) else None
     attrib_detector = FaceAttribDetector() if model_cfg.get("attrib", True) else None
     eye_gaze = EyeGazeEstimation() if model_cfg.get("eye_gaze", False) else None
 
     head_pose = None
     if model_cfg.get("head_pose", False):
-        head_pose = mobilenet_v2(pretrained=False, num_classes=6)
-        state_dict = torch.load(
-            "models/mobilenetv2.pt", map_location=device, weights_only=True
-        )
-        load_filtered_state_dict(head_pose, state_dict)
-        head_pose.to(device)
-        head_pose.eval()
+        head_pose = HeadPoseStage(model_dir="models/sixd_repnet-onnx-float")
 
-    # 3. Logic và UI
+    # 3. Logic & UI
     analyzer = DrowsinessAnalyzer() if model_cfg.get("analyzer", True) else None
     visualizer = Visualizer() if model_cfg.get("visualizer", True) else None
+    gaze_debug = GazeDebugLogger(
+        log_every_n=10,
+        enabled=config.get("debug", {}).get("gaze_logging", False),
+    )
 
     logger.info(
         f"Models enabled → facemap={facemap is not None}, "
@@ -60,26 +66,36 @@ def main():
         f"analyzer={analyzer is not None}, visualizer={visualizer is not None}"
     )
 
-    # 4. Lắp ráp tất cả vào Pipeline (Đường ống xử lý)
-    pipeline = DMSPipeline(
-        capture=capture,
-        detector=face_detector,
-        facemap=facemap,
-        eye_gaze=eye_gaze,
-        attrib_detector=attrib_detector,
-        head_pose=head_pose,
-        analyzer=analyzer,
-        visualizer=visualizer,
-        device=device,
-    )
+    # 4. Build stage chain
+    stages = [s for s in [
+        CaptureStage(capture),
+        DetectStage(face_detector, interval=5),
+        LandmarkStage(facemap),
+        head_pose,
+        GazeStage(eye_gaze, visualizer, debug_logger=gaze_debug),
+        AttribStage(attrib_detector),
+        DrowsinessStage(analyzer),
+        DebugStage(logger, config),
+        VizStage(visualizer, capture),
+    ] if s is not None]
 
-    # 5. Chạy hệ thống
+    event_bus = EventBus()
+    threaded = config.get("system", {}).get("threaded", False)
+    pipeline = DMSPipeline(stages, event_bus=event_bus, threaded=threaded)
+
+    if threaded:
+        logger.info("Running in THREADED mode (capture + inference on separate threads)")
+    else:
+        logger.info("Running in SEQUENTIAL mode")
+
+    # 5. Run
     try:
-        pipeline.start()
+        pipeline.start(capture)
     except KeyboardInterrupt:
-        logger.info("Người dùng đã dừng chương trình.")
+        logger.info("User stopped the system.")
     finally:
-        pipeline.stop()
+        logger.info("System shutdown")
+
 
 if __name__ == "__main__":
     main()

@@ -1,8 +1,9 @@
 camera:
   # Use device_id (int) for camera, or source (string path) for video file
-  # source: "data/dataset.mp4"
-  # source: "data/Dataset2.mp4"
-  source: "data/image.png"
+  source: "data/Dataset2.mp4"
+  # source: "data/0601.mp4"
+  # source: "data/0528.mp4"
+  # source: "data/image.png"
   # source: 0
   device_id: 0
   resolution:
@@ -12,6 +13,7 @@ camera:
 system:
   log_level: INFO
   log_file: logs/dms.log
+  threaded: true
 models:
   facemap: true          # FaceMap 3DMM landmark
   attrib: false           # Facial attribute (eyes/glasses/mask...)
@@ -19,3 +21,5 @@ models:
   analyzer: false         # Drowsiness analyzer
   visualizer: true       # Hiển thị cửa sổ OpenCV
   eye_gaze: true
+debug:
+  gaze_logging: true

@@ -6,6 +6,7 @@ import numpy as np
 from utils import facial_constants as fc
 from utils.helpers import draw_bbox
 from utils.helpers import draw_axis
+from utils.helpers import draw_head_direction_arrow
 from utils.general import get_rotation_matrix
 from typing import Tuple, List
 
@@ -44,6 +45,9 @@ class Visualizer:
         if head_pose is not None:
             yaw, pitch, roll = head_pose
             draw_axis(frame, yaw, pitch, roll, list(bbox))
+            # Mũi tên đỏ từ mũi chỉ hướng head (giống Qualcomm)
+            if landmarks is not None:
+                draw_head_direction_arrow(frame, landmarks, yaw, pitch)
 
         return frame
     
@@ -167,26 +171,27 @@ class Visualizer:
         length: float | None = None,
         color: tuple[int, int, int] = (255, 255, 0),
         num_dots: int = 6,
-        draw_eye_marker: bool = True,
-        min_radius: int = 1,
-        max_radius: int = 8,       
+        min_radius: int = 2,
+        max_radius: int = 16,       
         glow_size: int = 2,        
-        stretch_gain: float = 1.0, 
-        stretch_grow: float = 0.2,  
         eye_depth: float = 1.0,
         focal_length: float | None = None,
         head_pose: tuple[float, float, float] | None = None,
     ) -> np.ndarray:
         """
-        ✅ Proper 3D perspective projection with depth-based ellipse deformation.
+        Proper 3D perspective projection with depth-based ellipse deformation.
         Each dot is treated as a 3D disk perpendicular to the gaze vector.
         """
         H, W = image.shape[:2]
     
         # Extract gaze vector components
-        vx, vy, vz = float(v_world[0]), float(v_world[1]), float(v_world[2])
-        v_unit = np.array([vx, vy, vz])
-        v_unit /= np.linalg.norm(v_unit)
+        v = np.asarray(v_world, dtype=np.float64)
+        raw_strength = float(np.hypot(float(v[0]), float(v[1])))
+        norm = np.linalg.norm(v)
+        if norm < 1e-6 or eye_depth <= 0:
+            return image
+        v_unit = v/norm
+        vx, vy, vz = float(v_unit[0]), float(v_unit[1]), float(v_unit[2])
         
         # ──────── PINHOLE CAMERA SETUP ────────
         f = float(focal_length) if focal_length is not None else float(max(W, H))
@@ -208,11 +213,9 @@ class Visualizer:
         
         if head_pose is not None:
             yaw_d, pitch_d, roll_d = head_pose
-            # ✅ ONLY use Yaw for orientation to keep it "thẳng dọc" (vertical)
-            # ignoring Pitch and Roll prevents the "leaning" effect
             R_yaw_only = get_rotation_matrix(
                 0,                  # No pitch
-                np.deg2rad(-yaw_d), # Only yaw
+                np.deg2rad(yaw_d),  # Only yaw
                 0                   # No roll
             )
             # Face normal in camera coords (pointing out of face)
@@ -225,9 +228,10 @@ class Visualizer:
         alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
 
         # ──────── TRAIL WITH DEPTH-BASED DEFORMATION ────────
+        start_offset = 0.4  # offset first dot away from eye center
         for i in range(1, num_dots + 1):
-            t = i / num_dots
-            t_s = t ** 2.0
+            t = start_offset + (1.0 - start_offset) * i / num_dots
+            t_s = t ** 3.0
             
             # 3D position of the dot
             X = X_e + t_s * L * vx
@@ -248,7 +252,6 @@ class Visualizer:
             if not (0 <= px < W and 0 <= py < H):
                 continue
 
-            # ✅ Removed stretch_gain: dots stay as circles in 3D space.
             # They only become ellipses on-screen via perspective when the head turns.
             
             # Opacity

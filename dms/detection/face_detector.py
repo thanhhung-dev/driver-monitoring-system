@@ -1,10 +1,10 @@
 import logging
-import os
 from typing import Tuple
 
 import cv2
 import numpy as np
-import onnxruntime
+
+from utils.onnx_providers import make_session
 
 
 def _distance2bbox(points: np.ndarray, distance: np.ndarray) -> np.ndarray:
@@ -73,23 +73,7 @@ class FaceDetector:
     # --------------------------------------------------------------------- #
     def _initialize_model(self, model_path: str) -> None:
         try:
-            sess_options = onnxruntime.SessionOptions()
-            sess_options.graph_optimization_level = (
-                onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-            )
-
-            preferred = [
-                "CUDAExecutionProvider",
-                "DirectMLExecutionProvider",
-                "CoreMLExecutionProvider",
-                "CPUExecutionProvider",
-            ]
-            available = onnxruntime.get_available_providers()
-            providers = [p for p in preferred if p in available]
-
-            self.session = onnxruntime.InferenceSession(
-                model_path, sess_options=sess_options, providers=providers
-            )
+            self.session = make_session(model_path)
             self.input_name = self.session.get_inputs()[0].name
             self.output_names = [o.name for o in self.session.get_outputs()]
 
@@ -102,7 +86,7 @@ class FaceDetector:
 
             logging.info(
                 f"Loaded SCRFD model from {model_path} "
-                f"(providers={providers}, input={self.input_h}x{self.input_w})"
+                f"(providers={self.session.get_providers()}, input={self.input_h}x{self.input_w})"
             )
         except Exception as e:
             logging.error(f"Failed to load SCRFD model: {e}")
