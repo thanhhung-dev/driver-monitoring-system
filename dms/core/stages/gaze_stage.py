@@ -113,10 +113,10 @@ class GazeStage:
 
         # Rotate eye-local gaze vector by head pose → gaze-in-world
         # Prefer raw rotation matrix (avoids Euler decomposition/recomposition error).
-        # SixDRepNet R is camera→face, so use R.T (face→camera) to rotate gaze.
+        # SixDRepNet R = Rz·Ry·Rx (standard ZYX, model→camera).
         # Fallback to Euler angles only if raw R unavailable.
         if head_rotation_matrix is not None:
-            vec = head_rotation_matrix.T @ vec
+            vec = head_rotation_matrix @ vec
         elif head_pose is not None:
             yaw_d, pitch_d, roll_d = head_pose
             R = get_rotation_matrix(

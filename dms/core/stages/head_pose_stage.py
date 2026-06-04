@@ -3,6 +3,7 @@ import numpy as np
 
 from core.frame_context import FrameContext
 from utils.helpers import expand_bbox
+from utils.general import get_rotation_matrix
 from utils.onnx_providers import make_session
 
 import onnx
@@ -105,22 +106,17 @@ class HeadPoseStage:
         tensor = self._preprocess(head_crop)
         outs = self._session.run(None, {self._input_name: tensor})
         R = np.asarray(outs[0], dtype=np.float64).reshape(3, 3)
-        self._last_R = R
 
-        # Euler angles — PHẢI decompose đúng convention của SixDRepNet:
-        #   R = Rz · Rx · Ry  (KHÔNG phải ZYX chuẩn)
+        # Euler angles — SixDRepNet dùng R = Rz · Ry · Rx (standard ZYX).
         # Công thức gốc compute_euler_angles_from_rotation_matrices():
-        #   pitch(x) = atan2(R[2,1], sy)      sy = sqrt(R[2,2]^2 + R[0,2]^2)
-        #   yaw(y)   = atan2(-R[0,2], R[2,2])
-        #   roll(z)  = atan2(R[1,0], R[1,1])
-        # Dùng đúng công thức này thì yaw không còn bị bóp nhỏ ở góc lớn
-        # (decompose ZYX cũ có thừa số cos(pitch) → underestimate yaw).
-        # Giữ nguyên dấu app convention (pitch+ = up, yaw+ = right) như cũ:
-        #   khớp dấu tại góc nhỏ với code trước, chỉ sửa độ lớn ở góc lớn.
-        sy = np.sqrt(R[2, 2] ** 2 + R[0, 2] ** 2).clip(min=1e-12)
-        pitch_d = -float(np.degrees(np.arctan2(R[2, 1], sy)))
-        yaw_d   = float(np.degrees(np.arctan2(-R[0, 2], R[2, 2])))
-        roll_d  = float(np.degrees(np.arctan2(R[1, 0], R[1, 1])))
+        #   pitch(x) = atan2(R[2,1], R[2,2])
+        #   yaw(y)   = atan2(-R[2,0], sy)     sy = sqrt(R[0,0]^2 + R[1,0]^2)
+        #   roll(z)  = atan2(R[1,0], R[0,0])
+        # App convention: pitch+ = up, yaw+ = right → negate pitch & yaw.
+        sy = np.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2).clip(min=1e-12)
+        pitch_d = -float(np.degrees(np.arctan2(R[2, 1], R[2, 2])))
+        yaw_d   = float(np.degrees(np.arctan2(R[2, 0], sy)))
+        roll_d  = float(np.degrees(np.arctan2(R[1, 0], R[0, 0])))
 
         # Clamp to plausible human head range ±90°
         if abs(pitch_d) > 90 or abs(yaw_d) > 90:
@@ -152,6 +148,14 @@ class HeadPoseStage:
 
         self._last_head_pose = head_pose_angles
 
+        # Reconstruct R from (smoothed) angles — consistent with displayed
+        # head pose and avoids using noisy raw R for gaze rotation.
+        sy_d, sp_d, sr_d = head_pose_angles
+        R_smooth = get_rotation_matrix(
+            np.deg2rad(sp_d), np.deg2rad(sy_d), np.deg2rad(sr_d),
+        )
+        self._last_R = R_smooth
+
         return FrameContext(
             frame=ctx.frame,
             frame_number=ctx.frame_number,
@@ -160,5 +164,5 @@ class HeadPoseStage:
             landmarks=ctx.landmarks,
             facemap_pose=ctx.facemap_pose,
             head_pose=head_pose_angles,
-            head_rotation_matrix=R,
+            head_rotation_matrix=R_smooth,
         )
