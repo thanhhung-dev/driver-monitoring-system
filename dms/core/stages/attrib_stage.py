@@ -1,3 +1,5 @@
+import dataclasses
+
 from core.frame_context import FrameContext
 from detection.face_attrib_detector import FaceAttribDetector
 
@@ -20,18 +22,4 @@ class AttribStage:
         if attribs is None:
             return ctx
 
-        return FrameContext(
-            frame=ctx.frame,
-            frame_number=ctx.frame_number,
-            bbox=ctx.bbox,
-            face_kpss=ctx.face_kpss,
-            landmarks=ctx.landmarks,
-            facemap_pose=ctx.facemap_pose,
-            head_pose=ctx.head_pose,
-            head_rotation_matrix=ctx.head_rotation_matrix,
-            gaze_l=ctx.gaze_l,
-            gaze_r=ctx.gaze_r,
-            eye_center_l=ctx.eye_center_l,
-            eye_center_r=ctx.eye_center_r,
-            attribs=attribs,
-        )
+        return dataclasses.replace(ctx, attribs=attribs)

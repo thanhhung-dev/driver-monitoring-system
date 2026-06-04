@@ -1,3 +1,5 @@
+import dataclasses
+
 import numpy as np
 
 from core.frame_context import FrameContext
@@ -44,9 +46,4 @@ class DetectStage:
         x1, y1, x2, y2 = box[:4].astype(int)
         face_kpss = kpss[0] if kpss is not None else None
 
-        return FrameContext(
-            frame=ctx.frame,
-            frame_number=ctx.frame_number,
-            bbox=(x1, y1, x2, y2),
-            face_kpss=face_kpss,
-        )
+        return dataclasses.replace(ctx, bbox=(x1, y1, x2, y2), face_kpss=face_kpss)

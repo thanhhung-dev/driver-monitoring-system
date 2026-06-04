@@ -117,7 +117,6 @@ class VideoCapture:
             # Apply settings only for camera (best-effort; hardware may override)
             self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
             self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-            self._cap.set(cv2.CAP_PROP_FPS, target_fps)
         else:
             # Video file: đọc FPS gốc để pacing đúng tốc độ thực.
             native_fps = float(self._cap.get(cv2.CAP_PROP_FPS) or 0.0)

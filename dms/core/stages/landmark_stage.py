@@ -1,3 +1,5 @@
+import dataclasses
+
 from core.frame_context import FrameContext
 from detection.facemap_3dmm import FaceMap3DMMDetector
 
@@ -21,11 +23,4 @@ class LandmarkStage:
             return ctx
 
         landmarks, facemap_pose = facemap_out
-        return FrameContext(
-            frame=ctx.frame,
-            frame_number=ctx.frame_number,
-            bbox=ctx.bbox,
-            face_kpss=ctx.face_kpss,
-            landmarks=landmarks,
-            facemap_pose=facemap_pose,
-        )
+        return dataclasses.replace(ctx, landmarks=landmarks, facemap_pose=facemap_pose)

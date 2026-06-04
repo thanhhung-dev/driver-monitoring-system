@@ -1,3 +1,5 @@
+import dataclasses
+
 import cv2
 import numpy as np
 
@@ -77,13 +79,8 @@ class HeadPoseStage:
         self._counter += 1
         if self._counter < self._interval:
             if self._last_head_pose is not None:
-                return FrameContext(
-                    frame=ctx.frame,
-                    frame_number=ctx.frame_number,
-                    bbox=ctx.bbox,
-                    face_kpss=ctx.face_kpss,
-                    landmarks=ctx.landmarks,
-                    facemap_pose=ctx.facemap_pose,
+                return dataclasses.replace(
+                    ctx,
                     head_pose=self._last_head_pose,
                     head_rotation_matrix=self._last_R,
                 )
@@ -112,21 +109,19 @@ class HeadPoseStage:
         #   pitch(x) = atan2(R[2,1], R[2,2])
         #   yaw(y)   = atan2(-R[2,0], sy)     sy = sqrt(R[0,0]^2 + R[1,0]^2)
         #   roll(z)  = atan2(R[1,0], R[0,0])
-        # App convention: pitch+ = up, yaw+ = right → negate pitch & yaw.
+        # Model convention: yaw+ = quay TRÁI (subject's left).
+        # App convention:   yaw+ = phải → negate yaw cho video (không flip).
+        # Webcam (frame_flipped): ảnh đã mirror → model yaw+ = phải thực tế,
+        # nên KHÔNG negate.
         sy = np.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2).clip(min=1e-12)
         pitch_d = -float(np.degrees(np.arctan2(R[2, 1], R[2, 2])))
-        yaw_d   = float(np.degrees(np.arctan2(R[2, 0], sy)))
+        yaw_d   = float(np.degrees(np.arctan2(-R[2, 0], sy)))
         roll_d  = float(np.degrees(np.arctan2(R[1, 0], R[0, 0])))
 
         # Clamp to plausible human head range ±90°
         if abs(pitch_d) > 90 or abs(yaw_d) > 90:
-            return FrameContext(
-                frame=ctx.frame,
-                frame_number=ctx.frame_number,
-                bbox=ctx.bbox,
-                face_kpss=ctx.face_kpss,
-                landmarks=ctx.landmarks,
-                facemap_pose=ctx.facemap_pose,
+            return dataclasses.replace(
+                ctx,
                 head_pose=self._last_head_pose,
                 head_rotation_matrix=self._last_R,
             )
@@ -146,6 +141,14 @@ class HeadPoseStage:
                 a * roll_d  + (1 - a) * prev[2],
             )
 
+        # Flip yaw cho app convention (yaw+ = phải):
+        # - Video (frame_flipped=False): model yaw+ = left → negate để yaw+ = phải.
+        # - Webcam (frame_flipped=True): ảnh đã mirror → model left = real right → OK.
+        sy_a, sp_a, sr_a = head_pose_angles
+        if not ctx.frame_flipped:
+            sy_a = -sy_a
+        head_pose_angles = (sy_a, sp_a, sr_a)
+
         self._last_head_pose = head_pose_angles
 
         # Reconstruct R from (smoothed) angles — consistent with displayed
@@ -156,13 +159,8 @@ class HeadPoseStage:
         )
         self._last_R = R_smooth
 
-        return FrameContext(
-            frame=ctx.frame,
-            frame_number=ctx.frame_number,
-            bbox=ctx.bbox,
-            face_kpss=ctx.face_kpss,
-            landmarks=ctx.landmarks,
-            facemap_pose=ctx.facemap_pose,
+        return dataclasses.replace(
+            ctx,
             head_pose=head_pose_angles,
             head_rotation_matrix=R_smooth,
         )

@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+import dataclasses
+
 from core.frame_context import FrameContext
 from core.visualizer import Visualizer
 from detection.eye_gaze import EyeGazeEstimation, _eye_indices
@@ -307,15 +309,8 @@ class GazeStage:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2, cv2.LINE_AA,
             )
 
-        return FrameContext(
-            frame=ctx.frame,
-            frame_number=ctx.frame_number,
-            bbox=ctx.bbox,
-            face_kpss=ctx.face_kpss,
-            landmarks=ctx.landmarks,
-            facemap_pose=ctx.facemap_pose,
-            head_pose=ctx.head_pose,
-            head_rotation_matrix=ctx.head_rotation_matrix,
+        return dataclasses.replace(
+            ctx,
             gaze_l=display_gaze_l,
             gaze_r=display_gaze_r,
             gaze_vec_world=vec_world,

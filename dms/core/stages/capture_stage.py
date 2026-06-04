@@ -21,8 +21,10 @@ class CaptureStage:
         if not ret:
             return ctx
 
+        flipped = False
         if not self._capture._is_video_file:
             frame = cv2.flip(frame, 1)
+            flipped = True
 
         self._frame_number += 1
-        return FrameContext(frame=frame, frame_number=self._frame_number)
+        return FrameContext(frame=frame, frame_number=self._frame_number, frame_flipped=flipped)

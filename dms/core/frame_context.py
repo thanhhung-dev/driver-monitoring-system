@@ -31,3 +31,4 @@ class FrameContext:
     eye_center_r: np.ndarray | None = None
     attribs: dict[str, float] | None = None
     driver_state: Any | None = None
+    frame_flipped: bool = False
