@@ -15,7 +15,6 @@ ATTRIB_NAMES = [
     "sunglasses",
 ]
 
-
 class FaceAttribDetector:
     """Qualcomm AI Hub Facial-Attribute-Detection ONNX wrapper.
 

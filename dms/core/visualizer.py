@@ -47,27 +47,23 @@ class Visualizer:
             draw_axis(frame, yaw, pitch, roll, list(bbox))
             # Mũi tên đỏ từ mũi chỉ hướng head (giống Qualcomm)
             if landmarks is not None:
-                draw_head_direction_arrow(frame, landmarks, yaw, pitch)
+                draw_head_direction_arrow(frame, landmarks, yaw, pitch, roll)
 
         return frame
     
     def draw_full_mesh(self, image, landmarks, color=(255, 255, 0), radius=2):
-        """Vẽ trực tiếp lên frame (không upscale/downscale) → nhanh hơn ~10× so
-        với phiên bản cũ (vốn resize 640×480 ↔ 1280×960 mỗi frame)."""
         if landmarks is None:
             return image
-
-        CYAN = (255, 255, 0)
         lm = np.asarray(landmarks, dtype=np.int32)
 
         def poly(idxs, closed=True, thickness=1):
-            cv2.polylines(image, [lm[idxs]], closed, CYAN, thickness, cv2.LINE_AA)
+            cv2.polylines(image, [lm[idxs]], closed, color, thickness, cv2.LINE_AA)
 
         def dots(idxs):
             for i in idxs:
                 cv2.circle(image, (int(lm[i, 0]), int(lm[i, 1])), radius, color, -1, cv2.LINE_AA)
 
-        # Mắt + lông mày
+        # Mat + long mày
         poly(fc.LEFT_EYE_INDICES, closed=True, thickness=1)
         dots(fc.LEFT_EYE_INDICES)
         poly(fc.RIGHT_EYE_INDICES, closed=True, thickness=1)
@@ -77,14 +73,14 @@ class Visualizer:
         poly(fc.EYE_BROW_RIGHT, closed=False, thickness=1)
         dots(fc.EYE_BROW_RIGHT)
 
-        # Mũi
+        # Mui
         poly([27, 28, 29, 30], closed=False, thickness=1)
         dots(fc.NOISE_INDICES)
         poly([31, 30, 35], closed=False, thickness=1)
         poly([31, 33, 35], closed=False, thickness=1)
         dots(fc.NOISE_TRIANGLE_INDICES)
 
-        # Môi
+        # Moi
         poly(fc.OUTER_LIPS_INDICES, closed=True, thickness=1)
         dots(fc.OUTER_LIPS_INDICES)
         poly(fc.INNER_LIPS_INDICES, closed=True, thickness=1)
@@ -177,6 +173,8 @@ class Visualizer:
         eye_depth: float = 1.0,
         focal_length: float | None = None,
         head_pose: tuple[float, float, float] | None = None,
+        crosshair_size: float = 2.0,
+        opacity_scale: float = 1.0,
     ) -> np.ndarray:
         """
         Proper 3D perspective projection with depth-based ellipse deformation.
@@ -186,7 +184,6 @@ class Visualizer:
     
         # Extract gaze vector components
         v = np.asarray(v_world, dtype=np.float64)
-        raw_strength = float(np.hypot(float(v[0]), float(v[1])))
         norm = np.linalg.norm(v)
         if norm < 1e-6 or eye_depth <= 0:
             return image
@@ -226,6 +223,8 @@ class Visualizer:
         min_opacity, max_opacity = 0.05, 0.8
         alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
         alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
+        # Làm mờ nhạt gaze theo opacity_scale (vd: khi head yaw ~ thẳng).
+        alpha_global *= float(np.clip(opacity_scale, 0.0, 1.0))
 
         # ──────── TRAIL WITH DEPTH-BASED DEFORMATION ────────
         start_offset = 0.4  # offset first dot away from eye center
@@ -254,8 +253,7 @@ class Visualizer:
 
             # They only become ellipses on-screen via perspective when the head turns.
             
-            # Opacity
-            alpha = (0.2 + 0.6 * t) * alpha_global
+            alpha = (t ** 2) * alpha_global
             
             # Glow size (scales with depth)
             scale_factor = Z_e / max(Z, 0.1)
@@ -272,7 +270,6 @@ class Visualizer:
                     angle_deg, 0, 360, color, -1, cv2.LINE_AA
                 )
             
-            # Main: ellipse (oriented with face plane)
             cv2.ellipse(
                 overlay, (px, py),
                 (int(round(major)), int(round(minor))),
@@ -280,8 +277,7 @@ class Visualizer:
             )
             
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
-        
-        # ──────── ENDPOINT ────────
+
         X_end = X_e + L * vx
         Y_end = Y_e + L * (-vy)
         Z_end = Z_e + L * vz
@@ -293,45 +289,35 @@ class Visualizer:
         
         if 0 <= end_x < W and 0 <= end_y < H:
             overlay_end = image.copy()
-            scale_end = Z_e / max(Z_end, 0.1)
-            
-            # 1. Draw center circle (projected)
-            r_end_3d = 4.0 * Z_e / f  # radius of ~4px at eye_depth
-            (u_c, v_c), (maj_c, min_c), ang_c = self._project_circle_to_ellipse(
+            r_end_3d = 4.0 * Z_e / f
+            _, (maj_end, min_end), ang_end = self._project_circle_to_ellipse(
                 pos_end_3d, r_end_3d, normal, f, cx, cy
             )
-            cv2.ellipse(overlay_end, (int(round(u_c)), int(round(v_c))), 
-                        (int(round(maj_c)), int(round(min_c))), ang_c, 0, 360, color, -1, cv2.LINE_AA)
-            
-            # 2. Draw crosshair (+) projected in 3D
-            # We project two 3D segments centered at pos_end_3d, 
-            # oriented with the head pose's local 'right' and 'up' vectors.
-            bar_len_3d = 8.0 * Z_e / f # length of ~8px at eye_depth
-            
-            # Length in pixels at this depth
-            bar_len_px = int(round(8.0 * scale_end))
-            
-            # 1. Draw the horizontal bar (3D projected: rotates with head Yaw only)
-            if R_yaw_only is not None:
-                # Use the pre-calculated R_yaw_only for the crosshair horizontal bar
-                vec_right = R_yaw_only @ np.array([1.0, 0.0, 0.0])
-            else:
-                vec_right = np.array([1.0, 0.0, 0.0])
-            
-            bar_len_3d = 8.0 * Z_e / f
-            p1_h = pos_end_3d - vec_right * bar_len_3d
-            p2_h = pos_end_3d + vec_right * bar_len_3d
-            
+            major_i = max(1, int(round(maj_end)))
+            minor_i = max(1, int(round(min_end)))
+            cv2.ellipse(overlay_end, (end_x, end_y), (major_i, minor_i), ang_end, 0, 360, color, -1, cv2.LINE_AA)
+            bar_len_3d = (crosshair_size + major_i) * Z_e / f
+
             def _proj(p):
-                return (int(round(f * p[0] / max(p[2], 0.1) + cx)), 
+                return (int(round(f * p[0] / max(p[2], 0.1) + cx)),
                         int(round(f * p[1] / max(p[2], 0.1) + cy)))
-            
-            cv2.line(overlay_end, _proj(p1_h), _proj(p2_h), (0, 255, 255), 2, cv2.LINE_AA)
-            
-            # 2. Draw the vertical bar (2D fixed: strictly vertical on screen)
-            # Center is (end_x, end_y), extending up and down
-            cv2.line(overlay_end, (end_x, end_y - bar_len_px), (end_x, end_y + bar_len_px), (0, 255, 255), 2, cv2.LINE_AA)
-            
+
+            if R_yaw_only is not None:
+                vec_up = R_yaw_only @ np.array([0.0, -1.0, 0.0])
+            else:
+                vec_up = np.array([0.0, -1.0, 0.0])
+            # Vertical bar
+            p1_v = pos_end_3d - vec_up * bar_len_3d
+            p2_v = pos_end_3d + vec_up * bar_len_3d
+            cv2.line(overlay_end, _proj(p1_v), _proj(p2_v), (0, 255, 255), 2, cv2.LINE_AA)
+            # Horizontal bar (perpendicular to vertical, forms "+" crosshair)
+            vec_right = np.cross(v_unit, vec_up)
+            n_r = np.linalg.norm(vec_right)
+            if n_r > 1e-6:
+                vec_right /= n_r
+                p1_h = pos_end_3d - vec_right * bar_len_3d
+                p2_h = pos_end_3d + vec_right * bar_len_3d
+                cv2.line(overlay_end, _proj(p1_h), _proj(p2_h), (0, 255, 255), 2, cv2.LINE_AA)
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
         
         return image

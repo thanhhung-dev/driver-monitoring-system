@@ -1,9 +1,9 @@
 camera:
   # Use device_id (int) for camera, or source (string path) for video file
-  source: "data/Dataset2.mp4"
-  # source: "data/0601.mp4"
+  # source: "data/Dataset2.mp4"
+  source: "data/test3.mp4"
   # source: "data/0528.mp4"
-  # source: "data/image.png"
+  # source: "data/dataset.mp4"
   # source: 0
   device_id: 0
   resolution:

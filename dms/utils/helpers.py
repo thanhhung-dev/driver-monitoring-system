@@ -316,18 +316,20 @@ def draw_head_direction_arrow(
     landmarks: np.ndarray,
     yaw: float,
     pitch: float,
+    roll: float = 0.0,
     length: int = 80,
     color: tuple[int, int, int] = (0, 0, 255),
-    thickness: int = 2,
+    thickness: int = 1,
 ) -> None:
-    """Vẽ mũi tên đỏ từ mũi chỉ hướng head (yaw + pitch).
+    """Vẽ mũi tên đỏ 3D từ mũi chỉ hướng head (yaw + pitch + roll).
 
-    Giống Qualcomm reference: mũi tên đỏ trên mũi cho biết
-    đầu đang quay về hướng nào.
+    Dùng rotation matrix R = Rz @ Ry @ Rx để chiếu vector [0,0,-1]
+    (hướng trước mặt) sang tọa độ ảnh 2D — mũi tên xoay đúng theo
+    cả 3 trục, không còn phẳng 2D.
 
     Args:
         landmarks: (N, 2|3) pixel coords — tự detect nose tip theo N.
-        yaw, pitch: độ (head pose output).
+        yaw, pitch, roll: độ (head pose output).
         length: độ dài mũi tên (px).
     """
     lm = np.asarray(landmarks, dtype=np.float32)
@@ -343,15 +345,29 @@ def draw_head_direction_arrow(
     nose = lm[nose_idx, :2]
     nx, ny = int(round(nose[0])), int(round(nose[1]))
 
-    # Yaw > 0 = nhìn phải → mũi tên sang phải
-    # Pitch > 0 = nhìn lên → mũi tên lên trên
-    yaw_rad = np.deg2rad(yaw)
-    pitch_rad = np.deg2rad(pitch)
-    dx = length * np.sin(yaw_rad) * np.cos(pitch_rad)
-    dy = -length * np.sin(pitch_rad)
-    ex, ey = int(round(nx + dx)), int(round(ny + dy))
+    # Rotation matrix đầy đủ
+    y = np.deg2rad(yaw)
+    p = np.deg2rad(pitch)
+    r = np.deg2rad(roll)
 
-    cv2.arrowedLine(image, (nx, ny), (ex, ey), color, thickness, cv2.LINE_AA, tipLength=0.3)
+    Rx = np.array([[1, 0, 0],
+                   [0, np.cos(p), -np.sin(p)],
+                   [0, np.sin(p),  np.cos(p)]])
+    Ry = np.array([[ np.cos(y), 0, np.sin(y)],
+                   [ 0,         1, 0       ],
+                   [-np.sin(y), 0, np.cos(y)]])
+    Rz = np.array([[np.cos(r), -np.sin(r), 0],
+                   [np.sin(r),  np.cos(r), 0],
+                   [0,          0,         1]])
+    R = Rz @ Ry @ Rx
+    forward = R @ np.array([0.0, 0.0, 1.0])
+    dx = length * forward[0]
+    dy = length * forward[1]
+    ex, ey = int(round(nx + dx)), int(round(ny + dy))
+    line_len = float(np.hypot(dx, dy))
+    TIP_PX = 5.0
+    tip_ratio = float(np.clip(TIP_PX / line_len, 0.05, 0.5)) if line_len > 1e-3 else 0.3
+    cv2.arrowedLine(image, (nx, ny), (ex, ey), color, thickness, cv2.LINE_AA, tipLength=tip_ratio)
 
 
 

@@ -23,6 +23,7 @@ class FrameContext:
     landmarks: np.ndarray | None = None
     facemap_pose: tuple[float, float, float] | None = None
     head_pose: tuple[float, float, float] | None = None
+    head_rotation_matrix: np.ndarray | None = None
     gaze_l: np.ndarray | None = None
     gaze_r: np.ndarray | None = None
     gaze_vec_world: np.ndarray | None = None

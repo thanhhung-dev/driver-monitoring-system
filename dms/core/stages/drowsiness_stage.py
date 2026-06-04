@@ -28,6 +28,7 @@ class DrowsinessStage:
             landmarks=ctx.landmarks,
             facemap_pose=ctx.facemap_pose,
             head_pose=ctx.head_pose,
+            head_rotation_matrix=ctx.head_rotation_matrix,
             gaze_l=ctx.gaze_l,
             gaze_r=ctx.gaze_r,
             eye_center_l=ctx.eye_center_l,

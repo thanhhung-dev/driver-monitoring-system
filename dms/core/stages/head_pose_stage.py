@@ -19,10 +19,18 @@ class HeadPoseStage:
     _MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
     _STD  = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
-    def __init__(self, model_dir: str, interval: int = 5) -> None:
+    # EMA thích nghi: lệch nhỏ (đứng yên) → alpha thấp cho mượt;
+    # lệch lớn (quay nhanh) → alpha cao để bám kịp, hết "trễ bò dần".
+    _EMA_ALPHA_MIN = 0.35   # khi gần như đứng yên
+    _EMA_ALPHA_MAX = 0.9    # khi quay nhanh
+    _EMA_FAST_DELTA = 25.0  # độ lệch (deg) coi là "quay nhanh"
+
+    def __init__(self, model_dir: str, interval: int = 2, ema_alpha: float = 0.4) -> None:
         self._interval = interval
         self._counter = 0
         self._last_head_pose = None
+        self._last_R = None
+        self._ema_alpha = ema_alpha
 
         # Load ONNX model with external data (resolves paths relative to onnx file)
         onnx_path = f"{model_dir}/pose_estimator.onnx"
@@ -36,10 +44,29 @@ class HeadPoseStage:
         return "head_pose"
 
     def _preprocess(self, bgr_crop: np.ndarray) -> np.ndarray:
-        """BGR crop → ImageNet-normalized NCHW float32."""
+        """BGR crop → ImageNet-normalized NCHW float32.
+
+        ⚠️ Phải GIỮ aspect ratio như pipeline gốc của SixDRepNet:
+            Resize(shorter side → 224) + CenterCrop(224)
+        KHÔNG được cv2.resize thẳng về (224,224) vì crop không vuông sẽ bị
+        bóp méo → mặt quay nghiêng trông "ít nghiêng hơn" → yaw bị bão hòa
+        (vd: quay 60° chỉ ra ~40°).
+        """
         rgb = cv2.cvtColor(bgr_crop, cv2.COLOR_BGR2RGB)
-        resized = cv2.resize(rgb, (224, 224)).astype(np.float32) / 255.0
-        normalized = (resized - self._MEAN) / self._STD
+        h, w = rgb.shape[:2]
+
+        # Resize: cạnh ngắn → 224, giữ tỷ lệ
+        scale = 224.0 / max(1, min(h, w))
+        new_w = max(224, int(round(w * scale)))
+        new_h = max(224, int(round(h * scale)))
+        resized = cv2.resize(rgb, (new_w, new_h))
+
+        # CenterCrop 224×224
+        x0 = (new_w - 224) // 2
+        y0 = (new_h - 224) // 2
+        cropped = resized[y0:y0 + 224, x0:x0 + 224]
+
+        normalized = (cropped.astype(np.float32) / 255.0 - self._MEAN) / self._STD
         return normalized.transpose(2, 0, 1)[np.newaxis, :, :, :]  # (1,3,224,224)
 
     def process(self, ctx: FrameContext) -> FrameContext:
@@ -57,12 +84,13 @@ class HeadPoseStage:
                     landmarks=ctx.landmarks,
                     facemap_pose=ctx.facemap_pose,
                     head_pose=self._last_head_pose,
+                    head_rotation_matrix=self._last_R,
                 )
             return ctx
 
         self._counter = 0
         x1, y1, x2, y2 = ctx.bbox
-        ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2)
+        ex1, ey1, ex2, ey2 = expand_bbox(x1, y1, x2, y2, factor=0.3)
 
         h, w = ctx.frame.shape[:2]
         ex1 = max(0, ex1)
@@ -77,14 +105,22 @@ class HeadPoseStage:
         tensor = self._preprocess(head_crop)
         outs = self._session.run(None, {self._input_name: tensor})
         R = np.asarray(outs[0], dtype=np.float64).reshape(3, 3)
+        self._last_R = R
 
-        # Euler angles — negate pitch & yaw to match Qualcomm convention:
-        #   pitch + = up, yaw + = right, roll + = clockwise
-        # Uses clamp for numerical stability (avoids NaN from sqrt of tiny negatives)
-        sy = np.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2).clip(min=1e-12)
-        pitch_d = -float(np.degrees(np.arctan2(R[2, 1], R[2, 2])))
-        yaw_d   = -float(np.degrees(np.arctan2(-R[2, 0], sy)))
-        roll_d  = float(np.degrees(np.arctan2(R[1, 0], R[0, 0])))
+        # Euler angles — PHẢI decompose đúng convention của SixDRepNet:
+        #   R = Rz · Rx · Ry  (KHÔNG phải ZYX chuẩn)
+        # Công thức gốc compute_euler_angles_from_rotation_matrices():
+        #   pitch(x) = atan2(R[2,1], sy)      sy = sqrt(R[2,2]^2 + R[0,2]^2)
+        #   yaw(y)   = atan2(-R[0,2], R[2,2])
+        #   roll(z)  = atan2(R[1,0], R[1,1])
+        # Dùng đúng công thức này thì yaw không còn bị bóp nhỏ ở góc lớn
+        # (decompose ZYX cũ có thừa số cos(pitch) → underestimate yaw).
+        # Giữ nguyên dấu app convention (pitch+ = up, yaw+ = right) như cũ:
+        #   khớp dấu tại góc nhỏ với code trước, chỉ sửa độ lớn ở góc lớn.
+        sy = np.sqrt(R[2, 2] ** 2 + R[0, 2] ** 2).clip(min=1e-12)
+        pitch_d = -float(np.degrees(np.arctan2(R[2, 1], sy)))
+        yaw_d   = float(np.degrees(np.arctan2(-R[0, 2], R[2, 2])))
+        roll_d  = float(np.degrees(np.arctan2(R[1, 0], R[1, 1])))
 
         # Clamp to plausible human head range ±90°
         if abs(pitch_d) > 90 or abs(yaw_d) > 90:
@@ -96,9 +132,24 @@ class HeadPoseStage:
                 landmarks=ctx.landmarks,
                 facemap_pose=ctx.facemap_pose,
                 head_pose=self._last_head_pose,
+                head_rotation_matrix=self._last_R,
             )
 
         head_pose_angles = (yaw_d, pitch_d, roll_d)
+
+        # EMA thích nghi — giảm jitter khi đứng yên, bám kịp khi quay nhanh.
+        # alpha tăng theo độ lệch so với frame trước (chủ yếu theo yaw/pitch).
+        if self._last_head_pose is not None:
+            prev = self._last_head_pose
+            delta = max(abs(yaw_d - prev[0]), abs(pitch_d - prev[1]))
+            t = min(1.0, delta / self._EMA_FAST_DELTA)
+            a = self._EMA_ALPHA_MIN + (self._EMA_ALPHA_MAX - self._EMA_ALPHA_MIN) * t
+            head_pose_angles = (
+                a * yaw_d   + (1 - a) * prev[0],
+                a * pitch_d + (1 - a) * prev[1],
+                a * roll_d  + (1 - a) * prev[2],
+            )
+
         self._last_head_pose = head_pose_angles
 
         return FrameContext(
@@ -109,4 +160,5 @@ class HeadPoseStage:
             landmarks=ctx.landmarks,
             facemap_pose=ctx.facemap_pose,
             head_pose=head_pose_angles,
+            head_rotation_matrix=R,
         )

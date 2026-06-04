@@ -61,6 +61,20 @@ class GazeStage:
     # sau đầu). Blink 1-2 frame OK, > ngưỡng này → dùng head direction.
     STALE_AGE = 2
 
+    # Khi head yaw (Y trong PYR) gần thẳng (≈ -10..0..10°) → gaze vẽ mờ nhạt.
+    DIM_YAW_RANGE = 10.0
+    DIM_OPACITY_SCALE = 0.3
+
+    def _gaze_opacity_scale(
+        self, head_pose: tuple[float, float, float] | None
+    ) -> float:
+        """Mờ nhạt gaze khi head yaw nằm trong khoảng ~thẳng (|yaw| <= range)."""
+        if head_pose is None:
+            return 1.0
+        if abs(float(head_pose[0])) <= self.DIM_YAW_RANGE:
+            return self.DIM_OPACITY_SCALE
+        return 1.0
+
     @property
     def name(self) -> str:
         return "gaze"
@@ -69,6 +83,7 @@ class GazeStage:
         self,
         pitchyaw: np.ndarray,
         head_pose: tuple[float, float, float] | None = None,
+        head_rotation_matrix: np.ndarray | None = None,
     ) -> np.ndarray:
         """Compose eye gaze + head pose → world-space gaze vector.
 
@@ -97,7 +112,12 @@ class GazeStage:
         vec = np.array([x, y, z], dtype=np.float64)
 
         # Rotate eye-local gaze vector by head pose → gaze-in-world
-        if head_pose is not None:
+        # Prefer raw rotation matrix (avoids Euler decomposition/recomposition error).
+        # SixDRepNet R is camera→face, so use R.T (face→camera) to rotate gaze.
+        # Fallback to Euler angles only if raw R unavailable.
+        if head_rotation_matrix is not None:
+            vec = head_rotation_matrix.T @ vec
+        elif head_pose is not None:
             yaw_d, pitch_d, roll_d = head_pose
             R = get_rotation_matrix(
                 np.deg2rad(pitch_d),
@@ -229,21 +249,27 @@ class GazeStage:
             else:
                 gaze_avg = display_gaze_r
 
-            vec = self._pitchyaw_to_vec(gaze_avg, head_pose=ctx.head_pose)
+            vec = self._pitchyaw_to_vec(
+                gaze_avg, head_pose=ctx.head_pose,
+                head_rotation_matrix=ctx.head_rotation_matrix,
+            )
 
             yaw_val = np.abs(float(gaze_avg[1]))
             side_factor = np.clip(1.0 + yaw_val / 0.5, 1.0, 1.3)
             gaze_length *= side_factor
 
+            opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
             if display_center_l is not None:
                 self._visualizer.draw_gaze_3d(
                     ctx.frame, display_center_l, vec,
                     length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                    opacity_scale=opacity_scale,
                 )
             if display_center_r is not None:
                 self._visualizer.draw_gaze_3d(
                     ctx.frame, display_center_r, vec,
                     length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                    opacity_scale=opacity_scale,
                 )
             vec_world = vec
 
@@ -252,6 +278,7 @@ class GazeStage:
             # gaze_eye = (0,0) → R_head × [0,0,1] = head direction vector.
             head_vec = self._pitchyaw_to_vec(
                 np.zeros(2, dtype=np.float32), head_pose=ctx.head_pose,
+                head_rotation_matrix=ctx.head_rotation_matrix,
             )
             center = display_center_l if display_center_l is not None else display_center_r
             if center is not None:
@@ -288,6 +315,7 @@ class GazeStage:
             landmarks=ctx.landmarks,
             facemap_pose=ctx.facemap_pose,
             head_pose=ctx.head_pose,
+            head_rotation_matrix=ctx.head_rotation_matrix,
             gaze_l=display_gaze_l,
             gaze_r=display_gaze_r,
             gaze_vec_world=vec_world,
