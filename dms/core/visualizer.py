@@ -27,6 +27,7 @@ class Visualizer:
     def draw_no_face_warning(self, frame):
         cv2.putText(frame, "No face detected", (20, 80), self.font, 1, self.color_warning, 2)
 
+
     def draw_face_info(self, frame, bbox, landmarks, driver_state, head_pose=None):
         """Vẽ bbox + trục head-pose (nếu có).
 
@@ -195,22 +196,14 @@ class Visualizer:
         f = float(focal_length) if focal_length is not None else float(max(W, H))
         cx, cy = W * 0.5, H * 0.5
         Z_e = float(eye_depth)
-        
-        # Back-project eye position from 2D image coords to 3D world
         x0, y0 = float(eye_pos[0]), float(eye_pos[1])
         X_e = (x0 - cx) * Z_e / f
         Y_e = (y0 - cy) * Z_e / f
-        
-        # Trail length in 3D space
         L = float(length) * Z_e / (float(length) + f) if length else 0.0
-        
-        # ──────── HEAD POSE ROTATION (for trail orientation) ────────
-        # Default normal is facing camera if head_pose is missing
         normal = np.array([0.0, 0.0, -1.0])
         R_yaw_only = None
-        
         if head_pose is not None:
-            yaw_d, pitch_d, roll_d = head_pose
+            yaw_d = head_pose[0]
             R_yaw_only = get_rotation_matrix(
                 0,                  # No pitch
                 np.deg2rad(yaw_d),  # Only yaw

@@ -48,7 +48,7 @@ class GazeStage:
         self._last_age_l = 999
         self._last_age_r = 999
         self._prev_gaze_length = 200.0
-        self._gaze_length_alpha = 0.3
+        self._gaze_length_alpha = 0.2
         self.pitch_offset = pitch_offset
         self.yaw_offset = yaw_offset
         self._debug_logger = debug_logger

@@ -30,6 +30,8 @@ class VizStage:
                 ctx.frame, ctx.bbox, ctx.landmarks,
                 ctx.driver_state, head_pose=ctx.head_pose,
             )
+            if ctx.face_lost_extreme_pose:
+                self._visualizer.draw_extreme_pose_warning(ctx.frame)
 
         fps = self._capture.get_fps()
         self._visualizer.draw_fps(ctx.frame, fps)

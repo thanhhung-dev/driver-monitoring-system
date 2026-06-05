@@ -32,3 +32,4 @@ class FrameContext:
     attribs: dict[str, float] | None = None
     driver_state: Any | None = None
     frame_flipped: bool = False
+    face_lost_extreme_pose: bool = False

@@ -317,7 +317,7 @@ def draw_head_direction_arrow(
     yaw: float,
     pitch: float,
     roll: float = 0.0,
-    length: int = 80,
+    length: int = 40,
     color: tuple[int, int, int] = (0, 0, 255),
     thickness: int = 1,
 ) -> None:
