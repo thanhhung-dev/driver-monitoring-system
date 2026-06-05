@@ -60602,3 +60602,1298 @@
 [2026-06-05 01:11:26] [INFO] [Main] ------------------------------------------------------------
 [2026-06-05 01:11:27] [INFO] [VideoCapture] Camera released.
 [2026-06-05 01:11:27] [INFO] [Main] System shutdown
+[2026-06-05 11:16:19] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-06-05 11:16:26] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-06-05 11:16:26] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-06-05 11:16:26] [INFO] [VideoCapture] Opening video source: data/test3.mp4 ...
+[2026-06-05 11:16:27] [INFO] [VideoCapture] Video native FPS: 30.00 → pacing on
+[2026-06-05 11:16:27] [INFO] [VideoCapture] Source opened successfully: data/test3.mp4
+[2026-06-05 11:16:29] [INFO] [Main] [GAZE-RAW]  L[P= +14.2° Y= -24.6°]  R[P=  +2.9° Y=  -0.7°]
+[2026-06-05 11:16:29] [INFO] [Main] [GAZE-AVG]  P=  +8.5° Y= -12.7°
+[2026-06-05 11:16:29] [INFO] [Main] [GAZE-VEC]  x=+0.572(RIGHT)  y=-0.060(UP  )  z=+0.818  ← blended eye+head
+[2026-06-05 11:16:29] [INFO] [Main] [HEAD-POSE] P=  -4.9° Y= +22.4° R=  +0.5°
+[2026-06-05 11:16:29] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:29] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:30] [INFO] [Main] [GAZE-RAW]  L[P=  +0.4° Y= -28.0°]  R[P=  +2.7° Y=  +3.0°]
+[2026-06-05 11:16:30] [INFO] [Main] [GAZE-AVG]  P=  +1.5° Y= -12.5°
+[2026-06-05 11:16:30] [INFO] [Main] [GAZE-VEC]  x=+0.563(RIGHT)  y=+0.053(DOWN)  z=+0.825  ← blended eye+head
+[2026-06-05 11:16:30] [INFO] [Main] [HEAD-POSE] P=  -3.0° Y= +21.9° R=  +2.8°
+[2026-06-05 11:16:30] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:30] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:31] [INFO] [Main] [GAZE-RAW]  L[P=  +3.5° Y= -24.9°]  R[P=  +8.0° Y=  +1.0°]
+[2026-06-05 11:16:31] [INFO] [Main] [GAZE-AVG]  P=  +5.8° Y= -12.0°
+[2026-06-05 11:16:31] [INFO] [Main] [GAZE-VEC]  x=+0.377(RIGHT)  y=-0.015(FLAT)  z=+0.926  ← blended eye+head
+[2026-06-05 11:16:31] [INFO] [Main] [HEAD-POSE] P=  -3.7° Y= +10.2° R=  +3.4°
+[2026-06-05 11:16:31] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:31] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:31] [INFO] [Main] [GAZE-RAW]  L[P=  +8.9° Y= -26.3°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:31] [INFO] [Main] [GAZE-AVG]  P=  +4.5° Y= -13.1°
+[2026-06-05 11:16:31] [INFO] [Main] [GAZE-VEC]  x=+0.307(RIGHT)  y=-0.026(FLAT)  z=+0.951  ← blended eye+head
+[2026-06-05 11:16:31] [INFO] [Main] [HEAD-POSE] P=  -1.5° Y=  +4.6° R=  +5.1°
+[2026-06-05 11:16:31] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:31] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:32] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +7.9° Y=  +4.8°]
+[2026-06-05 11:16:32] [INFO] [Main] [GAZE-VEC]  x=-0.015(STR )  y=-0.100(UP  )  z=+0.995  ← blended eye+head
+[2026-06-05 11:16:32] [INFO] [Main] [HEAD-POSE] P=  -2.3° Y=  +3.4° R=  +4.5°
+[2026-06-05 11:16:32] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:32] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:32] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:32] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:32] [INFO] [Main] [GAZE-VEC]  x=+0.015(STR )  y=+0.062(DOWN)  z=+0.998  ← blended eye+head
+[2026-06-05 11:16:32] [INFO] [Main] [HEAD-POSE] P=  -3.5° Y=  +1.2° R=  +4.7°
+[2026-06-05 11:16:32] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:32] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:33] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:33] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:33] [INFO] [Main] [GAZE-VEC]  x=+0.224(RIGHT)  y=+0.009(FLAT)  z=+0.975  ← blended eye+head
+[2026-06-05 11:16:33] [INFO] [Main] [HEAD-POSE] P=  -0.5° Y= +12.9° R=  -0.2°
+[2026-06-05 11:16:33] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:33] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:33] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:33] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:33] [INFO] [Main] [GAZE-VEC]  x=+0.248(RIGHT)  y=+0.004(FLAT)  z=+0.969  ← blended eye+head
+[2026-06-05 11:16:33] [INFO] [Main] [HEAD-POSE] P=  -0.8° Y= +14.3° R=  -2.2°
+[2026-06-05 11:16:33] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:33] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:34] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:34] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:34] [INFO] [Main] [GAZE-VEC]  x=+0.308(RIGHT)  y=-0.035(FLAT)  z=+0.951  ← blended eye+head
+[2026-06-05 11:16:34] [INFO] [Main] [HEAD-POSE] P=  +2.0° Y= +18.0° R=  -0.1°
+[2026-06-05 11:16:34] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:34] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:34] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:34] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:34] [INFO] [Main] [GAZE-VEC]  x=+0.379(RIGHT)  y=-0.011(FLAT)  z=+0.925  ← blended eye+head
+[2026-06-05 11:16:34] [INFO] [Main] [HEAD-POSE] P=  +0.0° Y= +22.3° R=  -1.6°
+[2026-06-05 11:16:34] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:34] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:35] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:35] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:35] [INFO] [Main] [GAZE-VEC]  x=+0.270(RIGHT)  y=-0.008(FLAT)  z=+0.963  ← blended eye+head
+[2026-06-05 11:16:35] [INFO] [Main] [HEAD-POSE] P=  +0.2° Y= +15.7° R=  -1.1°
+[2026-06-05 11:16:35] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:35] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:35] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:35] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:35] [INFO] [Main] [GAZE-VEC]  x=+0.343(RIGHT)  y=+0.012(FLAT)  z=+0.939  ← blended eye+head
+[2026-06-05 11:16:35] [INFO] [Main] [HEAD-POSE] P=  -1.8° Y= +20.0° R=  -3.4°
+[2026-06-05 11:16:35] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:35] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:36] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:36] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:36] [INFO] [Main] [GAZE-VEC]  x=+0.114(RIGHT)  y=+0.057(DOWN)  z=+0.992  ← blended eye+head
+[2026-06-05 11:16:36] [INFO] [Main] [HEAD-POSE] P=  -3.6° Y=  +6.4° R=  -2.5°
+[2026-06-05 11:16:36] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:36] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:36] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:36] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:36] [INFO] [Main] [GAZE-VEC]  x=+0.050(RIGHT)  y=+0.064(DOWN)  z=+0.997  ← blended eye+head
+[2026-06-05 11:16:36] [INFO] [Main] [HEAD-POSE] P=  -3.8° Y=  +2.7° R=  -2.7°
+[2026-06-05 11:16:36] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:36] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:37] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:37] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:37] [INFO] [Main] [GAZE-VEC]  x=+0.240(RIGHT)  y=-0.007(FLAT)  z=+0.971  ← blended eye+head
+[2026-06-05 11:16:37] [INFO] [Main] [HEAD-POSE] P=  -0.5° Y= +13.9° R=  -3.9°
+[2026-06-05 11:16:37] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:37] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:37] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:37] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:37] [INFO] [Main] [GAZE-VEC]  x=+0.151(RIGHT)  y=-0.061(UP  )  z=+0.987  ← blended eye+head
+[2026-06-05 11:16:37] [INFO] [Main] [HEAD-POSE] P=  +3.2° Y=  +8.8° R=  -1.9°
+[2026-06-05 11:16:37] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:37] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:38] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:38] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:38] [INFO] [Main] [GAZE-VEC]  x=+0.355(RIGHT)  y=+0.027(FLAT)  z=+0.935  ← blended eye+head
+[2026-06-05 11:16:38] [INFO] [Main] [HEAD-POSE] P=  -3.0° Y= +20.6° R=  -3.9°
+[2026-06-05 11:16:38] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:38] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:38] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:38] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:38] [INFO] [Main] [GAZE-VEC]  x=+0.064(RIGHT)  y=+0.071(DOWN)  z=+0.995  ← blended eye+head
+[2026-06-05 11:16:38] [INFO] [Main] [HEAD-POSE] P=  -4.2° Y=  +3.5° R=  -1.5°
+[2026-06-05 11:16:38] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:38] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:39] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:39] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:39] [INFO] [Main] [GAZE-VEC]  x=+0.015(STR )  y=+0.021(FLAT)  z=+1.000  ← blended eye+head
+[2026-06-05 11:16:39] [INFO] [Main] [HEAD-POSE] P=  -1.3° Y=  +0.8° R=  -2.0°
+[2026-06-05 11:16:39] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:39] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:39] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:16:39] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:16:39] [INFO] [Main] [GAZE-VEC]  x=-0.015(STR )  y=-0.048(FLAT)  z=+0.999  ← blended eye+head
+[2026-06-05 11:16:39] [INFO] [Main] [HEAD-POSE] P=  +2.8° Y=  -0.8° R=  -1.8°
+[2026-06-05 11:16:39] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:39] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:40] [INFO] [Main] [GAZE-RAW]  L[P=  +6.0° Y=  -3.2°]  R[P=  -2.3° Y= +22.4°]
+[2026-06-05 11:16:40] [INFO] [Main] [GAZE-AVG]  P=  +1.8° Y=  +9.6°
+[2026-06-05 11:16:40] [INFO] [Main] [GAZE-VEC]  x=-0.144(LEFT )  y=+0.154(DOWN)  z=+0.977  ← blended eye+head
+[2026-06-05 11:16:40] [INFO] [Main] [HEAD-POSE] P=  -9.8° Y=  +0.3° R=  -6.8°
+[2026-06-05 11:16:40] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:40] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:40] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[  None        ]
+[2026-06-05 11:16:40] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:40] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:41] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +4.3° Y= +35.0°]
+[2026-06-05 11:16:41] [INFO] [Main] [GAZE-VEC]  x=-0.660(LEFT )  y=+0.147(DOWN)  z=+0.737  ← blended eye+head
+[2026-06-05 11:16:41] [INFO] [Main] [HEAD-POSE] P= -11.2° Y=  -7.3° R=  -5.3°
+[2026-06-05 11:16:41] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:41] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:41] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -7.5° Y= +18.6°]
+[2026-06-05 11:16:41] [INFO] [Main] [GAZE-VEC]  x=+0.171(RIGHT)  y=+0.318(DOWN)  z=+0.933  ← blended eye+head
+[2026-06-05 11:16:41] [INFO] [Main] [HEAD-POSE] P= -12.5° Y= +28.4° R=  -4.5°
+[2026-06-05 11:16:41] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:41] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:42] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +2.1° Y= -13.1°]
+[2026-06-05 11:16:42] [INFO] [Main] [GAZE-VEC]  x=+0.399(RIGHT)  y=-0.018(FLAT)  z=+0.917  ← blended eye+head
+[2026-06-05 11:16:42] [INFO] [Main] [HEAD-POSE] P=  +0.4° Y= +10.3° R=  +3.5°
+[2026-06-05 11:16:42] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:42] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:42] [INFO] [Main] [GAZE-RAW]  L[P= +10.3° Y= -17.2°]  R[P=  +3.3° Y= -11.4°]
+[2026-06-05 11:16:42] [INFO] [Main] [GAZE-AVG]  P=  +6.8° Y= -14.3°
+[2026-06-05 11:16:42] [INFO] [Main] [GAZE-VEC]  x=+0.006(STR )  y=-0.088(UP  )  z=+0.996  ← blended eye+head
+[2026-06-05 11:16:42] [INFO] [Main] [HEAD-POSE] P=  -1.8° Y= -14.1° R=  +1.5°
+[2026-06-05 11:16:42] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:42] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:43] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P= -16.4° Y= +30.6°]
+[2026-06-05 11:16:43] [INFO] [Main] [GAZE-VEC]  x=-0.471(LEFT )  y=+0.296(DOWN)  z=+0.831  ← blended eye+head
+[2026-06-05 11:16:43] [INFO] [Main] [HEAD-POSE] P=  -2.6° Y=  +2.3° R=  +2.9°
+[2026-06-05 11:16:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:43] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P= -20.7° Y= -17.5°]
+[2026-06-05 11:16:43] [INFO] [Main] [GAZE-VEC]  x=+0.364(RIGHT)  y=+0.392(DOWN)  z=+0.845  ← blended eye+head
+[2026-06-05 11:16:43] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +6.1° R=  +1.5°
+[2026-06-05 11:16:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:44] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +4.1° Y=  +0.9°]
+[2026-06-05 11:16:44] [INFO] [Main] [GAZE-VEC]  x=+0.296(RIGHT)  y=+0.028(FLAT)  z=+0.955  ← blended eye+head
+[2026-06-05 11:16:44] [INFO] [Main] [HEAD-POSE] P=  -5.7° Y= +18.2° R=  +0.2°
+[2026-06-05 11:16:44] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:44] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:45] [INFO] [Main] [GAZE-RAW]  L[P=  -4.1° Y= -26.8°]  R[P=  +2.9° Y=  +3.0°]
+[2026-06-05 11:16:45] [INFO] [Main] [GAZE-AVG]  P=  -0.6° Y= -11.9°
+[2026-06-05 11:16:45] [INFO] [Main] [GAZE-VEC]  x=+0.376(RIGHT)  y=+0.079(DOWN)  z=+0.923  ← blended eye+head
+[2026-06-05 11:16:45] [INFO] [Main] [HEAD-POSE] P=  -3.9° Y= +10.2° R=  +0.3°
+[2026-06-05 11:16:45] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:45] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:45] [INFO] [Main] [GAZE-RAW]  L[P=  +4.8° Y= -22.6°]  R[P=  +6.8° Y=  +1.8°]
+[2026-06-05 11:16:45] [INFO] [Main] [GAZE-AVG]  P=  +5.8° Y= -10.4°
+[2026-06-05 11:16:45] [INFO] [Main] [GAZE-VEC]  x=+0.359(RIGHT)  y=-0.030(FLAT)  z=+0.933  ← blended eye+head
+[2026-06-05 11:16:45] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y= +10.5° R=  +3.5°
+[2026-06-05 11:16:45] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:45] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:46] [INFO] [Main] [GAZE-RAW]  L[P=  +8.0° Y= -28.0°]  R[P=  +8.4° Y=  +3.0°]
+[2026-06-05 11:16:46] [INFO] [Main] [GAZE-AVG]  P=  +8.2° Y= -12.5°
+[2026-06-05 11:16:46] [INFO] [Main] [GAZE-VEC]  x=+0.329(RIGHT)  y=-0.085(UP  )  z=+0.941  ← blended eye+head
+[2026-06-05 11:16:46] [INFO] [Main] [HEAD-POSE] P=  -2.0° Y=  +6.4° R=  +4.3°
+[2026-06-05 11:16:46] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:16:46] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:16:46] [INFO] [VideoCapture] Camera released.
+[2026-06-05 11:16:46] [INFO] [Main] System shutdown
+[2026-06-05 11:22:40] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-06-05 11:22:42] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-06-05 11:22:42] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-06-05 11:22:42] [INFO] [VideoCapture] Opening video source: data/test3.mp4 ...
+[2026-06-05 11:22:42] [INFO] [VideoCapture] Video native FPS: 30.00 → pacing on
+[2026-06-05 11:22:42] [INFO] [VideoCapture] Source opened successfully: data/test3.mp4
+[2026-06-05 11:22:43] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +3.8° Y=  +2.5°]
+[2026-06-05 11:22:43] [INFO] [Main] [GAZE-VEC]  x=+0.302(RIGHT)  y=+0.036(FLAT)  z=+0.953  ← blended eye+head
+[2026-06-05 11:22:43] [INFO] [Main] [HEAD-POSE] P=  -5.9° Y= +20.1° R=  -0.1°
+[2026-06-05 11:22:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:43] [INFO] [Main] [GAZE-RAW]  L[P=  -2.4° Y= -26.4°]  R[P=  +4.0° Y=  +4.4°]
+[2026-06-05 11:22:43] [INFO] [Main] [GAZE-AVG]  P=  +0.8° Y= -11.0°
+[2026-06-05 11:22:43] [INFO] [Main] [GAZE-VEC]  x=+0.499(RIGHT)  y=+0.059(DOWN)  z=+0.864  ← blended eye+head
+[2026-06-05 11:22:43] [INFO] [Main] [HEAD-POSE] P=  -3.0° Y= +19.1° R=  +2.5°
+[2026-06-05 11:22:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:44] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +7.0° Y=  +2.5°]
+[2026-06-05 11:22:44] [INFO] [Main] [GAZE-VEC]  x=+0.144(RIGHT)  y=-0.064(UP  )  z=+0.987  ← blended eye+head
+[2026-06-05 11:22:44] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y= +10.5° R=  +3.5°
+[2026-06-05 11:22:44] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:44] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:45] [INFO] [Main] [GAZE-RAW]  L[P=  +9.2° Y= -26.9°]  R[P=  +6.9° Y=  +3.4°]
+[2026-06-05 11:22:45] [INFO] [Main] [GAZE-AVG]  P=  +8.0° Y= -11.7°
+[2026-06-05 11:22:45] [INFO] [Main] [GAZE-VEC]  x=+0.304(RIGHT)  y=-0.085(UP  )  z=+0.949  ← blended eye+head
+[2026-06-05 11:22:45] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +5.7° R=  +4.2°
+[2026-06-05 11:22:45] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:45] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:45] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +5.8° Y=  +6.0°]
+[2026-06-05 11:22:46] [INFO] [Main] [GAZE-VEC]  x=-0.061(LEFT )  y=-0.057(UP  )  z=+0.996  ← blended eye+head
+[2026-06-05 11:22:46] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y=  +2.2° R=  +4.5°
+[2026-06-05 11:22:46] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:46] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:46] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:46] [INFO] [Main] [GAZE-VEC]  x=+0.017(STR )  y=+0.044(FLAT)  z=+0.999  ← blended eye+head
+[2026-06-05 11:22:46] [INFO] [Main] [HEAD-POSE] P=  -2.4° Y=  +1.2° R=  +4.5°
+[2026-06-05 11:22:46] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:46] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:47] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:47] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:47] [INFO] [Main] [GAZE-VEC]  x=+0.183(RIGHT)  y=-0.035(FLAT)  z=+0.982  ← blended eye+head
+[2026-06-05 11:22:47] [INFO] [Main] [HEAD-POSE] P=  +2.1° Y= +10.6° R=  +0.6°
+[2026-06-05 11:22:47] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:47] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:47] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:47] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:47] [INFO] [Main] [GAZE-VEC]  x=+0.310(RIGHT)  y=+0.002(FLAT)  z=+0.951  ← blended eye+head
+[2026-06-05 11:22:47] [INFO] [Main] [HEAD-POSE] P=  -1.2° Y= +18.0° R=  -3.3°
+[2026-06-05 11:22:47] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:47] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:48] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:48] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:48] [INFO] [Main] [GAZE-VEC]  x=+0.286(RIGHT)  y=-0.078(UP  )  z=+0.955  ← blended eye+head
+[2026-06-05 11:22:48] [INFO] [Main] [HEAD-POSE] P=  +4.7° Y= +16.6° R=  +0.7°
+[2026-06-05 11:22:48] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:48] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:49] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:49] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:49] [INFO] [Main] [GAZE-VEC]  x=+0.395(RIGHT)  y=-0.007(FLAT)  z=+0.919  ← blended eye+head
+[2026-06-05 11:22:49] [INFO] [Main] [HEAD-POSE] P=  -0.4° Y= +23.2° R=  -2.0°
+[2026-06-05 11:22:49] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:49] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:49] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:49] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:49] [INFO] [Main] [GAZE-VEC]  x=+0.320(RIGHT)  y=-0.037(FLAT)  z=+0.947  ← blended eye+head
+[2026-06-05 11:22:49] [INFO] [Main] [HEAD-POSE] P=  +1.9° Y= +18.7° R=  -0.6°
+[2026-06-05 11:22:49] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:49] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:50] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:50] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:50] [INFO] [Main] [GAZE-VEC]  x=+0.356(RIGHT)  y=-0.053(UP  )  z=+0.933  ← blended eye+head
+[2026-06-05 11:22:50] [INFO] [Main] [HEAD-POSE] P=  +2.2° Y= +21.0° R=  -2.5°
+[2026-06-05 11:22:50] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:50] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:51] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:51] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:51] [INFO] [Main] [GAZE-VEC]  x=+0.091(RIGHT)  y=+0.078(DOWN)  z=+0.993  ← blended eye+head
+[2026-06-05 11:22:51] [INFO] [Main] [HEAD-POSE] P=  -4.7° Y=  +5.0° R=  -3.2°
+[2026-06-05 11:22:51] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:51] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:51] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:51] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:51] [INFO] [Main] [GAZE-VEC]  x=+0.293(RIGHT)  y=+0.039(FLAT)  z=+0.955  ← blended eye+head
+[2026-06-05 11:22:51] [INFO] [Main] [HEAD-POSE] P=  -3.2° Y= +16.9° R=  -3.5°
+[2026-06-05 11:22:51] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:51] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:52] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:52] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:52] [INFO] [Main] [GAZE-VEC]  x=+0.167(RIGHT)  y=-0.004(FLAT)  z=+0.986  ← blended eye+head
+[2026-06-05 11:22:52] [INFO] [Main] [HEAD-POSE] P=  -0.4° Y=  +9.6° R=  -3.9°
+[2026-06-05 11:22:52] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:52] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:53] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:53] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:53] [INFO] [Main] [GAZE-VEC]  x=+0.109(RIGHT)  y=-0.065(UP  )  z=+0.992  ← blended eye+head
+[2026-06-05 11:22:53] [INFO] [Main] [HEAD-POSE] P=  +3.5° Y=  +6.4° R=  -1.4°
+[2026-06-05 11:22:53] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:53] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:53] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:53] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:53] [INFO] [Main] [GAZE-VEC]  x=+0.365(RIGHT)  y=+0.009(FLAT)  z=+0.931  ← blended eye+head
+[2026-06-05 11:22:53] [INFO] [Main] [HEAD-POSE] P=  -2.2° Y= +21.3° R=  -4.6°
+[2026-06-05 11:22:53] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:53] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:54] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:54] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:54] [INFO] [Main] [GAZE-VEC]  x=+0.037(STR )  y=+0.058(DOWN)  z=+0.998  ← blended eye+head
+[2026-06-05 11:22:54] [INFO] [Main] [HEAD-POSE] P=  -3.4° Y=  +2.1° R=  -1.4°
+[2026-06-05 11:22:54] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:54] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:54] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:54] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:54] [INFO] [Main] [GAZE-VEC]  x=+0.009(STR )  y=-0.001(FLAT)  z=+1.000  ← blended eye+head
+[2026-06-05 11:22:54] [INFO] [Main] [HEAD-POSE] P=  +0.0° Y=  +0.5° R=  -1.9°
+[2026-06-05 11:22:54] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:54] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:55] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:22:55] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:22:55] [INFO] [Main] [GAZE-VEC]  x=-0.010(STR )  y=-0.062(UP  )  z=+0.998  ← blended eye+head
+[2026-06-05 11:22:55] [INFO] [Main] [HEAD-POSE] P=  +3.5° Y=  -0.5° R=  -1.1°
+[2026-06-05 11:22:55] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:55] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:56] [INFO] [Main] [GAZE-RAW]  L[P=  +6.4° Y=  -2.6°]  R[P=  -1.2° Y= +21.5°]
+[2026-06-05 11:22:56] [INFO] [Main] [GAZE-AVG]  P=  +2.6° Y=  +9.5°
+[2026-06-05 11:22:56] [INFO] [Main] [GAZE-VEC]  x=-0.170(LEFT )  y=+0.063(DOWN)  z=+0.983  ← blended eye+head
+[2026-06-05 11:22:56] [INFO] [Main] [HEAD-POSE] P=  -5.3° Y=  -0.7° R=  -5.9°
+[2026-06-05 11:22:56] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:56] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:57] [INFO] [Main] [GAZE-RAW]  L[P=  +7.3° Y=  -7.3°]  R[P= +13.5° Y=  +2.7°]
+[2026-06-05 11:22:57] [INFO] [Main] [GAZE-AVG]  P= +10.4° Y=  -2.3°
+[2026-06-05 11:22:57] [INFO] [Main] [GAZE-VEC]  x=+0.285(RIGHT)  y=-0.180(UP  )  z=+0.942  ← blended eye+head
+[2026-06-05 11:22:57] [INFO] [Main] [HEAD-POSE] P=  +0.4° Y= +14.3° R=  +1.4°
+[2026-06-05 11:22:57] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:57] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:57] [INFO] [Main] [GAZE-RAW]  L[P=  -3.9° Y=  +2.2°]  R[P=  +4.8° Y= +22.2°]
+[2026-06-05 11:22:57] [INFO] [Main] [GAZE-AVG]  P=  +0.5° Y= +12.2°
+[2026-06-05 11:22:57] [INFO] [Main] [GAZE-VEC]  x=-0.027(STR )  y=+0.197(DOWN)  z=+0.980  ← blended eye+head
+[2026-06-05 11:22:57] [INFO] [Main] [HEAD-POSE] P= -12.0° Y= +10.3° R=  -2.8°
+[2026-06-05 11:22:57] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:57] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:58] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.6° Y= +28.8°]
+[2026-06-05 11:22:58] [INFO] [Main] [GAZE-VEC]  x=-0.284(LEFT )  y=+0.294(DOWN)  z=+0.913  ← blended eye+head
+[2026-06-05 11:22:58] [INFO] [Main] [HEAD-POSE] P= -12.6° Y= +11.3° R=  -4.9°
+[2026-06-05 11:22:58] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:58] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:58] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.1° Y= -28.3°]
+[2026-06-05 11:22:58] [INFO] [Main] [GAZE-VEC]  x=+0.647(RIGHT)  y=+0.027(FLAT)  z=+0.762  ← blended eye+head
+[2026-06-05 11:22:58] [INFO] [Main] [HEAD-POSE] P=  +0.7° Y= +12.1° R=  +3.4°
+[2026-06-05 11:22:58] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:58] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:22:59] [INFO] [Main] [GAZE-RAW]  L[P=  -6.9° Y= -18.8°]  R[P=  -2.3° Y=  +3.1°]
+[2026-06-05 11:22:59] [INFO] [Main] [GAZE-AVG]  P=  -4.6° Y=  -7.8°
+[2026-06-05 11:22:59] [INFO] [Main] [GAZE-VEC]  x=-0.155(LEFT )  y=+0.103(DOWN)  z=+0.983  ← blended eye+head
+[2026-06-05 11:22:59] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y= -16.7° R=  +1.7°
+[2026-06-05 11:22:59] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:22:59] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:00] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.9° Y= +26.3°]
+[2026-06-05 11:23:00] [INFO] [Main] [GAZE-VEC]  x=-0.501(LEFT )  y=+0.079(DOWN)  z=+0.862  ← blended eye+head
+[2026-06-05 11:23:00] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y=  -3.5° R=  +3.6°
+[2026-06-05 11:23:00] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:00] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:01] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P= -15.1° Y= -18.7°]
+[2026-06-05 11:23:01] [INFO] [Main] [GAZE-VEC]  x=+0.319(RIGHT)  y=+0.321(DOWN)  z=+0.892  ← blended eye+head
+[2026-06-05 11:23:01] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y=  +2.2° R=  +4.6°
+[2026-06-05 11:23:01] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:01] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:01] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.7° Y=  +3.7°]
+[2026-06-05 11:23:01] [INFO] [Main] [GAZE-VEC]  x=+0.300(RIGHT)  y=+0.096(DOWN)  z=+0.949  ← blended eye+head
+[2026-06-05 11:23:01] [INFO] [Main] [HEAD-POSE] P=  -6.7° Y= +21.1° R=  -1.5°
+[2026-06-05 11:23:01] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:01] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:02] [INFO] [Main] [GAZE-RAW]  L[P=  -4.5° Y= -26.9°]  R[P=  +3.8° Y=  +5.9°]
+[2026-06-05 11:23:02] [INFO] [Main] [GAZE-AVG]  P=  -0.3° Y= -10.5°
+[2026-06-05 11:23:02] [INFO] [Main] [GAZE-VEC]  x=+0.452(RIGHT)  y=+0.116(DOWN)  z=+0.884  ← blended eye+head
+[2026-06-05 11:23:02] [INFO] [Main] [HEAD-POSE] P=  -5.4° Y= +16.8° R=  +2.3°
+[2026-06-05 11:23:02] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:02] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:03] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +6.5° Y=  +3.5°]
+[2026-06-05 11:23:03] [INFO] [Main] [GAZE-VEC]  x=+0.141(RIGHT)  y=-0.050(FLAT)  z=+0.989  ← blended eye+head
+[2026-06-05 11:23:03] [INFO] [Main] [HEAD-POSE] P=  -3.1° Y= +11.4° R=  +3.3°
+[2026-06-05 11:23:03] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:03] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:03] [INFO] [Main] [GAZE-RAW]  L[P=  +9.1° Y= -26.6°]  R[P=  +5.8° Y=  -0.4°]
+[2026-06-05 11:23:03] [INFO] [Main] [GAZE-AVG]  P=  +7.5° Y= -13.5°
+[2026-06-05 11:23:03] [INFO] [Main] [GAZE-VEC]  x=+0.300(RIGHT)  y=-0.073(UP  )  z=+0.951  ← blended eye+head
+[2026-06-05 11:23:03] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +3.7° R=  +4.7°
+[2026-06-05 11:23:03] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:03] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:04] [INFO] [Main] [GAZE-RAW]  L[P=  +2.1° Y= -20.4°]  R[P=  +6.4° Y=  +5.0°]
+[2026-06-05 11:23:04] [INFO] [Main] [GAZE-AVG]  P=  +4.2° Y=  -7.7°
+[2026-06-05 11:23:04] [INFO] [Main] [GAZE-VEC]  x=+0.169(RIGHT)  y=-0.014(FLAT)  z=+0.986  ← blended eye+head
+[2026-06-05 11:23:04] [INFO] [Main] [HEAD-POSE] P=  -2.7° Y=  +1.9° R=  +4.5°
+[2026-06-05 11:23:04] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:04] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:05] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +6.7° Y=  +7.6°]
+[2026-06-05 11:23:05] [INFO] [Main] [GAZE-VEC]  x=-0.041(STR )  y=-0.075(UP  )  z=+0.996  ← blended eye+head
+[2026-06-05 11:23:05] [INFO] [Main] [HEAD-POSE] P=  -2.6° Y=  +4.9° R=  +4.6°
+[2026-06-05 11:23:05] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:05] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:05] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:05] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:05] [INFO] [Main] [GAZE-VEC]  x=+0.241(RIGHT)  y=+0.051(DOWN)  z=+0.969  ← blended eye+head
+[2026-06-05 11:23:05] [INFO] [Main] [HEAD-POSE] P=  -3.1° Y= +13.9° R=  -0.6°
+[2026-06-05 11:23:05] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:05] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:06] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:06] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:06] [INFO] [Main] [GAZE-VEC]  x=+0.218(RIGHT)  y=-0.000(FLAT)  z=+0.976  ← blended eye+head
+[2026-06-05 11:23:06] [INFO] [Main] [HEAD-POSE] P=  -0.3° Y= +12.6° R=  -1.6°
+[2026-06-05 11:23:06] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:06] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:07] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:07] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:07] [INFO] [Main] [GAZE-VEC]  x=+0.359(RIGHT)  y=-0.028(FLAT)  z=+0.933  ← blended eye+head
+[2026-06-05 11:23:07] [INFO] [Main] [HEAD-POSE] P=  +1.8° Y= +21.0° R=  +0.6°
+[2026-06-05 11:23:07] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:07] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:07] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:07] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:07] [INFO] [Main] [GAZE-VEC]  x=+0.352(RIGHT)  y=-0.042(FLAT)  z=+0.935  ← blended eye+head
+[2026-06-05 11:23:07] [INFO] [Main] [HEAD-POSE] P=  +2.2° Y= +20.7° R=  -0.6°
+[2026-06-05 11:23:07] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:07] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:08] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:08] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:08] [INFO] [Main] [GAZE-VEC]  x=+0.348(RIGHT)  y=-0.075(UP  )  z=+0.934  ← blended eye+head
+[2026-06-05 11:23:08] [INFO] [Main] [HEAD-POSE] P=  +4.1° Y= +20.5° R=  -0.5°
+[2026-06-05 11:23:08] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:08] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:08] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:08] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:08] [INFO] [Main] [GAZE-VEC]  x=+0.347(RIGHT)  y=-0.013(FLAT)  z=+0.938  ← blended eye+head
+[2026-06-05 11:23:08] [INFO] [Main] [HEAD-POSE] P=  +0.1° Y= +20.3° R=  -2.0°
+[2026-06-05 11:23:08] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:08] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:09] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:09] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:09] [INFO] [Main] [GAZE-VEC]  x=+0.247(RIGHT)  y=+0.010(FLAT)  z=+0.969  ← blended eye+head
+[2026-06-05 11:23:09] [INFO] [Main] [HEAD-POSE] P=  -1.4° Y= +14.2° R=  -3.5°
+[2026-06-05 11:23:09] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:09] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:10] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:10] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:10] [INFO] [Main] [GAZE-VEC]  x=+0.224(RIGHT)  y=+0.074(DOWN)  z=+0.972  ← blended eye+head
+[2026-06-05 11:23:10] [INFO] [Main] [HEAD-POSE] P=  -4.9° Y= +12.7° R=  -3.0°
+[2026-06-05 11:23:10] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:10] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:10] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:10] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:10] [INFO] [Main] [GAZE-VEC]  x=+0.241(RIGHT)  y=-0.021(FLAT)  z=+0.970  ← blended eye+head
+[2026-06-05 11:23:10] [INFO] [Main] [HEAD-POSE] P=  +0.3° Y= +14.0° R=  -3.9°
+[2026-06-05 11:23:10] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:10] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:11] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:11] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:11] [INFO] [Main] [GAZE-VEC]  x=+0.120(RIGHT)  y=-0.072(UP  )  z=+0.990  ← blended eye+head
+[2026-06-05 11:23:11] [INFO] [Main] [HEAD-POSE] P=  +4.0° Y=  +7.0° R=  -1.3°
+[2026-06-05 11:23:11] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:11] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:12] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:12] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:12] [INFO] [Main] [GAZE-VEC]  x=+0.258(RIGHT)  y=-0.012(FLAT)  z=+0.966  ← blended eye+head
+[2026-06-05 11:23:12] [INFO] [Main] [HEAD-POSE] P=  -0.2° Y= +14.9° R=  -3.6°
+[2026-06-05 11:23:12] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:12] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:12] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:12] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:12] [INFO] [Main] [GAZE-VEC]  x=-0.055(LEFT )  y=+0.053(DOWN)  z=+0.997  ← blended eye+head
+[2026-06-05 11:23:12] [INFO] [Main] [HEAD-POSE] P=  -3.0° Y=  -3.3° R=  -1.5°
+[2026-06-05 11:23:12] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:12] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:13] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:13] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:13] [INFO] [Main] [GAZE-VEC]  x=+0.050(RIGHT)  y=+0.015(FLAT)  z=+0.999  ← blended eye+head
+[2026-06-05 11:23:13] [INFO] [Main] [HEAD-POSE] P=  -1.0° Y=  +2.8° R=  -2.3°
+[2026-06-05 11:23:13] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:13] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:14] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:23:14] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:23:14] [INFO] [Main] [GAZE-VEC]  x=+0.106(RIGHT)  y=-0.048(FLAT)  z=+0.993  ← blended eye+head
+[2026-06-05 11:23:14] [INFO] [Main] [HEAD-POSE] P=  +2.6° Y=  +6.1° R=  -0.9°
+[2026-06-05 11:23:14] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:14] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:14] [INFO] [Main] [GAZE-RAW]  L[P=  +5.6° Y=  -3.1°]  R[P=  -0.8° Y= +22.0°]
+[2026-06-05 11:23:14] [INFO] [Main] [GAZE-AVG]  P=  +2.4° Y=  +9.5°
+[2026-06-05 11:23:14] [INFO] [Main] [GAZE-VEC]  x=-0.229(LEFT )  y=+0.056(DOWN)  z=+0.972  ← blended eye+head
+[2026-06-05 11:23:14] [INFO] [Main] [HEAD-POSE] P=  -4.5° Y=  -4.0° R=  -4.9°
+[2026-06-05 11:23:14] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:14] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:15] [INFO] [Main] [GAZE-RAW]  L[P=  -0.2° Y=  -0.3°]  R[P= +10.0° Y=  +4.3°]
+[2026-06-05 11:23:15] [INFO] [Main] [GAZE-AVG]  P=  +4.9° Y=  +2.0°
+[2026-06-05 11:23:15] [INFO] [Main] [GAZE-VEC]  x=-0.059(LEFT )  y=-0.145(UP  )  z=+0.988  ← blended eye+head
+[2026-06-05 11:23:15] [INFO] [Main] [HEAD-POSE] P=  +3.6° Y=  -0.9° R=  -3.5°
+[2026-06-05 11:23:15] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:15] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:15] [INFO] [Main] [GAZE-RAW]  L[P=  +4.5° Y=  +4.5°]  R[P=  +4.5° Y= +29.8°]
+[2026-06-05 11:23:15] [INFO] [Main] [GAZE-AVG]  P=  +4.5° Y= +17.1°
+[2026-06-05 11:23:15] [INFO] [Main] [GAZE-VEC]  x=-0.113(LEFT )  y=+0.127(DOWN)  z=+0.985  ← blended eye+head
+[2026-06-05 11:23:15] [INFO] [Main] [HEAD-POSE] P= -12.0° Y= +10.3° R=  -2.8°
+[2026-06-05 11:23:15] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:15] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:16] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -3.1° Y= +35.4°]
+[2026-06-05 11:23:16] [INFO] [Main] [GAZE-VEC]  x=-0.433(LEFT )  y=+0.298(DOWN)  z=+0.851  ← blended eye+head
+[2026-06-05 11:23:16] [INFO] [Main] [HEAD-POSE] P= -14.2° Y=  +8.2° R=  -5.8°
+[2026-06-05 11:23:16] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:16] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:17] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.1° Y= -28.3°]
+[2026-06-05 11:23:17] [INFO] [Main] [GAZE-VEC]  x=+0.647(RIGHT)  y=+0.027(FLAT)  z=+0.762  ← blended eye+head
+[2026-06-05 11:23:17] [INFO] [Main] [HEAD-POSE] P=  +0.7° Y= +12.1° R=  +3.4°
+[2026-06-05 11:23:17] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:17] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:17] [INFO] [Main] [GAZE-RAW]  L[P=  -6.9° Y= -18.8°]  R[P=  -3.9° Y= +11.3°]
+[2026-06-05 11:23:17] [INFO] [Main] [GAZE-AVG]  P=  -5.4° Y=  -3.7°
+[2026-06-05 11:23:17] [INFO] [Main] [GAZE-VEC]  x=+0.114(RIGHT)  y=+0.175(DOWN)  z=+0.978  ← blended eye+head
+[2026-06-05 11:23:17] [INFO] [Main] [HEAD-POSE] P=  -4.3° Y=  +3.4° R=  +2.9°
+[2026-06-05 11:23:17] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:17] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:18] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.9° Y= +26.3°]
+[2026-06-05 11:23:18] [INFO] [Main] [GAZE-VEC]  x=-0.501(LEFT )  y=+0.079(DOWN)  z=+0.862  ← blended eye+head
+[2026-06-05 11:23:18] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y=  -3.5° R=  +3.6°
+[2026-06-05 11:23:18] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:18] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:19] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P= -15.5° Y= -16.2°]
+[2026-06-05 11:23:19] [INFO] [Main] [GAZE-VEC]  x=+0.386(RIGHT)  y=+0.347(DOWN)  z=+0.855  ← blended eye+head
+[2026-06-05 11:23:19] [INFO] [Main] [HEAD-POSE] P=  -4.0° Y=  +8.5° R=  +2.3°
+[2026-06-05 11:23:19] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:19] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:20] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.7° Y=  +3.7°]
+[2026-06-05 11:23:20] [INFO] [Main] [GAZE-VEC]  x=+0.300(RIGHT)  y=+0.096(DOWN)  z=+0.949  ← blended eye+head
+[2026-06-05 11:23:20] [INFO] [Main] [HEAD-POSE] P=  -6.7° Y= +21.1° R=  -1.5°
+[2026-06-05 11:23:20] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:20] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:20] [INFO] [Main] [GAZE-RAW]  L[P=  -4.5° Y= -26.9°]  R[P=  +3.9° Y=  +3.2°]
+[2026-06-05 11:23:20] [INFO] [Main] [GAZE-AVG]  P=  -0.3° Y= -11.8°
+[2026-06-05 11:23:20] [INFO] [Main] [GAZE-VEC]  x=+0.426(RIGHT)  y=+0.134(DOWN)  z=+0.895  ← blended eye+head
+[2026-06-05 11:23:20] [INFO] [Main] [HEAD-POSE] P=  -6.9° Y= +13.7° R=  +1.5°
+[2026-06-05 11:23:20] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:20] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:21] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +6.5° Y=  +3.5°]
+[2026-06-05 11:23:21] [INFO] [Main] [GAZE-VEC]  x=+0.141(RIGHT)  y=-0.050(FLAT)  z=+0.989  ← blended eye+head
+[2026-06-05 11:23:21] [INFO] [Main] [HEAD-POSE] P=  -3.1° Y= +11.4° R=  +3.3°
+[2026-06-05 11:23:21] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:21] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:22] [INFO] [Main] [GAZE-RAW]  L[P=  +9.1° Y= -26.6°]  R[P=  +6.3° Y=  -0.6°]
+[2026-06-05 11:23:22] [INFO] [Main] [GAZE-AVG]  P=  +7.7° Y= -13.6°
+[2026-06-05 11:23:22] [INFO] [Main] [GAZE-VEC]  x=+0.311(RIGHT)  y=-0.076(UP  )  z=+0.947  ← blended eye+head
+[2026-06-05 11:23:22] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +4.2° R=  +4.8°
+[2026-06-05 11:23:22] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:22] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:22] [INFO] [Main] [GAZE-RAW]  L[P=  +2.1° Y= -20.4°]  R[P=  +6.4° Y=  +5.0°]
+[2026-06-05 11:23:22] [INFO] [Main] [GAZE-AVG]  P=  +4.2° Y=  -7.7°
+[2026-06-05 11:23:22] [INFO] [Main] [GAZE-VEC]  x=+0.169(RIGHT)  y=-0.014(FLAT)  z=+0.986  ← blended eye+head
+[2026-06-05 11:23:22] [INFO] [Main] [HEAD-POSE] P=  -2.7° Y=  +1.9° R=  +4.5°
+[2026-06-05 11:23:22] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:22] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:23] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +5.1° Y=  +9.4°]
+[2026-06-05 11:23:23] [INFO] [Main] [GAZE-VEC]  x=-0.122(LEFT )  y=-0.071(UP  )  z=+0.990  ← blended eye+head
+[2026-06-05 11:23:23] [INFO] [Main] [HEAD-POSE] P=  -1.7° Y=  +2.0° R=  +4.9°
+[2026-06-05 11:23:23] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:23:23] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:23:23] [INFO] [VideoCapture] Camera released.
+[2026-06-05 11:23:23] [INFO] [Main] System shutdown
+[2026-06-05 11:26:15] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-06-05 11:26:17] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-06-05 11:26:17] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-06-05 11:26:17] [INFO] [VideoCapture] Opening video source: data/test3.mp4 ...
+[2026-06-05 11:26:17] [INFO] [VideoCapture] Video native FPS: 30.00 → pacing on
+[2026-06-05 11:26:17] [INFO] [VideoCapture] Source opened successfully: data/test3.mp4
+[2026-06-05 11:26:18] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +3.8° Y=  +2.5°]
+[2026-06-05 11:26:18] [INFO] [Main] [GAZE-VEC]  x=-0.384(LEFT )  y=-0.159(UP  )  z=+0.909  ← blended eye+head
+[2026-06-05 11:26:18] [INFO] [Main] [HEAD-POSE] P=  -5.9° Y= +20.1° R=  -0.1°
+[2026-06-05 11:26:18] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:18] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:18] [INFO] [Main] [GAZE-RAW]  L[P=  -2.4° Y= -26.4°]  R[P=  +4.0° Y=  +4.4°]
+[2026-06-05 11:26:18] [INFO] [Main] [GAZE-AVG]  P=  +0.8° Y= -11.0°
+[2026-06-05 11:26:18] [INFO] [Main] [GAZE-VEC]  x=-0.142(LEFT )  y=-0.073(UP  )  z=+0.987  ← blended eye+head
+[2026-06-05 11:26:18] [INFO] [Main] [HEAD-POSE] P=  -3.0° Y= +19.1° R=  +2.5°
+[2026-06-05 11:26:18] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:18] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:19] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +7.0° Y=  +2.5°]
+[2026-06-05 11:26:19] [INFO] [Main] [GAZE-VEC]  x=-0.231(LEFT )  y=-0.167(UP  )  z=+0.959  ← blended eye+head
+[2026-06-05 11:26:19] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y= +10.5° R=  +3.5°
+[2026-06-05 11:26:19] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:19] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:20] [INFO] [Main] [GAZE-RAW]  L[P=  +9.2° Y= -26.9°]  R[P=  +6.9° Y=  +3.4°]
+[2026-06-05 11:26:20] [INFO] [Main] [GAZE-AVG]  P=  +8.0° Y= -11.7°
+[2026-06-05 11:26:20] [INFO] [Main] [GAZE-VEC]  x=+0.093(RIGHT)  y=-0.187(UP  )  z=+0.978  ← blended eye+head
+[2026-06-05 11:26:20] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +5.7° R=  +4.2°
+[2026-06-05 11:26:20] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:20] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:21] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +5.8° Y=  +6.0°]
+[2026-06-05 11:26:21] [INFO] [Main] [GAZE-VEC]  x=-0.149(LEFT )  y=-0.140(UP  )  z=+0.979  ← blended eye+head
+[2026-06-05 11:26:21] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y=  +2.2° R=  +4.5°
+[2026-06-05 11:26:21] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:21] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:22] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:22] [INFO] [Main] [GAZE-VEC]  x=-0.021(STR )  y=-0.043(FLAT)  z=+0.999  ← blended eye+head
+[2026-06-05 11:26:22] [INFO] [Main] [HEAD-POSE] P=  -2.4° Y=  +1.2° R=  +4.5°
+[2026-06-05 11:26:22] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:22] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:22] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:22] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:22] [INFO] [Main] [GAZE-VEC]  x=-0.183(LEFT )  y=+0.036(FLAT)  z=+0.982  ← blended eye+head
+[2026-06-05 11:26:22] [INFO] [Main] [HEAD-POSE] P=  +2.1° Y= +10.6° R=  +0.6°
+[2026-06-05 11:26:22] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:22] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:23] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:23] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:23] [INFO] [Main] [GAZE-VEC]  x=-0.309(LEFT )  y=-0.019(FLAT)  z=+0.951  ← blended eye+head
+[2026-06-05 11:26:23] [INFO] [Main] [HEAD-POSE] P=  -1.2° Y= +18.0° R=  -3.3°
+[2026-06-05 11:26:23] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:23] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:24] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:24] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:24] [INFO] [Main] [GAZE-VEC]  x=-0.286(LEFT )  y=+0.078(DOWN)  z=+0.955  ← blended eye+head
+[2026-06-05 11:26:24] [INFO] [Main] [HEAD-POSE] P=  +4.7° Y= +16.6° R=  +0.7°
+[2026-06-05 11:26:24] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:24] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:24] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:24] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:24] [INFO] [Main] [GAZE-VEC]  x=-0.395(LEFT )  y=-0.007(FLAT)  z=+0.919  ← blended eye+head
+[2026-06-05 11:26:24] [INFO] [Main] [HEAD-POSE] P=  -0.4° Y= +23.2° R=  -2.0°
+[2026-06-05 11:26:24] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:24] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:25] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:25] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:25] [INFO] [Main] [GAZE-VEC]  x=-0.321(LEFT )  y=+0.032(FLAT)  z=+0.947  ← blended eye+head
+[2026-06-05 11:26:25] [INFO] [Main] [HEAD-POSE] P=  +1.9° Y= +18.7° R=  -0.6°
+[2026-06-05 11:26:25] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:25] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:26] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:26] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:26] [INFO] [Main] [GAZE-VEC]  x=-0.358(LEFT )  y=+0.035(FLAT)  z=+0.933  ← blended eye+head
+[2026-06-05 11:26:26] [INFO] [Main] [HEAD-POSE] P=  +2.2° Y= +21.0° R=  -2.5°
+[2026-06-05 11:26:26] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:26] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:26] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:26] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:26] [INFO] [Main] [GAZE-VEC]  x=-0.087(LEFT )  y=-0.082(UP  )  z=+0.993  ← blended eye+head
+[2026-06-05 11:26:26] [INFO] [Main] [HEAD-POSE] P=  -4.7° Y=  +5.0° R=  -3.2°
+[2026-06-05 11:26:26] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:26] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:27] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:27] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:27] [INFO] [Main] [GAZE-VEC]  x=-0.290(LEFT )  y=-0.054(UP  )  z=+0.955  ← blended eye+head
+[2026-06-05 11:26:27] [INFO] [Main] [HEAD-POSE] P=  -3.2° Y= +16.9° R=  -3.5°
+[2026-06-05 11:26:27] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:27] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:28] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:28] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:28] [INFO] [Main] [GAZE-VEC]  x=-0.167(LEFT )  y=-0.007(FLAT)  z=+0.986  ← blended eye+head
+[2026-06-05 11:26:28] [INFO] [Main] [HEAD-POSE] P=  -0.4° Y=  +9.6° R=  -3.9°
+[2026-06-05 11:26:28] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:28] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:28] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:28] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:28] [INFO] [Main] [GAZE-VEC]  x=-0.111(LEFT )  y=+0.061(DOWN)  z=+0.992  ← blended eye+head
+[2026-06-05 11:26:28] [INFO] [Main] [HEAD-POSE] P=  +3.5° Y=  +6.4° R=  -1.4°
+[2026-06-05 11:26:28] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:28] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:29] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:29] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:29] [INFO] [Main] [GAZE-VEC]  x=-0.364(LEFT )  y=-0.036(FLAT)  z=+0.931  ← blended eye+head
+[2026-06-05 11:26:29] [INFO] [Main] [HEAD-POSE] P=  -2.2° Y= +21.3° R=  -4.6°
+[2026-06-05 11:26:29] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:29] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:29] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:29] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:29] [INFO] [Main] [GAZE-VEC]  x=-0.036(STR )  y=-0.059(UP  )  z=+0.998  ← blended eye+head
+[2026-06-05 11:26:29] [INFO] [Main] [HEAD-POSE] P=  -3.4° Y=  +2.1° R=  -1.4°
+[2026-06-05 11:26:29] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:29] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:30] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:30] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:30] [INFO] [Main] [GAZE-VEC]  x=-0.009(STR )  y=+0.001(FLAT)  z=+1.000  ← blended eye+head
+[2026-06-05 11:26:30] [INFO] [Main] [HEAD-POSE] P=  +0.0° Y=  +0.5° R=  -1.9°
+[2026-06-05 11:26:30] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:30] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:31] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:31] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:31] [INFO] [Main] [GAZE-VEC]  x=+0.009(STR )  y=+0.062(DOWN)  z=+0.998  ← blended eye+head
+[2026-06-05 11:26:31] [INFO] [Main] [HEAD-POSE] P=  +3.5° Y=  -0.5° R=  -1.1°
+[2026-06-05 11:26:31] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:31] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:32] [INFO] [Main] [GAZE-RAW]  L[P=  +6.4° Y=  -2.6°]  R[P=  -1.2° Y= +21.5°]
+[2026-06-05 11:26:32] [INFO] [Main] [GAZE-AVG]  P=  +2.6° Y=  +9.5°
+[2026-06-05 11:26:32] [INFO] [Main] [GAZE-VEC]  x=-0.147(LEFT )  y=-0.153(UP  )  z=+0.977  ← blended eye+head
+[2026-06-05 11:26:32] [INFO] [Main] [HEAD-POSE] P=  -5.3° Y=  -0.7° R=  -5.9°
+[2026-06-05 11:26:32] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:32] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:32] [INFO] [Main] [GAZE-RAW]  L[P=  +7.3° Y=  -7.3°]  R[P= +13.5° Y=  +2.7°]
+[2026-06-05 11:26:32] [INFO] [Main] [GAZE-AVG]  P= +10.4° Y=  -2.3°
+[2026-06-05 11:26:32] [INFO] [Main] [GAZE-VEC]  x=-0.209(LEFT )  y=-0.174(UP  )  z=+0.962  ← blended eye+head
+[2026-06-05 11:26:32] [INFO] [Main] [HEAD-POSE] P=  +0.4° Y= +14.3° R=  +1.4°
+[2026-06-05 11:26:32] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:32] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:33] [INFO] [Main] [GAZE-RAW]  L[P=  -3.9° Y=  +2.2°]  R[P=  +4.8° Y= +22.2°]
+[2026-06-05 11:26:33] [INFO] [Main] [GAZE-AVG]  P=  +0.5° Y= +12.2°
+[2026-06-05 11:26:33] [INFO] [Main] [GAZE-VEC]  x=-0.383(LEFT )  y=-0.210(UP  )  z=+0.900  ← blended eye+head
+[2026-06-05 11:26:33] [INFO] [Main] [HEAD-POSE] P= -12.0° Y= +10.3° R=  -2.8°
+[2026-06-05 11:26:33] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:33] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:34] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.6° Y= +28.8°]
+[2026-06-05 11:26:34] [INFO] [Main] [GAZE-VEC]  x=-0.647(LEFT )  y=-0.129(UP  )  z=+0.752  ← blended eye+head
+[2026-06-05 11:26:34] [INFO] [Main] [HEAD-POSE] P= -12.6° Y= +11.3° R=  -4.9°
+[2026-06-05 11:26:34] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:34] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:35] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.1° Y= -28.3°]
+[2026-06-05 11:26:35] [INFO] [Main] [GAZE-VEC]  x=+0.279(RIGHT)  y=-0.018(FLAT)  z=+0.960  ← blended eye+head
+[2026-06-05 11:26:35] [INFO] [Main] [HEAD-POSE] P=  +0.7° Y= +12.1° R=  +3.4°
+[2026-06-05 11:26:35] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:35] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:37] [INFO] [Main] [GAZE-RAW]  L[P=  -6.9° Y= -18.8°]  R[P=  -2.3° Y=  +3.1°]
+[2026-06-05 11:26:37] [INFO] [Main] [GAZE-AVG]  P=  -4.6° Y=  -7.8°
+[2026-06-05 11:26:37] [INFO] [Main] [GAZE-VEC]  x=+0.416(RIGHT)  y=+0.052(DOWN)  z=+0.908  ← blended eye+head
+[2026-06-05 11:26:37] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y= -16.7° R=  +1.7°
+[2026-06-05 11:26:37] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:37] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:37] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.9° Y= +26.3°]
+[2026-06-05 11:26:37] [INFO] [Main] [GAZE-VEC]  x=-0.381(LEFT )  y=+0.088(DOWN)  z=+0.920  ← blended eye+head
+[2026-06-05 11:26:37] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y=  -3.5° R=  +3.6°
+[2026-06-05 11:26:37] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:37] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:38] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P= -15.1° Y= -18.7°]
+[2026-06-05 11:26:38] [INFO] [Main] [GAZE-VEC]  x=+0.293(RIGHT)  y=+0.201(DOWN)  z=+0.935  ← blended eye+head
+[2026-06-05 11:26:38] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y=  +2.2° R=  +4.6°
+[2026-06-05 11:26:38] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:38] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:39] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.7° Y=  +3.7°]
+[2026-06-05 11:26:39] [INFO] [Main] [GAZE-VEC]  x=-0.419(LEFT )  y=-0.119(UP  )  z=+0.900  ← blended eye+head
+[2026-06-05 11:26:39] [INFO] [Main] [HEAD-POSE] P=  -6.7° Y= +21.1° R=  -1.5°
+[2026-06-05 11:26:39] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:39] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:40] [INFO] [Main] [GAZE-RAW]  L[P=  -4.5° Y= -26.9°]  R[P=  +3.8° Y=  +5.9°]
+[2026-06-05 11:26:40] [INFO] [Main] [GAZE-AVG]  P=  -0.3° Y= -10.5°
+[2026-06-05 11:26:40] [INFO] [Main] [GAZE-VEC]  x=-0.110(LEFT )  y=-0.095(UP  )  z=+0.989  ← blended eye+head
+[2026-06-05 11:26:40] [INFO] [Main] [HEAD-POSE] P=  -5.4° Y= +16.8° R=  +2.3°
+[2026-06-05 11:26:40] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:40] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:40] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +6.5° Y=  +3.5°]
+[2026-06-05 11:26:40] [INFO] [Main] [GAZE-VEC]  x=-0.262(LEFT )  y=-0.161(UP  )  z=+0.952  ← blended eye+head
+[2026-06-05 11:26:40] [INFO] [Main] [HEAD-POSE] P=  -3.1° Y= +11.4° R=  +3.3°
+[2026-06-05 11:26:40] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:40] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:41] [INFO] [Main] [GAZE-RAW]  L[P=  +9.1° Y= -26.6°]  R[P=  +5.8° Y=  -0.4°]
+[2026-06-05 11:26:41] [INFO] [Main] [GAZE-AVG]  P=  +7.5° Y= -13.5°
+[2026-06-05 11:26:41] [INFO] [Main] [GAZE-VEC]  x=+0.158(RIGHT)  y=-0.181(UP  )  z=+0.971  ← blended eye+head
+[2026-06-05 11:26:41] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +3.7° R=  +4.7°
+[2026-06-05 11:26:41] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:41] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:42] [INFO] [Main] [GAZE-RAW]  L[P=  +2.1° Y= -20.4°]  R[P=  +6.4° Y=  +5.0°]
+[2026-06-05 11:26:42] [INFO] [Main] [GAZE-AVG]  P=  +4.2° Y=  -7.7°
+[2026-06-05 11:26:42] [INFO] [Main] [GAZE-VEC]  x=+0.095(RIGHT)  y=-0.131(UP  )  z=+0.987  ← blended eye+head
+[2026-06-05 11:26:42] [INFO] [Main] [HEAD-POSE] P=  -2.7° Y=  +1.9° R=  +4.5°
+[2026-06-05 11:26:42] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:42] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:43] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +6.7° Y=  +7.6°]
+[2026-06-05 11:26:43] [INFO] [Main] [GAZE-VEC]  x=-0.224(LEFT )  y=-0.150(UP  )  z=+0.963  ← blended eye+head
+[2026-06-05 11:26:43] [INFO] [Main] [HEAD-POSE] P=  -2.6° Y=  +4.9° R=  +4.6°
+[2026-06-05 11:26:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:43] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:26:43] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:26:43] [INFO] [Main] [GAZE-VEC]  x=-0.241(LEFT )  y=-0.052(UP  )  z=+0.969  ← blended eye+head
+[2026-06-05 11:26:43] [INFO] [Main] [HEAD-POSE] P=  -3.1° Y= +13.9° R=  -0.6°
+[2026-06-05 11:26:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:26:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:26:44] [INFO] [VideoCapture] Camera released.
+[2026-06-05 11:26:44] [INFO] [Main] System shutdown
+[2026-06-05 11:27:46] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-06-05 11:27:48] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-06-05 11:27:48] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-06-05 11:27:48] [INFO] [VideoCapture] Opening video source: data/test3.mp4 ...
+[2026-06-05 11:27:48] [INFO] [VideoCapture] Video native FPS: 30.00 → pacing on
+[2026-06-05 11:27:48] [INFO] [VideoCapture] Source opened successfully: data/test3.mp4
+[2026-06-05 11:27:49] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +3.8° Y=  +2.5°]
+[2026-06-05 11:27:49] [INFO] [Main] [GAZE-VEC]  x=+0.302(RIGHT)  y=+0.036(FLAT)  z=+0.953  ← blended eye+head
+[2026-06-05 11:27:49] [INFO] [Main] [HEAD-POSE] P=  -5.9° Y= +20.1° R=  -0.1°
+[2026-06-05 11:27:49] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:49] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:50] [INFO] [Main] [GAZE-RAW]  L[P=  -2.4° Y= -26.4°]  R[P=  +4.0° Y=  +4.4°]
+[2026-06-05 11:27:50] [INFO] [Main] [GAZE-AVG]  P=  +0.8° Y= -11.0°
+[2026-06-05 11:27:50] [INFO] [Main] [GAZE-VEC]  x=+0.499(RIGHT)  y=+0.059(DOWN)  z=+0.864  ← blended eye+head
+[2026-06-05 11:27:50] [INFO] [Main] [HEAD-POSE] P=  -3.0° Y= +19.1° R=  +2.5°
+[2026-06-05 11:27:50] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:50] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:51] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +7.0° Y=  +2.5°]
+[2026-06-05 11:27:51] [INFO] [Main] [GAZE-VEC]  x=+0.144(RIGHT)  y=-0.064(UP  )  z=+0.987  ← blended eye+head
+[2026-06-05 11:27:51] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y= +10.5° R=  +3.5°
+[2026-06-05 11:27:51] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:51] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:52] [INFO] [Main] [GAZE-RAW]  L[P=  +9.2° Y= -26.9°]  R[P=  +6.9° Y=  +3.4°]
+[2026-06-05 11:27:52] [INFO] [Main] [GAZE-AVG]  P=  +8.0° Y= -11.7°
+[2026-06-05 11:27:52] [INFO] [Main] [GAZE-VEC]  x=+0.304(RIGHT)  y=-0.085(UP  )  z=+0.949  ← blended eye+head
+[2026-06-05 11:27:52] [INFO] [Main] [HEAD-POSE] P=  -1.9° Y=  +5.7° R=  +4.2°
+[2026-06-05 11:27:52] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:52] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:53] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +5.8° Y=  +6.0°]
+[2026-06-05 11:27:53] [INFO] [Main] [GAZE-VEC]  x=-0.061(LEFT )  y=-0.057(UP  )  z=+0.996  ← blended eye+head
+[2026-06-05 11:27:53] [INFO] [Main] [HEAD-POSE] P=  -2.8° Y=  +2.2° R=  +4.5°
+[2026-06-05 11:27:53] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:53] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:54] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:54] [INFO] [Main] [GAZE-VEC]  x=+0.017(STR )  y=+0.044(FLAT)  z=+0.999  ← blended eye+head
+[2026-06-05 11:27:54] [INFO] [Main] [HEAD-POSE] P=  -2.4° Y=  +1.2° R=  +4.5°
+[2026-06-05 11:27:54] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:54] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:55] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:55] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:55] [INFO] [Main] [GAZE-VEC]  x=+0.183(RIGHT)  y=-0.035(FLAT)  z=+0.982  ← blended eye+head
+[2026-06-05 11:27:55] [INFO] [Main] [HEAD-POSE] P=  +2.1° Y= +10.6° R=  +0.6°
+[2026-06-05 11:27:55] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:55] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:56] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:56] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:56] [INFO] [Main] [GAZE-VEC]  x=+0.310(RIGHT)  y=+0.002(FLAT)  z=+0.951  ← blended eye+head
+[2026-06-05 11:27:56] [INFO] [Main] [HEAD-POSE] P=  -1.2° Y= +18.0° R=  -3.3°
+[2026-06-05 11:27:56] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:56] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:56] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:56] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:56] [INFO] [Main] [GAZE-VEC]  x=+0.286(RIGHT)  y=-0.078(UP  )  z=+0.955  ← blended eye+head
+[2026-06-05 11:27:56] [INFO] [Main] [HEAD-POSE] P=  +4.7° Y= +16.6° R=  +0.7°
+[2026-06-05 11:27:56] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:56] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:57] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:57] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:57] [INFO] [Main] [GAZE-VEC]  x=+0.395(RIGHT)  y=-0.007(FLAT)  z=+0.919  ← blended eye+head
+[2026-06-05 11:27:57] [INFO] [Main] [HEAD-POSE] P=  -0.4° Y= +23.2° R=  -2.0°
+[2026-06-05 11:27:57] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:57] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:58] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:58] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:58] [INFO] [Main] [GAZE-VEC]  x=+0.320(RIGHT)  y=-0.037(FLAT)  z=+0.947  ← blended eye+head
+[2026-06-05 11:27:58] [INFO] [Main] [HEAD-POSE] P=  +1.9° Y= +18.7° R=  -0.6°
+[2026-06-05 11:27:58] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:58] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:58] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:58] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:58] [INFO] [Main] [GAZE-VEC]  x=+0.356(RIGHT)  y=-0.053(UP  )  z=+0.933  ← blended eye+head
+[2026-06-05 11:27:58] [INFO] [Main] [HEAD-POSE] P=  +2.2° Y= +21.0° R=  -2.5°
+[2026-06-05 11:27:58] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:58] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:59] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:59] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:59] [INFO] [Main] [GAZE-VEC]  x=+0.091(RIGHT)  y=+0.078(DOWN)  z=+0.993  ← blended eye+head
+[2026-06-05 11:27:59] [INFO] [Main] [HEAD-POSE] P=  -4.7° Y=  +5.0° R=  -3.2°
+[2026-06-05 11:27:59] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:59] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:27:59] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:27:59] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:27:59] [INFO] [Main] [GAZE-VEC]  x=+0.293(RIGHT)  y=+0.039(FLAT)  z=+0.955  ← blended eye+head
+[2026-06-05 11:27:59] [INFO] [Main] [HEAD-POSE] P=  -3.2° Y= +16.9° R=  -3.5°
+[2026-06-05 11:27:59] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:27:59] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:00] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:28:00] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:28:00] [INFO] [Main] [GAZE-VEC]  x=+0.167(RIGHT)  y=-0.004(FLAT)  z=+0.986  ← blended eye+head
+[2026-06-05 11:28:00] [INFO] [Main] [HEAD-POSE] P=  -0.4° Y=  +9.6° R=  -3.9°
+[2026-06-05 11:28:00] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:00] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:01] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:28:01] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:28:01] [INFO] [Main] [GAZE-VEC]  x=+0.109(RIGHT)  y=-0.065(UP  )  z=+0.992  ← blended eye+head
+[2026-06-05 11:28:01] [INFO] [Main] [HEAD-POSE] P=  +3.5° Y=  +6.4° R=  -1.4°
+[2026-06-05 11:28:01] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:01] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:01] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:28:01] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:28:01] [INFO] [Main] [GAZE-VEC]  x=+0.365(RIGHT)  y=+0.009(FLAT)  z=+0.931  ← blended eye+head
+[2026-06-05 11:28:01] [INFO] [Main] [HEAD-POSE] P=  -2.2° Y= +21.3° R=  -4.6°
+[2026-06-05 11:28:01] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:01] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:02] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:28:02] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:28:02] [INFO] [Main] [GAZE-VEC]  x=+0.037(STR )  y=+0.058(DOWN)  z=+0.998  ← blended eye+head
+[2026-06-05 11:28:02] [INFO] [Main] [HEAD-POSE] P=  -3.4° Y=  +2.1° R=  -1.4°
+[2026-06-05 11:28:02] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:02] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:03] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:28:03] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:28:03] [INFO] [Main] [GAZE-VEC]  x=+0.009(STR )  y=-0.001(FLAT)  z=+1.000  ← blended eye+head
+[2026-06-05 11:28:03] [INFO] [Main] [HEAD-POSE] P=  +0.0° Y=  +0.5° R=  -1.9°
+[2026-06-05 11:28:03] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:03] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:03] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:28:03] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:28:03] [INFO] [Main] [GAZE-VEC]  x=-0.010(STR )  y=-0.062(UP  )  z=+0.998  ← blended eye+head
+[2026-06-05 11:28:03] [INFO] [Main] [HEAD-POSE] P=  +3.5° Y=  -0.5° R=  -1.1°
+[2026-06-05 11:28:03] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:03] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:04] [INFO] [Main] [GAZE-RAW]  L[P=  +6.4° Y=  -2.6°]  R[P=  -1.2° Y= +21.5°]
+[2026-06-05 11:28:04] [INFO] [Main] [GAZE-AVG]  P=  +2.6° Y=  +9.5°
+[2026-06-05 11:28:04] [INFO] [Main] [GAZE-VEC]  x=-0.170(LEFT )  y=+0.063(DOWN)  z=+0.983  ← blended eye+head
+[2026-06-05 11:28:04] [INFO] [Main] [HEAD-POSE] P=  -5.3° Y=  -0.7° R=  -5.9°
+[2026-06-05 11:28:04] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:04] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:05] [INFO] [Main] [GAZE-RAW]  L[P=  +7.3° Y=  -7.3°]  R[P= +13.5° Y=  +2.7°]
+[2026-06-05 11:28:05] [INFO] [Main] [GAZE-AVG]  P= +10.4° Y=  -2.3°
+[2026-06-05 11:28:05] [INFO] [Main] [GAZE-VEC]  x=+0.285(RIGHT)  y=-0.180(UP  )  z=+0.942  ← blended eye+head
+[2026-06-05 11:28:05] [INFO] [Main] [HEAD-POSE] P=  +0.4° Y= +14.3° R=  +1.4°
+[2026-06-05 11:28:05] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:05] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:06] [INFO] [Main] [GAZE-RAW]  L[P=  -3.9° Y=  +2.2°]  R[P=  +4.8° Y= +22.2°]
+[2026-06-05 11:28:06] [INFO] [Main] [GAZE-AVG]  P=  +0.5° Y= +12.2°
+[2026-06-05 11:28:06] [INFO] [Main] [GAZE-VEC]  x=-0.027(STR )  y=+0.197(DOWN)  z=+0.980  ← blended eye+head
+[2026-06-05 11:28:06] [INFO] [Main] [HEAD-POSE] P= -12.0° Y= +10.3° R=  -2.8°
+[2026-06-05 11:28:06] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:06] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:07] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.6° Y= +28.8°]
+[2026-06-05 11:28:07] [INFO] [Main] [GAZE-VEC]  x=-0.284(LEFT )  y=+0.294(DOWN)  z=+0.913  ← blended eye+head
+[2026-06-05 11:28:07] [INFO] [Main] [HEAD-POSE] P= -12.6° Y= +11.3° R=  -4.9°
+[2026-06-05 11:28:07] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:07] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:08] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.1° Y= -28.3°]
+[2026-06-05 11:28:08] [INFO] [Main] [GAZE-VEC]  x=+0.647(RIGHT)  y=+0.027(FLAT)  z=+0.762  ← blended eye+head
+[2026-06-05 11:28:08] [INFO] [Main] [HEAD-POSE] P=  +0.7° Y= +12.1° R=  +3.4°
+[2026-06-05 11:28:08] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:08] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:09] [INFO] [Main] [GAZE-RAW]  L[P=  -6.9° Y= -18.8°]  R[P=  -2.3° Y=  +3.1°]
+[2026-06-05 11:28:09] [INFO] [Main] [GAZE-AVG]  P=  -4.6° Y=  -7.8°
+[2026-06-05 11:28:09] [INFO] [Main] [GAZE-VEC]  x=-0.155(LEFT )  y=+0.103(DOWN)  z=+0.983  ← blended eye+head
+[2026-06-05 11:28:09] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y= -16.7° R=  +1.7°
+[2026-06-05 11:28:09] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:09] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:09] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.9° Y= +26.3°]
+[2026-06-05 11:28:09] [INFO] [Main] [GAZE-VEC]  x=-0.501(LEFT )  y=+0.079(DOWN)  z=+0.862  ← blended eye+head
+[2026-06-05 11:28:09] [INFO] [Main] [HEAD-POSE] P=  -1.6° Y=  -3.5° R=  +3.6°
+[2026-06-05 11:28:09] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:09] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:10] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P= -15.1° Y= -18.7°]
+[2026-06-05 11:28:10] [INFO] [Main] [GAZE-VEC]  x=+0.319(RIGHT)  y=+0.321(DOWN)  z=+0.892  ← blended eye+head
+[2026-06-05 11:28:10] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y=  +2.2° R=  +4.6°
+[2026-06-05 11:28:10] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:10] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:11] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.7° Y=  +3.7°]
+[2026-06-05 11:28:11] [INFO] [Main] [GAZE-VEC]  x=+0.300(RIGHT)  y=+0.096(DOWN)  z=+0.949  ← blended eye+head
+[2026-06-05 11:28:11] [INFO] [Main] [HEAD-POSE] P=  -6.7° Y= +21.1° R=  -1.5°
+[2026-06-05 11:28:11] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:28:11] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:28:11] [INFO] [VideoCapture] Camera released.
+[2026-06-05 11:28:11] [INFO] [Main] System shutdown
+[2026-06-05 11:47:12] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-06-05 11:47:14] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-06-05 11:47:14] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-06-05 11:47:14] [INFO] [VideoCapture] Opening video source: data/test3.mp4 ...
+[2026-06-05 11:47:14] [INFO] [VideoCapture] Video native FPS: 30.00 → pacing on
+[2026-06-05 11:47:14] [INFO] [VideoCapture] Source opened successfully: data/test3.mp4
+[2026-06-05 11:47:14] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +3.8° Y=  +2.5°]
+[2026-06-05 11:47:14] [INFO] [Main] [GAZE-VEC]  x=+0.207(RIGHT)  y=-0.041(FLAT)  z=+0.977  ← blended eye+head
+[2026-06-05 11:47:14] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y= +14.6° R=  -3.4°
+[2026-06-05 11:47:14] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:14] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:15] [INFO] [Main] [GAZE-RAW]  L[P=  -2.4° Y= -26.4°]  R[P=  +4.0° Y=  +4.4°]
+[2026-06-05 11:47:15] [INFO] [Main] [GAZE-AVG]  P=  +0.8° Y= -11.0°
+[2026-06-05 11:47:15] [INFO] [Main] [GAZE-VEC]  x=+0.446(RIGHT)  y=-0.045(FLAT)  z=+0.894  ← blended eye+head
+[2026-06-05 11:47:15] [INFO] [Main] [HEAD-POSE] P=  +4.6° Y= +15.1° R=  +6.1°
+[2026-06-05 11:47:15] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:15] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:16] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +7.0° Y=  +2.5°]
+[2026-06-05 11:47:16] [INFO] [Main] [GAZE-VEC]  x=+0.127(RIGHT)  y=-0.106(UP  )  z=+0.986  ← blended eye+head
+[2026-06-05 11:47:16] [INFO] [Main] [HEAD-POSE] P=  -1.0° Y=  +9.8° R=  -0.3°
+[2026-06-05 11:47:16] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:16] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:16] [INFO] [Main] [GAZE-RAW]  L[P=  +9.2° Y= -26.9°]  R[P=  +6.9° Y=  +3.4°]
+[2026-06-05 11:47:16] [INFO] [Main] [GAZE-AVG]  P=  +8.0° Y= -11.7°
+[2026-06-05 11:47:16] [INFO] [Main] [GAZE-VEC]  x=+0.426(RIGHT)  y=-0.110(UP  )  z=+0.898  ← blended eye+head
+[2026-06-05 11:47:16] [INFO] [Main] [HEAD-POSE] P=  -1.8° Y= +13.7° R=  -0.0°
+[2026-06-05 11:47:16] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:16] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:17] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +5.8° Y=  +6.0°]
+[2026-06-05 11:47:17] [INFO] [Main] [GAZE-VEC]  x=+0.107(RIGHT)  y=-0.066(UP  )  z=+0.992  ← blended eye+head
+[2026-06-05 11:47:17] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y= +12.1° R=  -0.6°
+[2026-06-05 11:47:17] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:17] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:18] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:18] [INFO] [Main] [GAZE-VEC]  x=+0.230(RIGHT)  y=+0.030(FLAT)  z=+0.973  ← blended eye+head
+[2026-06-05 11:47:18] [INFO] [Main] [HEAD-POSE] P=  -2.2° Y= +13.2° R=  -2.2°
+[2026-06-05 11:47:18] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:18] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:18] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:18] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:18] [INFO] [Main] [GAZE-VEC]  x=+0.256(RIGHT)  y=-0.112(UP  )  z=+0.960  ← blended eye+head
+[2026-06-05 11:47:18] [INFO] [Main] [HEAD-POSE] P=  +6.4° Y= +14.9° R=  +0.1°
+[2026-06-05 11:47:18] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:18] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:19] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:19] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:19] [INFO] [Main] [GAZE-VEC]  x=+0.246(RIGHT)  y=-0.165(UP  )  z=+0.955  ← blended eye+head
+[2026-06-05 11:47:19] [INFO] [Main] [HEAD-POSE] P=  +9.6° Y= +14.4° R=  +0.6°
+[2026-06-05 11:47:19] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:19] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:19] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:19] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:19] [INFO] [Main] [GAZE-VEC]  x=+0.258(RIGHT)  y=-0.152(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 11:47:19] [INFO] [Main] [HEAD-POSE] P=  +8.8° Y= +15.1° R=  +0.2°
+[2026-06-05 11:47:19] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:19] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:20] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:20] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:20] [INFO] [Main] [GAZE-VEC]  x=+0.266(RIGHT)  y=-0.188(UP  )  z=+0.945  ← blended eye+head
+[2026-06-05 11:47:20] [INFO] [Main] [HEAD-POSE] P= +10.9° Y= +15.7° R=  +0.3°
+[2026-06-05 11:47:20] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:20] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:21] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:21] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:21] [INFO] [Main] [GAZE-VEC]  x=+0.278(RIGHT)  y=-0.194(UP  )  z=+0.941  ← blended eye+head
+[2026-06-05 11:47:21] [INFO] [Main] [HEAD-POSE] P= +11.3° Y= +16.4° R=  +0.4°
+[2026-06-05 11:47:21] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:21] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:21] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:21] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:21] [INFO] [Main] [GAZE-VEC]  x=+0.248(RIGHT)  y=-0.170(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 11:47:21] [INFO] [Main] [HEAD-POSE] P=  +9.5° Y= +14.8° R=  -1.3°
+[2026-06-05 11:47:21] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:21] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:22] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:22] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:22] [INFO] [Main] [GAZE-VEC]  x=+0.217(RIGHT)  y=-0.206(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 11:47:22] [INFO] [Main] [HEAD-POSE] P= +11.1° Y= +13.5° R=  -3.3°
+[2026-06-05 11:47:22] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:22] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:22] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:22] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:22] [INFO] [Main] [GAZE-VEC]  x=+0.234(RIGHT)  y=-0.212(UP  )  z=+0.949  ← blended eye+head
+[2026-06-05 11:47:22] [INFO] [Main] [HEAD-POSE] P= +11.5° Y= +14.4° R=  -2.8°
+[2026-06-05 11:47:22] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:22] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:23] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:23] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:23] [INFO] [Main] [GAZE-VEC]  x=+0.229(RIGHT)  y=-0.194(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 11:47:23] [INFO] [Main] [HEAD-POSE] P= +10.4° Y= +14.1° R=  -3.2°
+[2026-06-05 11:47:23] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:23] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:23] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:23] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:23] [INFO] [Main] [GAZE-VEC]  x=+0.254(RIGHT)  y=-0.247(UP  )  z=+0.935  ← blended eye+head
+[2026-06-05 11:47:23] [INFO] [Main] [HEAD-POSE] P= +14.0° Y= +15.5° R=  -1.4°
+[2026-06-05 11:47:23] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:23] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:24] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:24] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:24] [INFO] [Main] [GAZE-VEC]  x=+0.235(RIGHT)  y=-0.222(UP  )  z=+0.946  ← blended eye+head
+[2026-06-05 11:47:24] [INFO] [Main] [HEAD-POSE] P= +12.2° Y= +14.5° R=  -2.6°
+[2026-06-05 11:47:24] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:24] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:25] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:25] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:25] [INFO] [Main] [GAZE-VEC]  x=+0.251(RIGHT)  y=-0.257(UP  )  z=+0.933  ← blended eye+head
+[2026-06-05 11:47:25] [INFO] [Main] [HEAD-POSE] P= +14.5° Y= +15.4° R=  -1.4°
+[2026-06-05 11:47:25] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:25] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:25] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:25] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:25] [INFO] [Main] [GAZE-VEC]  x=+0.266(RIGHT)  y=-0.247(UP  )  z=+0.932  ← blended eye+head
+[2026-06-05 11:47:25] [INFO] [Main] [HEAD-POSE] P= +14.0° Y= +16.2° R=  -1.1°
+[2026-06-05 11:47:25] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:25] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:26] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:26] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:26] [INFO] [Main] [GAZE-VEC]  x=+0.268(RIGHT)  y=-0.267(UP  )  z=+0.926  ← blended eye+head
+[2026-06-05 11:47:26] [INFO] [Main] [HEAD-POSE] P= +15.6° Y= +16.0° R=  +0.5°
+[2026-06-05 11:47:26] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:26] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:26] [INFO] [Main] [GAZE-RAW]  L[P=  +6.4° Y=  -2.6°]  R[P=  -1.2° Y= +21.5°]
+[2026-06-05 11:47:26] [INFO] [Main] [GAZE-AVG]  P=  +2.6° Y=  +9.5°
+[2026-06-05 11:47:26] [INFO] [Main] [GAZE-VEC]  x=-0.002(STR )  y=-0.086(UP  )  z=+0.996  ← blended eye+head
+[2026-06-05 11:47:26] [INFO] [Main] [HEAD-POSE] P=  +2.3° Y= +10.0° R=  -7.8°
+[2026-06-05 11:47:26] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:26] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:27] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:27] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:27] [INFO] [Main] [GAZE-VEC]  x=+0.997(RIGHT)  y=+0.004(FLAT)  z=+0.080  ← blended eye+head
+[2026-06-05 11:47:27] [INFO] [Main] [HEAD-POSE] P= +11.5° Y= +85.3° R= +11.8°
+[2026-06-05 11:47:27] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:27] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:27] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +6.2° Y= +39.6°]
+[2026-06-05 11:47:27] [INFO] [Main] [GAZE-AVG]  P=  +3.1° Y= +19.8°
+[2026-06-05 11:47:27] [INFO] [Main] [GAZE-VEC]  x=-0.039(STR )  y=+0.092(DOWN)  z=+0.995  ← blended eye+head
+[2026-06-05 11:47:27] [INFO] [Main] [HEAD-POSE] P=  -8.7° Y= +17.2° R=  -4.8°
+[2026-06-05 11:47:27] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:27] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:28] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.6° Y= +28.9°]
+[2026-06-05 11:47:28] [INFO] [Main] [GAZE-VEC]  x=-0.127(LEFT )  y=+0.332(DOWN)  z=+0.935  ← blended eye+head
+[2026-06-05 11:47:28] [INFO] [Main] [HEAD-POSE] P= -16.1° Y= +21.0° R=  -5.2°
+[2026-06-05 11:47:28] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:28] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:29] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:29] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:29] [INFO] [Main] [GAZE-VEC]  x=+0.966(RIGHT)  y=+0.209(DOWN)  z=+0.152  ← blended eye+head
+[2026-06-05 11:47:29] [INFO] [Main] [HEAD-POSE] P= -38.1° Y= +78.8° R= -26.4°
+[2026-06-05 11:47:29] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:29] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:29] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:29] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:29] [INFO] [Main] [GAZE-VEC]  x=+0.983(RIGHT)  y=+0.164(DOWN)  z=+0.082  ← blended eye+head
+[2026-06-05 11:47:29] [INFO] [Main] [HEAD-POSE] P= -45.0° Y= +83.4° R= -35.7°
+[2026-06-05 11:47:29] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:29] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:30] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:30] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:30] [INFO] [Main] [GAZE-VEC]  x=+0.987(RIGHT)  y=+0.135(DOWN)  z=+0.090  ← blended eye+head
+[2026-06-05 11:47:30] [INFO] [Main] [HEAD-POSE] P= -42.6° Y= +83.0° R= -35.0°
+[2026-06-05 11:47:30] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:30] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:30] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 11:47:30] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 11:47:30] [INFO] [Main] [GAZE-VEC]  x=+0.960(RIGHT)  y=+0.120(DOWN)  z=+0.254  ← blended eye+head
+[2026-06-05 11:47:30] [INFO] [Main] [HEAD-POSE] P= -34.5° Y= +72.1° R= -28.8°
+[2026-06-05 11:47:30] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:30] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:31] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +1.0° Y=  +4.1°]
+[2026-06-05 11:47:31] [INFO] [Main] [GAZE-VEC]  x=+0.176(RIGHT)  y=+0.041(FLAT)  z=+0.984  ← blended eye+head
+[2026-06-05 11:47:31] [INFO] [Main] [HEAD-POSE] P=  -4.0° Y= +14.1° R=  -3.9°
+[2026-06-05 11:47:31] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 11:47:31] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 11:47:31] [INFO] [VideoCapture] Camera released.
+[2026-06-05 11:47:31] [INFO] [Main] System shutdown
+[2026-06-05 12:52:26] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-06-05 12:52:27] [INFO] [Main] Models enabled → facemap=True, attrib=False, head_pose=True, analyzer=False, visualizer=True
+[2026-06-05 12:52:27] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-06-05 12:52:27] [INFO] [VideoCapture] Opening video source: data/test3.mp4 ...
+[2026-06-05 12:52:27] [INFO] [VideoCapture] Video native FPS: 30.00 → pacing on
+[2026-06-05 12:52:27] [INFO] [VideoCapture] Source opened successfully: data/test3.mp4
+[2026-06-05 12:52:28] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +3.8° Y=  +2.5°]
+[2026-06-05 12:52:28] [INFO] [Main] [GAZE-VEC]  x=+0.207(RIGHT)  y=-0.041(FLAT)  z=+0.977  ← blended eye+head
+[2026-06-05 12:52:28] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y= +14.6° R=  -3.4°
+[2026-06-05 12:52:28] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:28] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:29] [INFO] [Main] [GAZE-RAW]  L[P=  -2.4° Y= -26.4°]  R[P=  +4.0° Y=  +4.4°]
+[2026-06-05 12:52:29] [INFO] [Main] [GAZE-AVG]  P=  +0.8° Y= -11.0°
+[2026-06-05 12:52:29] [INFO] [Main] [GAZE-VEC]  x=+0.446(RIGHT)  y=-0.045(FLAT)  z=+0.894  ← blended eye+head
+[2026-06-05 12:52:29] [INFO] [Main] [HEAD-POSE] P=  +4.6° Y= +15.1° R=  +6.1°
+[2026-06-05 12:52:29] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:29] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:30] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +7.0° Y=  +2.5°]
+[2026-06-05 12:52:30] [INFO] [Main] [GAZE-VEC]  x=+0.127(RIGHT)  y=-0.106(UP  )  z=+0.986  ← blended eye+head
+[2026-06-05 12:52:30] [INFO] [Main] [HEAD-POSE] P=  -1.0° Y=  +9.8° R=  -0.3°
+[2026-06-05 12:52:30] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:30] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:31] [INFO] [Main] [GAZE-RAW]  L[P=  +9.2° Y= -26.9°]  R[P=  +6.9° Y=  +3.4°]
+[2026-06-05 12:52:31] [INFO] [Main] [GAZE-AVG]  P=  +8.0° Y= -11.7°
+[2026-06-05 12:52:31] [INFO] [Main] [GAZE-VEC]  x=+0.426(RIGHT)  y=-0.110(UP  )  z=+0.898  ← blended eye+head
+[2026-06-05 12:52:31] [INFO] [Main] [HEAD-POSE] P=  -1.8° Y= +13.7° R=  -0.0°
+[2026-06-05 12:52:31] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:31] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:32] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +5.8° Y=  +6.0°]
+[2026-06-05 12:52:32] [INFO] [Main] [GAZE-VEC]  x=+0.107(RIGHT)  y=-0.066(UP  )  z=+0.992  ← blended eye+head
+[2026-06-05 12:52:32] [INFO] [Main] [HEAD-POSE] P=  -2.1° Y= +12.1° R=  -0.6°
+[2026-06-05 12:52:32] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:32] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:33] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:33] [INFO] [Main] [GAZE-VEC]  x=+0.230(RIGHT)  y=+0.030(FLAT)  z=+0.973  ← blended eye+head
+[2026-06-05 12:52:33] [INFO] [Main] [HEAD-POSE] P=  -2.2° Y= +13.2° R=  -2.2°
+[2026-06-05 12:52:33] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:33] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:33] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:33] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:33] [INFO] [Main] [GAZE-VEC]  x=+0.256(RIGHT)  y=-0.112(UP  )  z=+0.960  ← blended eye+head
+[2026-06-05 12:52:33] [INFO] [Main] [HEAD-POSE] P=  +6.4° Y= +14.9° R=  +0.1°
+[2026-06-05 12:52:33] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:33] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:34] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:34] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:34] [INFO] [Main] [GAZE-VEC]  x=+0.246(RIGHT)  y=-0.165(UP  )  z=+0.955  ← blended eye+head
+[2026-06-05 12:52:34] [INFO] [Main] [HEAD-POSE] P=  +9.6° Y= +14.4° R=  +0.6°
+[2026-06-05 12:52:34] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:34] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:35] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:35] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:35] [INFO] [Main] [GAZE-VEC]  x=+0.258(RIGHT)  y=-0.152(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 12:52:35] [INFO] [Main] [HEAD-POSE] P=  +8.8° Y= +15.1° R=  +0.2°
+[2026-06-05 12:52:35] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:35] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:35] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:35] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:35] [INFO] [Main] [GAZE-VEC]  x=+0.266(RIGHT)  y=-0.188(UP  )  z=+0.945  ← blended eye+head
+[2026-06-05 12:52:35] [INFO] [Main] [HEAD-POSE] P= +10.9° Y= +15.7° R=  +0.3°
+[2026-06-05 12:52:35] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:35] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:36] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:36] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:36] [INFO] [Main] [GAZE-VEC]  x=+0.278(RIGHT)  y=-0.194(UP  )  z=+0.941  ← blended eye+head
+[2026-06-05 12:52:36] [INFO] [Main] [HEAD-POSE] P= +11.3° Y= +16.4° R=  +0.4°
+[2026-06-05 12:52:36] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:36] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:36] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:36] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:36] [INFO] [Main] [GAZE-VEC]  x=+0.248(RIGHT)  y=-0.170(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 12:52:36] [INFO] [Main] [HEAD-POSE] P=  +9.5° Y= +14.8° R=  -1.3°
+[2026-06-05 12:52:36] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:36] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:37] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:37] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:37] [INFO] [Main] [GAZE-VEC]  x=+0.217(RIGHT)  y=-0.206(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 12:52:37] [INFO] [Main] [HEAD-POSE] P= +11.1° Y= +13.5° R=  -3.3°
+[2026-06-05 12:52:37] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:37] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:37] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:37] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:37] [INFO] [Main] [GAZE-VEC]  x=+0.234(RIGHT)  y=-0.212(UP  )  z=+0.949  ← blended eye+head
+[2026-06-05 12:52:37] [INFO] [Main] [HEAD-POSE] P= +11.5° Y= +14.4° R=  -2.8°
+[2026-06-05 12:52:37] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:37] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:38] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:38] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:38] [INFO] [Main] [GAZE-VEC]  x=+0.229(RIGHT)  y=-0.194(UP  )  z=+0.954  ← blended eye+head
+[2026-06-05 12:52:38] [INFO] [Main] [HEAD-POSE] P= +10.4° Y= +14.1° R=  -3.2°
+[2026-06-05 12:52:38] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:38] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:39] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:39] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:39] [INFO] [Main] [GAZE-VEC]  x=+0.254(RIGHT)  y=-0.247(UP  )  z=+0.935  ← blended eye+head
+[2026-06-05 12:52:39] [INFO] [Main] [HEAD-POSE] P= +14.0° Y= +15.5° R=  -1.4°
+[2026-06-05 12:52:39] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:39] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:39] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:39] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:39] [INFO] [Main] [GAZE-VEC]  x=+0.235(RIGHT)  y=-0.222(UP  )  z=+0.946  ← blended eye+head
+[2026-06-05 12:52:39] [INFO] [Main] [HEAD-POSE] P= +12.2° Y= +14.5° R=  -2.6°
+[2026-06-05 12:52:39] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:39] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:40] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:40] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:40] [INFO] [Main] [GAZE-VEC]  x=+0.251(RIGHT)  y=-0.257(UP  )  z=+0.933  ← blended eye+head
+[2026-06-05 12:52:40] [INFO] [Main] [HEAD-POSE] P= +14.5° Y= +15.4° R=  -1.4°
+[2026-06-05 12:52:40] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:40] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:40] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:40] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:40] [INFO] [Main] [GAZE-VEC]  x=+0.266(RIGHT)  y=-0.247(UP  )  z=+0.932  ← blended eye+head
+[2026-06-05 12:52:40] [INFO] [Main] [HEAD-POSE] P= +14.0° Y= +16.2° R=  -1.1°
+[2026-06-05 12:52:40] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:40] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:41] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:41] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:41] [INFO] [Main] [GAZE-VEC]  x=+0.268(RIGHT)  y=-0.267(UP  )  z=+0.926  ← blended eye+head
+[2026-06-05 12:52:41] [INFO] [Main] [HEAD-POSE] P= +15.6° Y= +16.0° R=  +0.5°
+[2026-06-05 12:52:41] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:41] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:41] [INFO] [Main] [GAZE-RAW]  L[P=  +6.4° Y=  -2.6°]  R[P=  -1.2° Y= +21.5°]
+[2026-06-05 12:52:41] [INFO] [Main] [GAZE-AVG]  P=  +2.6° Y=  +9.5°
+[2026-06-05 12:52:41] [INFO] [Main] [GAZE-VEC]  x=-0.002(STR )  y=-0.086(UP  )  z=+0.996  ← blended eye+head
+[2026-06-05 12:52:41] [INFO] [Main] [HEAD-POSE] P=  +2.3° Y= +10.0° R=  -7.8°
+[2026-06-05 12:52:41] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:41] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:42] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:42] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:42] [INFO] [Main] [GAZE-VEC]  x=+0.997(RIGHT)  y=+0.004(FLAT)  z=+0.080  ← blended eye+head
+[2026-06-05 12:52:42] [INFO] [Main] [HEAD-POSE] P= +11.5° Y= +85.3° R= +11.8°
+[2026-06-05 12:52:42] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:42] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:43] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +6.2° Y= +39.6°]
+[2026-06-05 12:52:43] [INFO] [Main] [GAZE-AVG]  P=  +3.1° Y= +19.8°
+[2026-06-05 12:52:43] [INFO] [Main] [GAZE-VEC]  x=-0.039(STR )  y=+0.092(DOWN)  z=+0.995  ← blended eye+head
+[2026-06-05 12:52:43] [INFO] [Main] [HEAD-POSE] P=  -8.7° Y= +17.2° R=  -4.8°
+[2026-06-05 12:52:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:43] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  -4.6° Y= +28.9°]
+[2026-06-05 12:52:43] [INFO] [Main] [GAZE-VEC]  x=-0.127(LEFT )  y=+0.332(DOWN)  z=+0.935  ← blended eye+head
+[2026-06-05 12:52:43] [INFO] [Main] [HEAD-POSE] P= -16.1° Y= +21.0° R=  -5.2°
+[2026-06-05 12:52:43] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:43] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:44] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:44] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:44] [INFO] [Main] [GAZE-VEC]  x=+0.966(RIGHT)  y=+0.209(DOWN)  z=+0.152  ← blended eye+head
+[2026-06-05 12:52:44] [INFO] [Main] [HEAD-POSE] P= -38.1° Y= +78.8° R= -26.4°
+[2026-06-05 12:52:44] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:44] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:44] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:44] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:44] [INFO] [Main] [GAZE-VEC]  x=+0.983(RIGHT)  y=+0.164(DOWN)  z=+0.082  ← blended eye+head
+[2026-06-05 12:52:44] [INFO] [Main] [HEAD-POSE] P= -45.0° Y= +83.4° R= -35.7°
+[2026-06-05 12:52:44] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:44] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:45] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:45] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:45] [INFO] [Main] [GAZE-VEC]  x=+0.987(RIGHT)  y=+0.135(DOWN)  z=+0.090  ← blended eye+head
+[2026-06-05 12:52:45] [INFO] [Main] [HEAD-POSE] P= -42.6° Y= +83.0° R= -35.0°
+[2026-06-05 12:52:45] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:45] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:45] [INFO] [Main] [GAZE-RAW]  L[P=  +0.0° Y=  +0.0°]  R[P=  +0.0° Y=  +0.0°]
+[2026-06-05 12:52:45] [INFO] [Main] [GAZE-AVG]  P=  +0.0° Y=  +0.0°
+[2026-06-05 12:52:45] [INFO] [Main] [GAZE-VEC]  x=+0.960(RIGHT)  y=+0.120(DOWN)  z=+0.254  ← blended eye+head
+[2026-06-05 12:52:45] [INFO] [Main] [HEAD-POSE] P= -34.5° Y= +72.1° R= -28.8°
+[2026-06-05 12:52:45] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:45] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:46] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +1.0° Y=  +4.1°]
+[2026-06-05 12:52:46] [INFO] [Main] [GAZE-VEC]  x=+0.176(RIGHT)  y=+0.041(FLAT)  z=+0.984  ← blended eye+head
+[2026-06-05 12:52:46] [INFO] [Main] [HEAD-POSE] P=  -4.0° Y= +14.1° R=  -3.9°
+[2026-06-05 12:52:46] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:46] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:47] [INFO] [Main] [GAZE-RAW]  L[P=  -4.5° Y= -26.9°]  R[P=  +3.8° Y=  +5.9°]
+[2026-06-05 12:52:47] [INFO] [Main] [GAZE-AVG]  P=  -0.3° Y= -10.5°
+[2026-06-05 12:52:47] [INFO] [Main] [GAZE-VEC]  x=+0.457(RIGHT)  y=-0.034(FLAT)  z=+0.889  ← blended eye+head
+[2026-06-05 12:52:47] [INFO] [Main] [HEAD-POSE] P=  +5.0° Y= +16.4° R=  +5.8°
+[2026-06-05 12:52:47] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:47] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:47] [INFO] [Main] [GAZE-RAW]  L[  None        ]  R[P=  +6.5° Y=  +3.5°]
+[2026-06-05 12:52:47] [INFO] [Main] [GAZE-VEC]  x=+0.105(RIGHT)  y=-0.079(UP  )  z=+0.991  ← blended eye+head
+[2026-06-05 12:52:47] [INFO] [Main] [HEAD-POSE] P=  -2.0° Y=  +9.5° R=  -0.2°
+[2026-06-05 12:52:47] [INFO] [Main] [OFFSET]    pitch_offset=+0.0° yaw_offset=+0.0°
+[2026-06-05 12:52:47] [INFO] [Main] ------------------------------------------------------------
+[2026-06-05 12:52:48] [INFO] [VideoCapture] Camera released.
+[2026-06-05 12:52:48] [INFO] [Main] System shutdown

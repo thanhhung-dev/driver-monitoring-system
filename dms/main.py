@@ -50,7 +50,7 @@ def main():
 
     head_pose = None
     if model_cfg.get("head_pose", False):
-        head_pose = HeadPoseStage(model_dir="models/sixd_repnet-onnx-float")
+        head_pose = HeadPoseStage(model_path="models/resnet50.onnx")
 
     # 3. Logic & UI
     analyzer = DrowsinessAnalyzer() if model_cfg.get("analyzer", True) else None

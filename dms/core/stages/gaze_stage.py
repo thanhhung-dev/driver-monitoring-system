@@ -113,9 +113,8 @@ class GazeStage:
         z = cos_p * cos_y
         vec = np.array([x, y, z], dtype=np.float64)
 
-        # Rotate eye-local gaze vector by head pose → gaze-in-world
+        # Rotate eye-local gaze vector by head pose → gaze-in-world.
         # Prefer raw rotation matrix (avoids Euler decomposition/recomposition error).
-        # SixDRepNet R = Rz·Ry·Rx (standard ZYX, model→camera).
         # Fallback to Euler angles only if raw R unavailable.
         if head_rotation_matrix is not None:
             vec = head_rotation_matrix @ vec
