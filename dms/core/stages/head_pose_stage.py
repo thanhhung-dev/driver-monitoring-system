@@ -51,7 +51,7 @@ class HeadPoseStage:
         self._counter = 0
         self._last_head_pose = None
         self._last_R = None
-
+        
         onnx_model = onnx.load(model_path, load_external_data=True)
         model_bytes = onnx_model.SerializeToString()
         self._session = make_session(model_bytes)
@@ -64,8 +64,7 @@ class HeadPoseStage:
     def _preprocess(self, bgr_crop: np.ndarray) -> np.ndarray:
         """BGR crop → ImageNet-normalized NCHW float32.
 
-        ⚠️ Phải GIỮ aspect ratio:
-            Resize(shorter side → 224) + CenterCrop(224)
+        Resize(shorter side → 224) + CenterCrop(224)
         KHÔNG được cv2.resize thẳng về (224,224) vì crop không vuông sẽ bị
         bóp méo → mặt quay nghiêng trông "ít nghiêng hơn" → yaw bị bão hòa
         (vd: quay 60° chỉ ra ~40°).
@@ -133,11 +132,10 @@ class HeadPoseStage:
 
         head_pose_angles = (yaw_d, pitch_d, roll_d)
 
-        # Flip yaw cho app convention (yaw+ = phải):
-        # - Video (frame_flipped=False): model yaw+ = left → negate để yaw+ = phải.
-        # - Webcam (frame_flipped=True): ảnh đã mirror → model left = real right → OK.
+        # Flip yaw only for mirrored webcam frames so app convention stays:
+        # yaw+ = subject turns toward image/right side after display mirroring.
         sy_a, sp_a, sr_a = head_pose_angles
-        if not ctx.frame_flipped:
+        if ctx.frame_flipped:
             sy_a = -sy_a
         head_pose_angles = (sy_a, sp_a, sr_a)
 

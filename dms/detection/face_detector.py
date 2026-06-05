@@ -34,8 +34,6 @@ class FaceDetector:
     """
 
     DEFAULT_INPUT_SHAPE = (480, 640)  # (H, W)
-
-    # SCRFD constants
     _FEAT_STRIDE_FPN = [8, 16, 32]
     _NUM_ANCHORS = 2
     _INPUT_MEAN = 127.5
@@ -44,7 +42,6 @@ class FaceDetector:
     def __init__(
         self,
         model_path: str,
-        metadata_path: str | None = None,  # kept for backward compatibility (unused)
         conf_thres: float = 0.5,
         iou_thres: float = 0.4,
         input_shape: Tuple[int, int] | None = None,
@@ -68,9 +65,6 @@ class FaceDetector:
         self._initialize_model(model_path)
         self._anchor_cache: dict[tuple, np.ndarray] = {}
 
-    # --------------------------------------------------------------------- #
-    # Model loading
-    # --------------------------------------------------------------------- #
     def _initialize_model(self, model_path: str) -> None:
         try:
             self.session = make_session(model_path)

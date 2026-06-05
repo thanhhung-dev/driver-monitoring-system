@@ -167,7 +167,7 @@ class Visualizer:
         length: float | None = None,
         color: tuple[int, int, int] = (255, 255, 0),
         num_dots: int = 6,
-        min_radius: int = 2,
+        min_radius: int = 1,
         max_radius: int = 16,       
         glow_size: int = 2,        
         eye_depth: float = 1.0,
@@ -175,6 +175,7 @@ class Visualizer:
         head_pose: tuple[float, float, float] | None = None,
         crosshair_size: float = 2.0,
         opacity_scale: float = 1.0,
+        show_crosshair: bool = True,
     ) -> np.ndarray:
         """
         Proper 3D perspective projection with depth-based ellipse deformation.
@@ -296,28 +297,30 @@ class Visualizer:
             major_i = max(1, int(round(maj_end)))
             minor_i = max(1, int(round(min_end)))
             cv2.ellipse(overlay_end, (end_x, end_y), (major_i, minor_i), ang_end, 0, 360, color, -1, cv2.LINE_AA)
-            bar_len_3d = (crosshair_size + major_i) * Z_e / f
 
-            def _proj(p):
-                return (int(round(f * p[0] / max(p[2], 0.1) + cx)),
-                        int(round(f * p[1] / max(p[2], 0.1) + cy)))
+            if show_crosshair and crosshair_size > 0:
+                bar_len_3d = (crosshair_size + major_i) * Z_e / f
 
-            if R_yaw_only is not None:
-                vec_up = R_yaw_only @ np.array([0.0, -1.0, 0.0])
-            else:
-                vec_up = np.array([0.0, -1.0, 0.0])
-            # Vertical bar
-            p1_v = pos_end_3d - vec_up * bar_len_3d
-            p2_v = pos_end_3d + vec_up * bar_len_3d
-            cv2.line(overlay_end, _proj(p1_v), _proj(p2_v), (0, 255, 255), 2, cv2.LINE_AA)
-            # Horizontal bar (perpendicular to vertical, forms "+" crosshair)
-            vec_right = np.cross(v_unit, vec_up)
-            n_r = np.linalg.norm(vec_right)
-            if n_r > 1e-6:
-                vec_right /= n_r
-                p1_h = pos_end_3d - vec_right * bar_len_3d
-                p2_h = pos_end_3d + vec_right * bar_len_3d
-                cv2.line(overlay_end, _proj(p1_h), _proj(p2_h), (0, 255, 255), 2, cv2.LINE_AA)
+                def _proj(p):
+                    return (int(round(f * p[0] / max(p[2], 0.1) + cx)),
+                            int(round(f * p[1] / max(p[2], 0.1) + cy)))
+
+                if R_yaw_only is not None:
+                    vec_up = R_yaw_only @ np.array([0.0, -1.0, 0.0])
+                else:
+                    vec_up = np.array([0.0, -1.0, 0.0])
+                # Vertical bar
+                p1_v = pos_end_3d - vec_up * bar_len_3d
+                p2_v = pos_end_3d + vec_up * bar_len_3d
+                cv2.line(overlay_end, _proj(p1_v), _proj(p2_v), (0, 255, 255), 2, cv2.LINE_AA)
+                # Horizontal bar (perpendicular to vertical, forms "+" crosshair)
+                vec_right = np.cross(v_unit, vec_up)
+                n_r = np.linalg.norm(vec_right)
+                if n_r > 1e-6:
+                    vec_right /= n_r
+                    p1_h = pos_end_3d - vec_right * bar_len_3d
+                    p2_h = pos_end_3d + vec_right * bar_len_3d
+                    cv2.line(overlay_end, _proj(p1_h), _proj(p2_h), (0, 255, 255), 2, cv2.LINE_AA)
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
         
         return image

@@ -29,7 +29,7 @@ class DebugStage:
         cos_p = np.cos(pitch)
         sin_y = np.sin(yaw)
         cos_y = np.cos(yaw)
-        x = -cos_p * sin_y     # yaw > 0 (LEFT) → x < 0 → arrow LEFT
+        x = cos_p * sin_y      # yaw > 0 (RIGHT) → x > 0 → arrow RIGHT
         y = -sin_p              # pitch > 0 (UP) → y < 0 → arrow UP
         z = cos_p * cos_y
         return np.array([x, y, z], dtype=np.float32)

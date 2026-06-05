@@ -58,12 +58,7 @@ class GazeStage:
     # Số frame tối đa giữ cache khi mắt mất tín hiệu (blink ~1-3 frame OK,
     # head-turn kéo dài thì cache stale phải bị clear).
     MAX_FALLBACK_AGE = 5
-
-    # Gaze cache quá cũ → không compose với head pose (tránh mũi tên chĩa
-    # sau đầu). Blink 1-2 frame OK, > ngưỡng này → dùng head direction.
     STALE_AGE = 2
-
-    # Khi head yaw (Y trong PYR) gần thẳng (≈ -10..0..10°) → gaze vẽ mờ nhạt.
     DIM_YAW_RANGE = 10.0
     DIM_OPACITY_SCALE = 0.3
 
@@ -98,8 +93,8 @@ class GazeStage:
           → EyeNet: +10° (eye-local)
           → World:  R_head × (+10°) = -30° + 10° = -20° (vẫn nhìn trái) ✓
 
-        Model convention (Qualcomm EyeNet):
-          yaw > 0 = subject looks LEFT → negate x so arrow points LEFT on screen
+        App convention:
+          yaw > 0 = subject looks RIGHT → x positive → arrow RIGHT on screen
           pitch > 0 = subject looks UP → y = -sin(pitch) < 0 → arrow UP on screen
         """
         pitch = float(pitchyaw[0])
@@ -108,7 +103,7 @@ class GazeStage:
         cos_p = np.cos(pitch)
         sin_y = np.sin(yaw)
         cos_y = np.cos(yaw)
-        x = -cos_p * sin_y
+        x = cos_p * sin_y
         y = -sin_p
         z = cos_p * cos_y
         vec = np.array([x, y, z], dtype=np.float64)
@@ -129,13 +124,9 @@ class GazeStage:
 
         return vec.astype(np.float32)
 
-    # Skip eye gaze inference when head yaw exceeds this (degrees).
-    # At extreme side angles the eye crop is too foreshortened for reliable gaze.
-    # Lowered from 70° → 50°: log thực tế cho thấy EyeNet thoái hóa rõ rệt
-    # ở ~55° (2 mắt cho gaze mâu thuẫn 30°+).
-    # Vượt ngưỡng này → fallback "gaze = head direction" (synthetic gaze
-    # = (0,0) trong eye-frame, rotation theo head pose → arrow theo đầu).
-    MAX_HEAD_YAW_FOR_GAZE = 50.0
+    MAX_HEAD_YAW_FOR_GAZE = 55
+    PROFILE_GAZE_LENGTH_SCALE = 0.65
+    PROFILE_CROSSHAIR_SIZE = 0.3
 
     @staticmethod
     def _eye_centers_from_landmarks(
@@ -176,6 +167,15 @@ class GazeStage:
             gaze_l, gaze_r, eye_center_l, eye_center_r = self._eye_gaze.detect(
                 ctx.frame, ctx.landmarks
             )
+
+        # EyeNet yaw convention is opposite of the app/head-pose convention.
+        # Convert once here so all downstream code uses yaw+ = screen/right.
+        if gaze_l is not None:
+            gaze_l = gaze_l.copy()
+            gaze_l[1] = -gaze_l[1]
+        if gaze_r is not None:
+            gaze_r = gaze_r.copy()
+            gaze_r[1] = -gaze_r[1]
 
         # Apply calibration offsets
         if gaze_l is not None:
@@ -220,16 +220,6 @@ class GazeStage:
             self._prev_gaze_length = gaze_length
         else:
             gaze_length = self._prev_gaze_length
-
-        # ── Compose gaze: gaze_world = R_head × gaze_eye ──────────────────
-        # EyeNet trả gaze_eye = hướng mắt tương đối so với đầu (eye-in-head).
-        # Phải rotate bởi R_head mới ra gaze thật trong world space.
-        # Công thức: gaze_world = R_head × gaze_eye_vector
-        #   = _pitchyaw_to_vec(gaze_eye, head_pose)
-        #
-        # ⚠️ STALE CHECK: gaze cache quá cũ (head đang quay) → không compose.
-        # Gaze cũ + head rotation mới = mũi tên chĩa sau đầu.
-        # Dùng head direction thay thế cho đến khi EyeNet	fresh trở lại.
         vec_world = None
         is_gaze_fresh = (
             (gaze_l is not None or gaze_r is not None)
@@ -239,7 +229,7 @@ class GazeStage:
             )
         )
         has_eye_gaze = display_gaze_l is not None or display_gaze_r is not None
-        use_eye_gaze = has_eye_gaze and is_gaze_fresh
+        use_eye_gaze = has_eye_gaze and is_gaze_fresh and not use_head_fallback
 
         if use_eye_gaze:
             # ── Eye gaze available: compose eye + head ────────────────────
@@ -281,11 +271,22 @@ class GazeStage:
                 np.zeros(2, dtype=np.float32), head_pose=ctx.head_pose,
                 head_rotation_matrix=ctx.head_rotation_matrix,
             )
-            center = display_center_l if display_center_l is not None else display_center_r
-            if center is not None:
+            profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
+            if display_center_l is not None:
                 self._visualizer.draw_gaze_3d(
-                    ctx.frame, center, head_vec,
-                    length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                    ctx.frame, display_center_l, head_vec,
+                    length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                    num_dots=7, max_radius=12,
+                    crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
+                    show_crosshair=True,
+                )
+            if display_center_r is not None:
+                self._visualizer.draw_gaze_3d(
+                    ctx.frame, display_center_r, head_vec,
+                    length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                    num_dots=7, max_radius=12,
+                    crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
+                    show_crosshair=True,
                 )
             vec_world = head_vec
 

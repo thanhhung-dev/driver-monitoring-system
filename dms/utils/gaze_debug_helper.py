@@ -25,9 +25,9 @@ PITCH_DOWN = 0.25       # pitch > → nhìn xuống
 def classify_gaze(pitch: float, yaw: float) -> str:
     """Classify [pitch, yaw] radians thành direction label.
 
-    Model convention (Qualcomm EyeNet):
-      yaw > 0 = subject looks LEFT → arrow LEFT on screen
-      yaw < 0 = subject looks RIGHT → arrow RIGHT on screen
+    App convention:
+      yaw > 0 = subject looks RIGHT → arrow RIGHT on screen
+      yaw < 0 = subject looks LEFT → arrow LEFT on screen
       pitch > 0 = subject looks UP → arrow UP on screen
       pitch < 0 = subject looks DOWN → arrow DOWN on screen
     """
@@ -39,15 +39,15 @@ def classify_gaze(pitch: float, yaw: float) -> str:
     else:
         v = ""
 
-    # Horizontal (yaw > 0 = LEFT)
+    # Horizontal (yaw > 0 = RIGHT)
     if yaw > YAW_SIDE:
-        h = "LEFT"
-    elif yaw < -YAW_SIDE:
         h = "RIGHT"
+    elif yaw < -YAW_SIDE:
+        h = "LEFT"
     elif abs(yaw) < YAW_CENTER:
         h = ""
     else:
-        h = "SLIGHT_" + ("LEFT" if yaw > 0 else "RIGHT")
+        h = "SLIGHT_" + ("RIGHT" if yaw > 0 else "LEFT")
 
     if v and h:
         return f"{v}-{h}"
@@ -61,9 +61,9 @@ def classify_gaze(pitch: float, yaw: float) -> str:
 def direction_arrow(pitch: float, yaw: float) -> str:
     """ASCII arrow mô tả hướng nhìn TRÊN MÀN HÌNH.
 
-    Model convention (Qualcomm EyeNet):
-      yaw > 0 = LEFT → arrow ←
-      yaw < 0 = RIGHT → arrow →
+    App convention:
+      yaw > 0 = RIGHT → arrow →
+      yaw < 0 = LEFT → arrow ←
       pitch > 0 = UP → arrow ↑
       pitch < 0 = DOWN → arrow ↓
     """
@@ -75,15 +75,15 @@ def direction_arrow(pitch: float, yaw: float) -> str:
     else:
         v = "·"
 
-    # Horizontal: yaw > 0 → LEFT, yaw < 0 → RIGHT
+    # Horizontal: yaw > 0 → RIGHT, yaw < 0 → LEFT
     if yaw > YAW_SIDE:
-        h = "←"
-    elif yaw < -YAW_SIDE:
         h = "→"
+    elif yaw < -YAW_SIDE:
+        h = "←"
     elif yaw > YAW_CENTER:
-        h = "⇠"
-    elif yaw < -YAW_CENTER:
         h = "⇢"
+    elif yaw < -YAW_CENTER:
+        h = "⇠"
     else:
         h = "·"
 
