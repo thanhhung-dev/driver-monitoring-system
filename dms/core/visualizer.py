@@ -212,12 +212,13 @@ class Visualizer:
             # Face normal in camera coords (pointing out of face)
             normal = R_yaw_only @ np.array([0.0, 0.0, -1.0])
 
-        # Opacity based on gaze strength
+        # Opacity gradient: mờ khi nhìn thẳng, rõ khi nghiêng.
+        # gaze_strength ≈ sin(gaze_angle), 0 = thẳng, 1 = nghiêng 90°.
         gaze_strength = np.hypot(vx, vy)
-        min_opacity, max_opacity = 0.05, 0.8
-        alpha_global = min_opacity + (max_opacity - min_opacity) * gaze_strength * 3
-        alpha_global = float(np.clip(alpha_global, min_opacity, max_opacity))
-        # Làm mờ nhạt gaze theo opacity_scale (vd: khi head yaw ~ thẳng).
+        min_opacity, max_opacity = 0.05, 0.9
+        t = float(np.clip(gaze_strength ** 0.6, 0.0, 1.0))
+        alpha_global = min_opacity + (max_opacity - min_opacity) * t
+        # opacity_scale từ head-yaw gradient (mờ khi đầu thẳng, rõ khi nghiêng).
         alpha_global *= float(np.clip(opacity_scale, 0.0, 1.0))
 
         # ──────── TRAIL WITH DEPTH-BASED DEFORMATION ────────

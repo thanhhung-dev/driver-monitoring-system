@@ -59,18 +59,25 @@ class GazeStage:
     # head-turn kéo dài thì cache stale phải bị clear).
     MAX_FALLBACK_AGE = 5
     STALE_AGE = 2
-    DIM_YAW_RANGE = 10.0
-    DIM_OPACITY_SCALE = 0.3
+    # Gradient opacity: gaze mờ khi thẳng, rõ khi nghiêng.
+    OPACITY_MIN = 0.05       # opacity tối thiểu khi nhìn thẳng
+    OPACITY_MAX = 1.0        # opacity tối đa khi nhìn nghiêng
+    OPACITY_FULL_DEG = 25.0  # góc (độ) mà opacity đạt tối đa
 
     def _gaze_opacity_scale(
         self, head_pose: tuple[float, float, float] | None
     ) -> float:
-        """Mờ nhạt gaze khi head yaw nằm trong khoảng ~thẳng (|yaw| <= range)."""
+        """Opacity gradient: mờ khi nhìn thẳng, rõ khi nghiêng.
+
+        Tỉ lệ tuyến tính theo |head_yaw|:
+          |yaw| = 0°  → OPACITY_MIN  (gần như ẩn)
+          |yaw| >= OPACITY_FULL_DEG → OPACITY_MAX  (rõ hoàn toàn)
+        """
         if head_pose is None:
-            return 1.0
-        if abs(float(head_pose[0])) <= self.DIM_YAW_RANGE:
-            return self.DIM_OPACITY_SCALE
-        return 1.0
+            return self.OPACITY_MAX
+        yaw_abs = abs(float(head_pose[0]))
+        t = np.clip(yaw_abs / self.OPACITY_FULL_DEG, 0.0, 1.0)
+        return float(self.OPACITY_MIN + (self.OPACITY_MAX - self.OPACITY_MIN) * t)
 
     @property
     def name(self) -> str:
@@ -272,6 +279,7 @@ class GazeStage:
                 head_rotation_matrix=ctx.head_rotation_matrix,
             )
             profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
+            opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
             if display_center_l is not None:
                 self._visualizer.draw_gaze_3d(
                     ctx.frame, display_center_l, head_vec,
@@ -279,6 +287,7 @@ class GazeStage:
                     num_dots=7, max_radius=12,
                     crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
                     show_crosshair=True,
+                    opacity_scale=opacity_scale,
                 )
             if display_center_r is not None:
                 self._visualizer.draw_gaze_3d(
@@ -287,6 +296,7 @@ class GazeStage:
                     num_dots=7, max_radius=12,
                     crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
                     show_crosshair=True,
+                    opacity_scale=opacity_scale,
                 )
             vec_world = head_vec
 
