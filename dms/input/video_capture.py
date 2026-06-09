@@ -65,8 +65,6 @@ class VideoCapture:
         self._frame_interval: float = 0.0   # seconds per frame
         self._next_frame_t: float = 0.0     # mốc thời gian dự kiến cho frame kế
 
-
-
     def _load_config(self, config_path: str) -> dict:
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Config file not found: {config_path}")

@@ -362,7 +362,9 @@ def draw_head_direction_arrow(
     R = Rz @ Ry @ Rx
     forward = R @ np.array([0.0, 0.0, 1.0])
     dx = length * forward[0]
-    dy = length * forward[1]
+    # Trục y toán học hướng lên, ảnh hướng xuống → đảo dấu cho khớp
+    # convention của draw_axis (tdy - rotated[1]); nếu không sẽ lật up/down.
+    dy = -length * forward[1]
     ex, ey = int(round(nx + dx)), int(round(ny + dy))
     line_len = float(np.hypot(dx, dy))
     TIP_PX = 5.0

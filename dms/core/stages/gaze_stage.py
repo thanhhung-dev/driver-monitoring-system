@@ -42,9 +42,6 @@ class GazeStage:
         self._last_gaze_r = None
         self._last_center_l = None
         self._last_center_r = None
-        # Age (frames) since each eye last produced a fresh gaze. Sau khi
-        # vượt MAX_FALLBACK_AGE thì coi như eye cache đã stale → không vẽ
-        # arrow nữa (tránh "ghost arrow" khi head quay nghiêng kéo dài).
         self._last_age_l = 999
         self._last_age_r = 999
         self._prev_gaze_length = 200.0
@@ -52,17 +49,12 @@ class GazeStage:
         self.pitch_offset = pitch_offset
         self.yaw_offset = yaw_offset
         self._debug_logger = debug_logger
-        # Blink rate tracker — đếm số blink/sec qua sliding window 30s.
         self._blink_tracker = BlinkRateTracker(window_sec=30.0, closed_threshold=30.0)
-
-    # Số frame tối đa giữ cache khi mắt mất tín hiệu (blink ~1-3 frame OK,
-    # head-turn kéo dài thì cache stale phải bị clear).
     MAX_FALLBACK_AGE = 5
     STALE_AGE = 2
-    # Gradient opacity: gaze mờ khi thẳng, rõ khi nghiêng.
-    OPACITY_MIN = 0.2       # opacity tối thiểu khi nhìn thẳng
-    OPACITY_MAX = 1.0        # opacity tối đa khi nhìn nghiêng
-    OPACITY_FULL_DEG = 25.0  # góc (độ) mà opacity đạt tối đa
+    OPACITY_MIN = 0.3       
+    OPACITY_MAX = 1.0        
+    OPACITY_FULL_DEG = 25.0  
 
     def _gaze_opacity_scale(
         self, head_pose: tuple[float, float, float] | None
@@ -175,26 +167,18 @@ class GazeStage:
                 ctx.frame, ctx.landmarks
             )
 
-        # EyeNet yaw convention is opposite of the app/head-pose convention.
-        # Convert once here so all downstream code uses yaw+ = screen/right.
         if gaze_l is not None:
             gaze_l = gaze_l.copy()
             gaze_l[1] = -gaze_l[1]
         if gaze_r is not None:
             gaze_r = gaze_r.copy()
             gaze_r[1] = -gaze_r[1]
-
-        # Apply calibration offsets
         if gaze_l is not None:
             gaze_l = gaze_l + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
         if gaze_r is not None:
             gaze_r = gaze_r + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
-
-        # Debug logging
         if self._debug_logger is not None:
             self._debug_logger.log_avg(gaze_l, gaze_r, ctx.frame_number)
-
-        # ── Update last-known + age cache ─────────────────────────────────
         if gaze_l is not None:
             self._last_gaze_l = gaze_l
             self._last_age_l = 0
@@ -216,8 +200,6 @@ class GazeStage:
         display_gaze_r = gaze_r if gaze_r is not None else fallback_r
         display_center_l = eye_center_l if eye_center_l is not None else self._last_center_l
         display_center_r = eye_center_r if eye_center_r is not None else self._last_center_r
-
-        # Dynamic gaze length based on inter-eye distance
         if display_center_l is not None and display_center_r is not None:
             eye_dist = np.linalg.norm(display_center_l - display_center_r)
             raw_gaze_length = 60 * (100.0 / max(eye_dist, 1.0))
@@ -239,7 +221,6 @@ class GazeStage:
         use_eye_gaze = has_eye_gaze and is_gaze_fresh and not use_head_fallback
 
         if use_eye_gaze:
-            # ── Eye gaze available: compose eye + head ────────────────────
             if display_gaze_l is not None and display_gaze_r is not None:
                 gaze_avg = (display_gaze_l + display_gaze_r) / 2.0
             elif display_gaze_l is not None:
@@ -257,50 +238,23 @@ class GazeStage:
             gaze_length *= side_factor
 
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            if not ctx.extreme_pose_mode:
-                if display_center_l is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_l, vec,
-                        length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        opacity_scale=opacity_scale,
-                    )
-                if display_center_r is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_r, vec,
-                        length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        opacity_scale=opacity_scale,
-                    )
+            gaze_render = {
+                "vec": vec,
+                "length": gaze_length,
+                "fallback": False
+            }
             vec_world = vec
 
         elif ctx.head_pose is not None and not use_eye_gaze:
-            # ── Eye detection	fail: fallback to head direction ─────────
-            # gaze_eye = (0,0) → R_head × [0,0,1] = head direction vector.
             head_vec = self._pitchyaw_to_vec(
                 np.zeros(2, dtype=np.float32), head_pose=ctx.head_pose,
                 head_rotation_matrix=ctx.head_rotation_matrix,
             )
             profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            if not ctx.extreme_pose_mode:
-                if display_center_l is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_l, head_vec,
-                        length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        num_dots=7, max_radius=12,
-                        crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
-                        show_crosshair=True,
-                        opacity_scale=opacity_scale,
-                    )
-                if display_center_r is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_r, head_vec,
-                        length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        num_dots=7, max_radius=12,
-                        crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
-                        show_crosshair=True,
-                        opacity_scale=opacity_scale,
-                    )
+            gaze_render = {"vec": head_vec, "length": profile_gaze_length, "fallback": True}
             vec_world = head_vec
+
 
         # ── Debug overlay ─────────────────────────────────────────────────
         if self._debug_logger is not None and self._debug_logger._enabled:
@@ -312,15 +266,20 @@ class GazeStage:
                 display_center_l, display_center_r,
                 use_head_fallback=not use_eye_gaze,
             )
-
-        # ── On-frame indicator khi dùng head direction ────────────────────
         if not use_eye_gaze:
             h, w = ctx.frame.shape[:2]
             cv2.putText(
                 ctx.frame, "HEAD-GAZE", (w - 170, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2, cv2.LINE_AA,
             )
-
+        if 'gaze_render' not in locals():
+            gaze_render = None
+        else:
+            gaze_render["center_l"] = display_center_l
+            gaze_render["center_r"] = display_center_r
+            gaze_render["head_pose"] = ctx.head_pose
+            gaze_render["opacity_scale"] = opacity_scale
+            
         return dataclasses.replace(
             ctx,
             gaze_l=display_gaze_l,
@@ -328,6 +287,7 @@ class GazeStage:
             gaze_vec_world=vec_world,
             eye_center_l=display_center_l,
             eye_center_r=display_center_r,
+            gaze_render_data=gaze_render,
         )
 
     def _draw_debug_overlay(

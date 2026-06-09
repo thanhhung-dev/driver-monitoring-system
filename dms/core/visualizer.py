@@ -201,16 +201,15 @@ class Visualizer:
         Y_e = (y0 - cy) * Z_e / f
         L = float(length) * Z_e / (float(length) + f) if length else 0.0
         normal = np.array([0.0, 0.0, -1.0])
-        R_yaw_only = None
+        R_head = None
         if head_pose is not None:
-            yaw_d = head_pose[0]
-            R_yaw_only = get_rotation_matrix(
-                0,                  # No pitch
-                np.deg2rad(yaw_d),  # Only yaw
-                0                   # No roll
+            yaw_d, pitch_d, roll_d = head_pose
+            R_head = get_rotation_matrix(
+                np.deg2rad(pitch_d),
+                np.deg2rad(yaw_d),
+                np.deg2rad(roll_d),
             )
-            # Face normal in camera coords (pointing out of face)
-            normal = R_yaw_only @ np.array([0.0, 0.0, -1.0])
+            normal = R_head @ np.array([0.0, 0.0, -1.0])
 
         # Opacity gradient: mờ khi nhìn thẳng, rõ khi nghiêng.
         # gaze_strength ≈ sin(gaze_angle), 0 = thẳng, 1 = nghiêng 90°.
@@ -299,8 +298,8 @@ class Visualizer:
                     return (int(round(f * p[0] / max(p[2], 0.1) + cx)),
                             int(round(f * p[1] / max(p[2], 0.1) + cy)))
 
-                if R_yaw_only is not None:
-                    vec_up = R_yaw_only @ np.array([0.0, -1.0, 0.0])
+                if R_head is not None:
+                    vec_up = R_head @ np.array([0.0, -1.0, 0.0])
                 else:
                     vec_up = np.array([0.0, -1.0, 0.0])
                 # Vertical bar

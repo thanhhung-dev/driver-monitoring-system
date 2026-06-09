@@ -34,3 +34,4 @@ class FrameContext:
     frame_flipped: bool = False
     face_lost_extreme_pose: bool = False
     extreme_pose_mode: bool = False
+    gaze_render_data: dict | None = None
