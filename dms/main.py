@@ -9,6 +9,7 @@ from detection.face_attrib_detector import FaceAttribDetector
 from analysis.drowsiness_analyzer import DrowsinessAnalyzer
 from core.pipeline import DMSPipeline
 from core.event_bus import EventBus
+from core.head_pose_feedback import HeadPoseFeedback
 from core.visualizer import Visualizer
 from detection.eye_gaze import EyeGazeEstimation
 from core.stages import (
@@ -48,9 +49,16 @@ def main():
     attrib_detector = FaceAttribDetector() if model_cfg.get("attrib", True) else None
     eye_gaze = EyeGazeEstimation() if model_cfg.get("eye_gaze", False) else None
 
+    # Shared cross-frame channel: HeadPoseStage ghi head pose, DetectStage đọc
+    # ở frame kế tiếp để bật extreme_pose_mode khi yaw quá lớn.
+    head_pose_feedback = HeadPoseFeedback()
+
     head_pose = None
     if model_cfg.get("head_pose", False):
-        head_pose = HeadPoseStage(model_path="models/resnet50.onnx")
+        head_pose = HeadPoseStage(
+            model_path="models/resnet50.onnx",
+            feedback=head_pose_feedback,
+        )
 
     # 3. Logic & UI
     analyzer = DrowsinessAnalyzer() if model_cfg.get("analyzer", True) else None
@@ -69,7 +77,7 @@ def main():
     # 4. Build stage chain
     stages = [s for s in [
         CaptureStage(capture),
-        DetectStage(face_detector, interval=5),
+        DetectStage(face_detector, interval=5, feedback=head_pose_feedback),
         LandmarkStage(facemap),
         head_pose,
         GazeStage(eye_gaze, visualizer, debug_logger=gaze_debug),

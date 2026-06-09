@@ -60,7 +60,7 @@ class GazeStage:
     MAX_FALLBACK_AGE = 5
     STALE_AGE = 2
     # Gradient opacity: gaze mờ khi thẳng, rõ khi nghiêng.
-    OPACITY_MIN = 0.05       # opacity tối thiểu khi nhìn thẳng
+    OPACITY_MIN = 0.2       # opacity tối thiểu khi nhìn thẳng
     OPACITY_MAX = 1.0        # opacity tối đa khi nhìn nghiêng
     OPACITY_FULL_DEG = 25.0  # góc (độ) mà opacity đạt tối đa
 
@@ -257,18 +257,19 @@ class GazeStage:
             gaze_length *= side_factor
 
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            if display_center_l is not None:
-                self._visualizer.draw_gaze_3d(
-                    ctx.frame, display_center_l, vec,
-                    length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                    opacity_scale=opacity_scale,
-                )
-            if display_center_r is not None:
-                self._visualizer.draw_gaze_3d(
-                    ctx.frame, display_center_r, vec,
-                    length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                    opacity_scale=opacity_scale,
-                )
+            if not ctx.extreme_pose_mode:
+                if display_center_l is not None:
+                    self._visualizer.draw_gaze_3d(
+                        ctx.frame, display_center_l, vec,
+                        length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                        opacity_scale=opacity_scale,
+                    )
+                if display_center_r is not None:
+                    self._visualizer.draw_gaze_3d(
+                        ctx.frame, display_center_r, vec,
+                        length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                        opacity_scale=opacity_scale,
+                    )
             vec_world = vec
 
         elif ctx.head_pose is not None and not use_eye_gaze:
@@ -280,24 +281,25 @@ class GazeStage:
             )
             profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            if display_center_l is not None:
-                self._visualizer.draw_gaze_3d(
-                    ctx.frame, display_center_l, head_vec,
-                    length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                    num_dots=7, max_radius=12,
-                    crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
-                    show_crosshair=True,
-                    opacity_scale=opacity_scale,
-                )
-            if display_center_r is not None:
-                self._visualizer.draw_gaze_3d(
-                    ctx.frame, display_center_r, head_vec,
-                    length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                    num_dots=7, max_radius=12,
-                    crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
-                    show_crosshair=True,
-                    opacity_scale=opacity_scale,
-                )
+            if not ctx.extreme_pose_mode:
+                if display_center_l is not None:
+                    self._visualizer.draw_gaze_3d(
+                        ctx.frame, display_center_l, head_vec,
+                        length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                        num_dots=7, max_radius=12,
+                        crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
+                        show_crosshair=True,
+                        opacity_scale=opacity_scale,
+                    )
+                if display_center_r is not None:
+                    self._visualizer.draw_gaze_3d(
+                        ctx.frame, display_center_r, head_vec,
+                        length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
+                        num_dots=7, max_radius=12,
+                        crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
+                        show_crosshair=True,
+                        opacity_scale=opacity_scale,
+                    )
             vec_world = head_vec
 
         # ── Debug overlay ─────────────────────────────────────────────────
@@ -422,7 +424,8 @@ class GazeStage:
                 total_p, total_y = gaze_p_deg, gaze_y_deg
 
             zone = classify_gaze_zone(total_p, total_y)
-            if use_head_fallback:
+            if use_head_fallback and head_pose is not None:
+                # head_pose chắc chắn tồn tại → pitch_h/yaw_h đã được gán ở trên.
                 lines.append(("GAZE DIR [HEAD]", color_label))
                 lines.append((f"  P={pitch_h:+6.1f}  Y={yaw_h:+6.1f}", (0, 165, 255)))
             else:

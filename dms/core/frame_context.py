@@ -33,3 +33,4 @@ class FrameContext:
     driver_state: Any | None = None
     frame_flipped: bool = False
     face_lost_extreme_pose: bool = False
+    extreme_pose_mode: bool = False

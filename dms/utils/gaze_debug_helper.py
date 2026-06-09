@@ -11,7 +11,9 @@ Output: in ra terminal hướng nhìn + pitch/yaw raw values.
 import logging
 import numpy as np
 
-logger = logging.getLogger("gaze_debug")
+# logger = logging.getLogger("gaze_debug")
+from utils.logger import setup_logger
+logger = setup_logger("gaze_debug")
 
 
 # ── Thresholds (radians) ─────────────────────────────────────────────
@@ -121,14 +123,6 @@ class GazeDebugLogger:
         direction = classify_gaze(pitch, yaw)
         arrow = direction_arrow(pitch, yaw)
         fn = frame_number if frame_number is not None else self._frame_count
-
-        logger.info(
-            "[Frame %d] %s eye | pitch=%.3f (%.1f°) yaw=%.3f (%.1f°) → %s %s",
-            fn, eye,
-            pitch, np.degrees(pitch),
-            yaw, np.degrees(yaw),
-            arrow, direction,
-        )
         return direction
 
     def log_avg(

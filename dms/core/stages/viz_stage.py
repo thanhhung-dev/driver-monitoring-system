@@ -24,11 +24,13 @@ class VizStage:
         if ctx.bbox is None:
             self._visualizer.draw_no_face_warning(ctx.frame)
         else:
-            if ctx.landmarks is not None:
+            if ctx.landmarks is not None and not ctx.extreme_pose_mode:
                 self._visualizer.draw_full_mesh(ctx.frame, ctx.landmarks)
+            # Ẩn head pose arrow khi extreme — chỉ hiển thị bbox.
+            hp = None if ctx.extreme_pose_mode else ctx.head_pose
             self._visualizer.draw_face_info(
                 ctx.frame, ctx.bbox, ctx.landmarks,
-                ctx.driver_state, head_pose=ctx.head_pose,
+                ctx.driver_state, head_pose=hp,
             )
             if ctx.face_lost_extreme_pose:
                 self._visualizer.draw_extreme_pose_warning(ctx.frame)

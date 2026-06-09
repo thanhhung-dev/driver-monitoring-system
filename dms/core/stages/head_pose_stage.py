@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 
 from core.frame_context import FrameContext
+from core.head_pose_feedback import HeadPoseFeedback
 from utils.helpers import expand_bbox
 from utils.general import get_rotation_matrix
 from utils.onnx_providers import make_session
@@ -13,21 +14,17 @@ import onnx
 
 def _rotation_matrix_to_euler(R: np.ndarray) -> np.ndarray:
     """Convert 3×3 rotation matrix to Euler angles (pitch, yaw, roll) in radians.
-
     ZYX convention: R = Rz · Ry · Rx.
     Numpy equivalent of qai_hub_models.utils.image_processing_3d.rotation_matrix_to_euler.
     """
     sy = np.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2).clip(min=1e-12)
     singular = sy < 1e-6
-
     x = np.arctan2(R[2, 1], R[2, 2])
     y = np.arctan2(-R[2, 0], sy)
     z = np.arctan2(R[1, 0], R[0, 0])
-
     xs = np.arctan2(-R[1, 2], R[1, 1])
     ys = np.arctan2(-R[2, 0], sy)
     zs = 0.0
-
     return np.array([
         x * (1 - singular) + xs * singular,
         y * (1 - singular) + ys * singular,
@@ -46,11 +43,33 @@ class HeadPoseStage:
     _MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
     _STD  = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
-    def __init__(self, model_path: str, interval: int = 2) -> None:
+    # Bước nhảy yaw tối đa (độ) giữa 2 lần đo. Khi mặt gần profile (>~77°),
+    # model đảo dấu yaw (vd +85° → −65°) = nhảy ~150°, bất khả thi về vật lý
+    # → từ chối, giữ giá trị cũ để KHÔNG hiển thị giá trị đảo dấu.
+    _MAX_YAW_JUMP = 70.0
+
+    # Chỉ coi là "đảo gương gần profile" khi yaw frame trước đã đủ lớn. Tránh
+    # nhầm các bước nhảy lớn ngẫu nhiên lúc mặt còn gần chính diện.
+    _FLIP_NEAR_PROFILE_DEG = 55.0
+
+    # Giá trị yaw bão hòa khi phát hiện lật gương. Lớn hơn ENTER_EXTREME_YAW
+    # (80°) của DetectStage → kích hoạt extreme_pose_mode ở frame kế tiếp thay
+    # vì kẹt dưới ngưỡng. Giữ <90° để không bị clamp loại bỏ.
+    _YAW_SATURATION_DEG = 88.0
+
+    def __init__(
+        self,
+        model_path: str,
+        interval: int = 2,
+        feedback: HeadPoseFeedback | None = None,
+    ) -> None:
         self._interval = interval
         self._counter = 0
         self._last_head_pose = None
         self._last_R = None
+        # Cross-frame channel so DetectStage (chạy trước) đọc được head pose
+        # của frame trước → kích hoạt extreme_pose_mode.
+        self._feedback = feedback
         
         onnx_model = onnx.load(model_path, load_external_data=True)
         model_bytes = onnx_model.SerializeToString()
@@ -87,7 +106,7 @@ class HeadPoseStage:
         return normalized.transpose(2, 0, 1)[np.newaxis, :, :, :]  # (1,3,224,224)
 
     def process(self, ctx: FrameContext) -> FrameContext:
-        if ctx.bbox is None:
+        if ctx.bbox is None or ctx.face_lost_extreme_pose:
             return ctx
 
         self._counter += 1
@@ -139,7 +158,32 @@ class HeadPoseStage:
             sy_a = -sy_a
         head_pose_angles = (sy_a, sp_a, sr_a)
 
+        # Xử lý yaw đảo dấu / nhảy vô lý ở gần profile.
+        if self._last_head_pose is not None:
+            last_yaw = self._last_head_pose[0]
+            big_jump = abs(sy_a - last_yaw) > self._MAX_YAW_JUMP
+            # "Lật gương": dấu ngược + frame trước yaw đã lớn + nhảy vô lý.
+            # Đây là lỗi đặc trưng của model khi mặt gần profile (>~77°): nó
+            # đoán ra rotation matrix của tư thế đối xứng → yaw đổi dấu.
+            is_mirror_flip = (
+                big_jump
+                and sy_a * last_yaw < 0
+                and abs(last_yaw) >= self._FLIP_NEAR_PROFILE_DEG
+            )
+            if is_mirror_flip:
+                sy_a = float(np.sign(last_yaw) * self._YAW_SATURATION_DEG)
+                sp_a, sr_a = self._last_head_pose[1], self._last_head_pose[2]
+                head_pose_angles = (sy_a, sp_a, sr_a)
+            elif big_jump and not ctx.extreme_pose_mode:
+                return dataclasses.replace(
+                    ctx,
+                    head_pose=self._last_head_pose,
+                    head_rotation_matrix=self._last_R,
+                )
+
         self._last_head_pose = head_pose_angles
+        if self._feedback is not None:
+            self._feedback.last_head_pose = head_pose_angles
 
         # Reconstruct R from angles — consistent with displayed head pose.
         sy_d, sp_d, sr_d = head_pose_angles
