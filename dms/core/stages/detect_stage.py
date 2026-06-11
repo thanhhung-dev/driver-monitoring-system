@@ -86,19 +86,22 @@ class DetectStage:
         if prev is None:
             return
         raw_yaw = abs(float(prev[0]))
-        # EMA smoothing
-        if self._yaw_ema is None:
-            self._yaw_ema = raw_yaw
-        else:
-            self._yaw_ema = self._ema_alpha * raw_yaw + (1 - self._ema_alpha) * self._yaw_ema
-        yaw = self._yaw_ema
         if self._extreme_mode:
-            if yaw < self._exit_yaw:
+            # Đang extreme → EMA smooth để THOÁT mượt (chống noise ±5-10°),
+            # không nhấp nháy ở biên.
+            if self._yaw_ema is None:
+                self._yaw_ema = raw_yaw
+            else:
+                self._yaw_ema = self._ema_alpha * raw_yaw + (1 - self._ema_alpha) * self._yaw_ema
+            if self._yaw_ema < self._exit_yaw:
                 self._extreme_mode = False
-                self._yaw_ema = None  # reset khi về normal
+                self._yaw_ema = None
         else:
-            if yaw > self._enter_yaw:
+            # Chưa extreme → VÀO NGAY trên yaw thô (head pose / keypoint đã ép
+            # bão hòa 88° khi tới profile) để không bị EMA làm trễ vào extreme.
+            if raw_yaw > self._enter_yaw:
                 self._extreme_mode = True
+                self._yaw_ema = raw_yaw
 
     def process(self, ctx: FrameContext) -> FrameContext:
         self._update_extreme_mode()

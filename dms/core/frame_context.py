@@ -35,3 +35,9 @@ class FrameContext:
     face_lost_extreme_pose: bool = False
     extreme_pose_mode: bool = False
     gaze_render_data: dict | None = None
+
+    # Analysis layer results
+    drowsiness_score: float | None = None
+    distraction_score: float | None = None
+    risk_score: float | None = None
+    risk_severity: str | None = None

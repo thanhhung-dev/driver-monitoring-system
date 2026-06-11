@@ -15,7 +15,9 @@ class LandmarkStage:
         return "landmark"
 
     def process(self, ctx: FrameContext) -> FrameContext:
-        if self._facemap is None or ctx.bbox is None:
+        # Extreme pose (|yaw|>80°): bỏ qua landmark → kéo theo gaze/attrib/
+        # drowsiness cũng skip (chúng cần landmarks). Chỉ giữ SCRFD + head pose.
+        if self._facemap is None or ctx.bbox is None or ctx.extreme_pose_mode:
             return ctx
 
         facemap_out = self._facemap.detect(ctx.frame, ctx.bbox, ctx.face_kpss)

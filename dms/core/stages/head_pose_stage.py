@@ -57,6 +57,18 @@ class HeadPoseStage:
     # vì kẹt dưới ngưỡng. Giữ <90° để không bị clamp loại bỏ.
     _YAW_SATURATION_DEG = 88.0
 
+    # ── Tín hiệu DẤU yaw từ SCRFD keypoints (độc lập model head pose) ──────
+    # Model head pose nhập nhằng ở profile: vừa đảo DẤU vừa kẹt độ lớn ~70°.
+    # SCRFD cho 5 điểm [mắt-trái-ảnh, mắt-phải-ảnh, mũi, ...] → vị trí mũi so
+    # với 2 mắt cho biết hướng quay đáng tin. r = 2*nose_pos - 1 ∈ [-1,1]:
+    #   r>0 mũi lệch sang phải-ảnh → yaw>0 (theo app convention sau khi flip)
+    _KP_SIGN_R = 0.15            # |r| dưới mức này coi là gần chính diện → bỏ qua
+    _KP_PROFILE_R = 0.65         # |r| trên mức này = profile rõ → ép yaw bão hòa
+    _KP_PROFILE_R_WITH_SPAN = 0.45  # |r| này + eye-span hẹp cũng coi là profile
+    _KP_PROFILE_SPAN_NORM = 0.18    # eye_span/bbox_h dưới mức này = mặt rất nghiêng
+    _KP_MIN_EYE_SPAN_PX = 8.0       # eye-span quá nhỏ → keypoint không tin được
+    _KP_PROFILE_MODEL_ABS = 60.0    # model báo |yaw| lớn mà ngược dấu keypoint = artifact
+
     def __init__(
         self,
         model_path: str,
@@ -105,8 +117,60 @@ class HeadPoseStage:
         normalized = (cropped.astype(np.float32) / 255.0 - self._MEAN) / self._STD
         return normalized.transpose(2, 0, 1)[np.newaxis, :, :, :]  # (1,3,224,224)
 
+    def _keypoint_yaw_cue(self, ctx: FrameContext):
+        """Suy DẤU yaw (+ cờ profile) từ SCRFD keypoints — đáng tin ở góc lớn.
+
+        Returns (kp_sign, profile_by_geometry, r, span_norm) hoặc None nếu
+        không đủ tin (gần chính diện / mất mặt / eye-span quá nhỏ).
+
+        QUAN TRỌNG: dùng keypoint của FRAME HIỆN TẠI và KHÔNG dùng khi
+        face_lost_extreme_pose (keypoint cũ → kẹt saturation vĩnh viễn).
+        """
+        if ctx.face_kpss is None or ctx.bbox is None or ctx.face_lost_extreme_pose:
+            return None
+
+        kps = np.asarray(ctx.face_kpss, dtype=np.float32)
+        if kps.shape[0] < 3 or not np.isfinite(kps[:3]).all():
+            return None
+
+        eye_l, eye_r, nose = kps[0], kps[1], kps[2]
+        # Phòng thủ thứ tự: đảm bảo eye_l nằm bên trái ảnh.
+        if eye_l[0] > eye_r[0]:
+            eye_l, eye_r = eye_r, eye_l
+
+        eye_vec = eye_r - eye_l
+        eye_span = float(np.linalg.norm(eye_vec))
+
+        x1, y1, x2, y2 = ctx.bbox
+        bbox_h = max(1.0, float(y2 - y1))
+        if eye_span < max(self._KP_MIN_EYE_SPAN_PX, 0.04 * bbox_h):
+            return None
+
+        # nose_pos: 0 ở mắt-trái, 1 ở mắt-phải (chiếu lên trục 2 mắt → chịu roll).
+        u = eye_vec / eye_span
+        nose_pos = float(np.dot(nose - eye_l, u) / eye_span)
+        r = float(np.clip(2.0 * nose_pos - 1.0, -1.5, 1.5))
+
+        if abs(r) < self._KP_SIGN_R:
+            return None  # gần chính diện → dấu không quan trọng/không tin
+
+        kp_sign = 1.0 if r > 0 else -1.0
+        span_norm = eye_span / bbox_h  # chuẩn hoá theo chiều CAO bbox (ổn định hơn)
+        profile_by_geometry = (
+            abs(r) >= self._KP_PROFILE_R
+            or (abs(r) >= self._KP_PROFILE_R_WITH_SPAN
+                and span_norm <= self._KP_PROFILE_SPAN_NORM)
+        )
+        return kp_sign, profile_by_geometry, r, span_norm
+
     def process(self, ctx: FrameContext) -> FrameContext:
-        if ctx.bbox is None or ctx.face_lost_extreme_pose:
+        # Không có bbox nào để crop → bỏ qua.
+        # LƯU Ý: KHÔNG bỏ qua khi face_lost_extreme_pose=True. Lúc mất mặt
+        # nghiêng, DetectStage giữ bbox gần nhất; head pose VẪN chạy trên đó để
+        # liên tục đo yaw → DetectStage mới thấy yaw giảm <75° và thoát
+        # extreme_pose_mode khi tài xế quay mặt về (nếu không, yaw đóng băng ở
+        # giá trị bão hòa và hệ thống kẹt extreme = "đứng hình").
+        if ctx.bbox is None:
             return ctx
 
         self._counter += 1
@@ -156,25 +220,54 @@ class HeadPoseStage:
         sy_a, sp_a, sr_a = head_pose_angles
         if ctx.frame_flipped:
             sy_a = -sy_a
+
+        # ── Sửa DẤU + phát hiện profile bằng SCRFD keypoints ───────────────
+        # Keypoint là tín hiệu hình học 2D độc lập, đáng tin hơn model head
+        # pose vốn vừa đảo dấu vừa kẹt độ lớn (~70°) ở profile. KHÔNG negate
+        # lại theo frame_flipped vì keypoint đã ở hệ toạ độ ảnh đã flip.
+        raw_model_yaw = sy_a
+        model_abs = abs(raw_model_yaw)
+        kp_cue = self._keypoint_yaw_cue(ctx)
+        forced_profile = False
+        if kp_cue is not None:
+            kp_sign, profile_by_geometry, _r, _span = kp_cue
+            model_wrong_sign_large = (
+                model_abs >= self._KP_PROFILE_MODEL_ABS
+                and raw_model_yaw * kp_sign < 0
+            )
+            if profile_by_geometry or model_wrong_sign_large:
+                # Profile thật / artifact đảo dấu → bão hòa để kích hoạt extreme.
+                sy_a = kp_sign * self._YAW_SATURATION_DEG
+                forced_profile = True
+            elif model_abs >= 10.0:
+                # Chưa profile: chỉ sửa DẤU, giữ ĐỘ LỚN của model.
+                sy_a = kp_sign * model_abs
+
         head_pose_angles = (sy_a, sp_a, sr_a)
 
-        # Xử lý yaw đảo dấu / nhảy vô lý ở gần profile.
-        if self._last_head_pose is not None:
+        # ── Fallback khi KHÔNG có keypoint cue (giữ logic chống nhảy cũ) ────
+        if self._last_head_pose is not None and not forced_profile:
             last_yaw = self._last_head_pose[0]
             big_jump = abs(sy_a - last_yaw) > self._MAX_YAW_JUMP
-            # "Lật gương": dấu ngược + frame trước yaw đã lớn + nhảy vô lý.
-            # Đây là lỗi đặc trưng của model khi mặt gần profile (>~77°): nó
-            # đoán ra rotation matrix của tư thế đối xứng → yaw đổi dấu.
-            is_mirror_flip = (
-                big_jump
-                and sy_a * last_yaw < 0
-                and abs(last_yaw) >= self._FLIP_NEAR_PROFILE_DEG
-            )
-            if is_mirror_flip:
-                sy_a = float(np.sign(last_yaw) * self._YAW_SATURATION_DEG)
-                sp_a, sr_a = self._last_head_pose[1], self._last_head_pose[2]
-                head_pose_angles = (sy_a, sp_a, sr_a)
+            sign_reversed = sy_a * last_yaw < 0
+            if kp_cue is None:
+                # Không có keypoint → dùng heuristic thời gian như trước.
+                is_mirror_flip = (
+                    big_jump and sign_reversed
+                    and abs(last_yaw) >= self._FLIP_NEAR_PROFILE_DEG
+                )
+                if is_mirror_flip:
+                    sy_a = float(np.sign(last_yaw) * self._YAW_SATURATION_DEG)
+                    head_pose_angles = (sy_a, sp_a, sr_a)
+                elif big_jump and not ctx.extreme_pose_mode:
+                    return dataclasses.replace(
+                        ctx,
+                        head_pose=self._last_head_pose,
+                        head_rotation_matrix=self._last_R,
+                    )
             elif big_jump and not ctx.extreme_pose_mode:
+                # Đã có dấu từ keypoint nhưng bước nhảy vẫn vô lý (ngoài profile)
+                # → coi là outlier, giữ giá trị cũ.
                 return dataclasses.replace(
                     ctx,
                     head_pose=self._last_head_pose,

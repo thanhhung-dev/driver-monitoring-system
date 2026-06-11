@@ -43,7 +43,7 @@ class VizStage:
                     head_pose=d["head_pose"], opacity_scale=d["opacity_scale"],
                 )
                 if d["fallback"]:
-                    kwargs.update(num_dots=7, max_radius=12,
+                    kwargs.update(num_dots=7, max_radius=10,
                                   crosshair_size=0.3, show_crosshair=True)
                 for center in (d["center_l"], d["center_r"]):
                     if center is not None:

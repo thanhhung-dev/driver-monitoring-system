@@ -22,4 +22,8 @@ class DrowsinessStage:
         pitch_in = ctx.head_pose[1] if ctx.head_pose else 0
         driver_state = self._analyzer.update(ctx.landmarks, pitch=pitch_in, yaw=yaw_in)
 
-        return dataclasses.replace(ctx, driver_state=driver_state)
+        return dataclasses.replace(
+            ctx,
+            driver_state=driver_state,
+            drowsiness_score=self._analyzer.drowsy_score,
+        )
