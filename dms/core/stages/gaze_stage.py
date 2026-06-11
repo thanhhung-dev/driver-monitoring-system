@@ -42,9 +42,6 @@ class GazeStage:
         self._last_gaze_r = None
         self._last_center_l = None
         self._last_center_r = None
-        # Age (frames) since each eye last produced a fresh gaze. Sau khi
-        # vượt MAX_FALLBACK_AGE thì coi như eye cache đã stale → không vẽ
-        # arrow nữa (tránh "ghost arrow" khi head quay nghiêng kéo dài).
         self._last_age_l = 999
         self._last_age_r = 999
         self._prev_gaze_length = 200.0
@@ -52,17 +49,12 @@ class GazeStage:
         self.pitch_offset = pitch_offset
         self.yaw_offset = yaw_offset
         self._debug_logger = debug_logger
-        # Blink rate tracker — đếm số blink/sec qua sliding window 30s.
         self._blink_tracker = BlinkRateTracker(window_sec=30.0, closed_threshold=30.0)
-
-    # Số frame tối đa giữ cache khi mắt mất tín hiệu (blink ~1-3 frame OK,
-    # head-turn kéo dài thì cache stale phải bị clear).
     MAX_FALLBACK_AGE = 5
     STALE_AGE = 2
-    # Gradient opacity: gaze mờ khi thẳng, rõ khi nghiêng.
-    OPACITY_MIN = 0.2       # opacity tối thiểu khi nhìn thẳng
-    OPACITY_MAX = 1.0        # opacity tối đa khi nhìn nghiêng
-    OPACITY_FULL_DEG = 25.0  # góc (độ) mà opacity đạt tối đa
+    OPACITY_MIN = 0.5      
+    OPACITY_MAX = 1.0       
+    OPACITY_FULL_DEG = 25.0
 
     def _gaze_opacity_scale(
         self, head_pose: tuple[float, float, float] | None
@@ -114,10 +106,6 @@ class GazeStage:
         y = -sin_p
         z = cos_p * cos_y
         vec = np.array([x, y, z], dtype=np.float64)
-
-        # Rotate eye-local gaze vector by head pose → gaze-in-world.
-        # Prefer raw rotation matrix (avoids Euler decomposition/recomposition error).
-        # Fallback to Euler angles only if raw R unavailable.
         if head_rotation_matrix is not None:
             vec = head_rotation_matrix @ vec
         elif head_pose is not None:
@@ -131,9 +119,8 @@ class GazeStage:
 
         return vec.astype(np.float32)
 
-    MAX_HEAD_YAW_FOR_GAZE = 55
+    MAX_HEAD_YAW_FOR_GAZE = 70
     PROFILE_GAZE_LENGTH_SCALE = 0.65
-    PROFILE_CROSSHAIR_SIZE = 0.3
 
     @staticmethod
     def _eye_centers_from_landmarks(
@@ -154,10 +141,6 @@ class GazeStage:
     def process(self, ctx: FrameContext) -> FrameContext:
         if self._eye_gaze is None or ctx.landmarks is None:
             return ctx
-
-        # ── Hard fallback: yaw > 50° → skip ONNX entirely ────────────────
-        # Ở góc head yaw lớn, eye crop quá foreshortened → ONNX output
-        # không tin cậy. Dùng synthetic gaze = (0,0) + head rotation.
         use_head_fallback = (
             ctx.head_pose is not None
             and abs(ctx.head_pose[0]) > self.MAX_HEAD_YAW_FOR_GAZE
@@ -267,6 +250,7 @@ class GazeStage:
                 "head_pose": ctx.head_pose,
                 "opacity_scale": opacity_scale,
                 "fallback": False,
+                "show_crosshair": False,
             }
             vec_world = vec
 
@@ -288,6 +272,8 @@ class GazeStage:
                 "head_pose": ctx.head_pose,
                 "opacity_scale": opacity_scale,
                 "fallback": True,
+                "show_crosshair": False,
+                "show_crosshair": False,
             }
             vec_world = head_vec
 
