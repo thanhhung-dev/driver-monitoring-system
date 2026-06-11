@@ -28,8 +28,8 @@ class DetectStage:
       → reset hẳn về normal (xoá bbox + yaw cũ) để không kẹt extreme vĩnh viễn.
     """
 
-    ENTER_EXTREME_YAW = 80.0
-    EXIT_EXTREME_YAW = 75.0
+    ENTER_EXTREME_YAW = 85.0
+    EXIT_EXTREME_YAW = 80.0
     MAX_LOST_FRAMES = 15  # ~1s @ 15 FPS: mất mặt lâu hơn → reset về normal
 
     def __init__(

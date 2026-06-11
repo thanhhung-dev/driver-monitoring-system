@@ -53,7 +53,7 @@ class HeadPoseStage:
     _FLIP_NEAR_PROFILE_DEG = 55.0
 
     # Giá trị yaw bão hòa khi phát hiện lật gương. Lớn hơn ENTER_EXTREME_YAW
-    # (80°) của DetectStage → kích hoạt extreme_pose_mode ở frame kế tiếp thay
+    # (85°) của DetectStage → kích hoạt extreme_pose_mode ở frame kế tiếp thay
     # vì kẹt dưới ngưỡng. Giữ <90° để không bị clamp loại bỏ.
     _YAW_SATURATION_DEG = 88.0
 
@@ -63,9 +63,6 @@ class HeadPoseStage:
     # với 2 mắt cho biết hướng quay đáng tin. r = 2*nose_pos - 1 ∈ [-1,1]:
     #   r>0 mũi lệch sang phải-ảnh → yaw>0 (theo app convention sau khi flip)
     _KP_SIGN_R = 0.15            # |r| dưới mức này coi là gần chính diện → bỏ qua
-    _KP_PROFILE_R = 0.65         # |r| trên mức này = profile rõ → ép yaw bão hòa
-    _KP_PROFILE_R_WITH_SPAN = 0.45  # |r| này + eye-span hẹp cũng coi là profile
-    _KP_PROFILE_SPAN_NORM = 0.18    # eye_span/bbox_h dưới mức này = mặt rất nghiêng
     _KP_MIN_EYE_SPAN_PX = 8.0       # eye-span quá nhỏ → keypoint không tin được
     _KP_PROFILE_MODEL_ABS = 60.0    # model báo |yaw| lớn mà ngược dấu keypoint = artifact
 
@@ -118,10 +115,10 @@ class HeadPoseStage:
         return normalized.transpose(2, 0, 1)[np.newaxis, :, :, :]  # (1,3,224,224)
 
     def _keypoint_yaw_cue(self, ctx: FrameContext):
-        """Suy DẤU yaw (+ cờ profile) từ SCRFD keypoints — đáng tin ở góc lớn.
+        """Suy DẤU yaw từ SCRFD keypoints — đáng tin ở góc lớn.
 
-        Returns (kp_sign, profile_by_geometry, r, span_norm) hoặc None nếu
-        không đủ tin (gần chính diện / mất mặt / eye-span quá nhỏ).
+        Returns kp_sign (±1.0) hoặc None nếu không đủ tin (gần chính diện /
+        mất mặt / eye-span quá nhỏ).
 
         QUAN TRỌNG: dùng keypoint của FRAME HIỆN TẠI và KHÔNG dùng khi
         face_lost_extreme_pose (keypoint cũ → kẹt saturation vĩnh viễn).
@@ -154,14 +151,7 @@ class HeadPoseStage:
         if abs(r) < self._KP_SIGN_R:
             return None  # gần chính diện → dấu không quan trọng/không tin
 
-        kp_sign = 1.0 if r > 0 else -1.0
-        span_norm = eye_span / bbox_h  # chuẩn hoá theo chiều CAO bbox (ổn định hơn)
-        profile_by_geometry = (
-            abs(r) >= self._KP_PROFILE_R
-            or (abs(r) >= self._KP_PROFILE_R_WITH_SPAN
-                and span_norm <= self._KP_PROFILE_SPAN_NORM)
-        )
-        return kp_sign, profile_by_geometry, r, span_norm
+        return 1.0 if r > 0 else -1.0
 
     def process(self, ctx: FrameContext) -> FrameContext:
         # Không có bbox nào để crop → bỏ qua.
@@ -227,20 +217,20 @@ class HeadPoseStage:
         # lại theo frame_flipped vì keypoint đã ở hệ toạ độ ảnh đã flip.
         raw_model_yaw = sy_a
         model_abs = abs(raw_model_yaw)
-        kp_cue = self._keypoint_yaw_cue(ctx)
+        kp_sign = self._keypoint_yaw_cue(ctx)
         forced_profile = False
-        if kp_cue is not None:
-            kp_sign, profile_by_geometry, _r, _span = kp_cue
+        if kp_sign is not None:
             model_wrong_sign_large = (
                 model_abs >= self._KP_PROFILE_MODEL_ABS
                 and raw_model_yaw * kp_sign < 0
             )
-            if profile_by_geometry or model_wrong_sign_large:
-                # Profile thật / artifact đảo dấu → bão hòa để kích hoạt extreme.
+            if model_wrong_sign_large:
+                # Artifact đảo dấu của model ở profile (model đọc |yaw| lớn nhưng
+                # NGƯỢC chiều keypoint) → bão hòa để kích hoạt extreme.
                 sy_a = kp_sign * self._YAW_SATURATION_DEG
                 forced_profile = True
             elif model_abs >= 10.0:
-                # Chưa profile: chỉ sửa DẤU, giữ ĐỘ LỚN của model.
+                # Chỉ sửa DẤU, giữ ĐỘ LỚN của model.
                 sy_a = kp_sign * model_abs
 
         head_pose_angles = (sy_a, sp_a, sr_a)
@@ -250,7 +240,7 @@ class HeadPoseStage:
             last_yaw = self._last_head_pose[0]
             big_jump = abs(sy_a - last_yaw) > self._MAX_YAW_JUMP
             sign_reversed = sy_a * last_yaw < 0
-            if kp_cue is None:
+            if kp_sign is None:
                 # Không có keypoint → dùng heuristic thời gian như trước.
                 is_mirror_flip = (
                     big_jump and sign_reversed
