@@ -228,6 +228,7 @@ class GazeStage:
         else:
             gaze_length = self._prev_gaze_length
         vec_world = None
+        gaze_render_data = None
         is_gaze_fresh = (
             (gaze_l is not None or gaze_r is not None)
             or (
@@ -257,19 +258,16 @@ class GazeStage:
             gaze_length *= side_factor
 
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            if not ctx.extreme_pose_mode:
-                if display_center_l is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_l, vec,
-                        length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        opacity_scale=opacity_scale,
-                    )
-                if display_center_r is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_r, vec,
-                        length=gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        opacity_scale=opacity_scale,
-                    )
+            # Lưu render data để VizStage vẽ SAU grayscale conversion
+            gaze_render_data = {
+                "vec": vec,
+                "center_l": display_center_l,
+                "center_r": display_center_r,
+                "length": gaze_length,
+                "head_pose": ctx.head_pose,
+                "opacity_scale": opacity_scale,
+                "fallback": False,
+            }
             vec_world = vec
 
         elif ctx.head_pose is not None and not use_eye_gaze:
@@ -281,25 +279,16 @@ class GazeStage:
             )
             profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            if not ctx.extreme_pose_mode:
-                if display_center_l is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_l, head_vec,
-                        length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        num_dots=7, max_radius=12,
-                        crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
-                        show_crosshair=True,
-                        opacity_scale=opacity_scale,
-                    )
-                if display_center_r is not None:
-                    self._visualizer.draw_gaze_3d(
-                        ctx.frame, display_center_r, head_vec,
-                        length=profile_gaze_length, focal_length=1000, head_pose=ctx.head_pose,
-                        num_dots=7, max_radius=12,
-                        crosshair_size=self.PROFILE_CROSSHAIR_SIZE,
-                        show_crosshair=True,
-                        opacity_scale=opacity_scale,
-                    )
+            # Lưu render data để VizStage vẽ SAU grayscale conversion
+            gaze_render_data = {
+                "vec": head_vec,
+                "center_l": display_center_l,
+                "center_r": display_center_r,
+                "length": profile_gaze_length,
+                "head_pose": ctx.head_pose,
+                "opacity_scale": opacity_scale,
+                "fallback": True,
+            }
             vec_world = head_vec
 
         # ── Debug overlay ─────────────────────────────────────────────────
@@ -328,6 +317,7 @@ class GazeStage:
             gaze_vec_world=vec_world,
             eye_center_l=display_center_l,
             eye_center_r=display_center_r,
+            gaze_render_data=gaze_render_data,
         )
 
     def _draw_debug_overlay(
