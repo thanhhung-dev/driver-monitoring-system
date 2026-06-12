@@ -153,9 +153,17 @@ class Visualizer:
         # Semi-major axis is sqrt(evals[1]), semi-minor is sqrt(evals[0])
         major_axis = float(np.sqrt(max(evals[1], 1e-6)))
         minor_axis = float(np.sqrt(max(evals[0], 1e-6)))
-        
+
+        # Limit ellipse flattening: minor_axis >= 10% of major_axis
+        min_ratio = 0.1
+        minor_axis = max(minor_axis, major_axis * min_ratio)
+
         # Angle of the major axis
-        angle_rad = np.arctan2(evecs[1, 1], evecs[0, 1])
+        # Ensure consistent eigenvector direction (prevent 180° flips)
+        major_vec = evecs[:, 1].copy()
+        if major_vec[1] < 0:  # Always point "downward" in image coords
+            major_vec = -major_vec
+        angle_rad = np.arctan2(major_vec[1], major_vec[0])
         angle_deg = float(np.degrees(angle_rad))
         
         return (u0, v0), (major_axis, minor_axis), angle_deg
@@ -236,9 +244,12 @@ class Visualizer:
             r_pixel = min_radius + (max_radius - min_radius) * t_s
             r_3d = r_pixel * Z_e / f
             
-            # Project 3D disk (oriented with head Yaw) to 2D ellipse
+            # Project 3D disk (oriented with gaze direction) to 2D ellipse
+            # Use gaze vector as normal so ellipse orientation follows eye direction
+            gaze_normal = np.array([vx, -vy, vz])  # flip Y for image coords
+            gaze_normal /= np.linalg.norm(gaze_normal)
             (u, v), (major, minor), angle_deg = self._project_circle_to_ellipse(
-                pos_3d, r_3d, normal, f, cx, cy
+                pos_3d, r_3d, gaze_normal, f, cx, cy
             )
             
             px, py = int(round(u)), int(round(v))

@@ -158,8 +158,7 @@ class GazeStage:
                 ctx.frame, ctx.landmarks
             )
 
-        # EyeNet yaw convention is opposite of the app/head-pose convention.
-        # Convert once here so all downstream code uses yaw+ = screen/right.
+
         if gaze_l is not None:
             gaze_l = gaze_l.copy()
             gaze_l[1] = -gaze_l[1]
@@ -167,17 +166,14 @@ class GazeStage:
             gaze_r = gaze_r.copy()
             gaze_r[1] = -gaze_r[1]
 
-        # Apply calibration offsets
         if gaze_l is not None:
             gaze_l = gaze_l + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
         if gaze_r is not None:
             gaze_r = gaze_r + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
 
-        # Debug logging
         if self._debug_logger is not None:
             self._debug_logger.log_avg(gaze_l, gaze_r, ctx.frame_number)
 
-        # ── Update last-known + age cache ─────────────────────────────────
         if gaze_l is not None:
             self._last_gaze_l = gaze_l
             self._last_age_l = 0
@@ -200,7 +196,6 @@ class GazeStage:
         display_center_l = eye_center_l if eye_center_l is not None else self._last_center_l
         display_center_r = eye_center_r if eye_center_r is not None else self._last_center_r
 
-        # Dynamic gaze length based on inter-eye distance
         if display_center_l is not None and display_center_r is not None:
             eye_dist = np.linalg.norm(display_center_l - display_center_r)
             raw_gaze_length = 60 * (100.0 / max(eye_dist, 1.0))
@@ -223,7 +218,6 @@ class GazeStage:
         use_eye_gaze = has_eye_gaze and is_gaze_fresh and not use_head_fallback
 
         if use_eye_gaze:
-            # ── Eye gaze available: compose eye + head ────────────────────
             if display_gaze_l is not None and display_gaze_r is not None:
                 gaze_avg = (display_gaze_l + display_gaze_r) / 2.0
             elif display_gaze_l is not None:
@@ -241,7 +235,6 @@ class GazeStage:
             gaze_length *= side_factor
 
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            # Lưu render data để VizStage vẽ SAU grayscale conversion
             gaze_render_data = {
                 "vec": vec,
                 "center_l": display_center_l,
@@ -250,20 +243,17 @@ class GazeStage:
                 "head_pose": ctx.head_pose,
                 "opacity_scale": opacity_scale,
                 "fallback": False,
-                "show_crosshair": False,
+                "show_crosshair": True,
             }
             vec_world = vec
 
         elif ctx.head_pose is not None and not use_eye_gaze:
-            # ── Eye detection	fail: fallback to head direction ─────────
-            # gaze_eye = (0,0) → R_head × [0,0,1] = head direction vector.
             head_vec = self._pitchyaw_to_vec(
                 np.zeros(2, dtype=np.float32), head_pose=ctx.head_pose,
                 head_rotation_matrix=ctx.head_rotation_matrix,
             )
             profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
-            # Lưu render data để VizStage vẽ SAU grayscale conversion
             gaze_render_data = {
                 "vec": head_vec,
                 "center_l": display_center_l,
@@ -405,7 +395,7 @@ class GazeStage:
                 lines.append(("GAZE DIR [HEAD]", color_label))
                 lines.append((f"  P={pitch_h:+6.1f}  Y={yaw_h:+6.1f}", (0, 165, 255)))
             else:
-                lines.append(("GAZE DIR (eye+head)", color_label))
+                lines.append(("GAZE DIR (eye+head)+", color_label))
                 lines.append((f"  P={total_p:+6.1f}  Y={total_y:+6.1f}", color_value))
             lines.append(("GAZE ZONE", color_label))
             lines.append((f"  {zone}", color_zone))
