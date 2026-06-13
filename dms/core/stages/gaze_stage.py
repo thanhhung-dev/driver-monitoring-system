@@ -55,6 +55,36 @@ class GazeStage:
     OPACITY_MIN = 0.5      
     OPACITY_MAX = 1.0       
     OPACITY_FULL_DEG = 25.0
+    MAX_HEAD_YAW_FOR_GAZE = 70
+    PROFILE_GAZE_LENGTH_SCALE = 0.65
+    GAZE_LENGTH_MIN = 50.0
+    GAZE_LENGTH_MAX = 100
+    PROFILE_GAZE_LENGTH = 120
+    # Rút ngắn gaze khi nhắm mắt: >= ngưỡng này coi như mở hẳn (giữ nguyên độ dài),
+    # nhắm hẳn -> còn EYE_CLOSED_LENGTH_SCALE độ dài.
+    EYE_OPEN_FULL_PERCENT = 30.0
+    EYE_CLOSED_LENGTH_SCALE = 0.4
+
+    def _eye_open_length_scale(self, landmarks) -> float:
+        """Hệ số [EYE_CLOSED_LENGTH_SCALE..1.0] theo độ mở mắt.
+
+        Mắt càng nhắm -> hệ số càng nhỏ -> gaze càng ngắn.
+        """
+        if landmarks is None or len(landmarks) == 0:
+            return 1.0
+        lm = np.asarray(landmarks, dtype=np.float32)
+        left_idx, right_idx = _eye_indices(len(lm))
+        ops = [
+            v for v in (
+                eye_openness_percent(lm, left_idx),
+                eye_openness_percent(lm, right_idx),
+            ) if v is not None
+        ]
+        if not ops:
+            return 1.0
+        avg_op = float(np.mean(ops))
+        t = float(np.clip(avg_op / self.EYE_OPEN_FULL_PERCENT, 0.0, 1.0))
+        return self.EYE_CLOSED_LENGTH_SCALE + (1.0 - self.EYE_CLOSED_LENGTH_SCALE) * t
 
     def _gaze_opacity_scale(
         self, head_pose: tuple[float, float, float] | None
@@ -82,7 +112,6 @@ class GazeStage:
         head_rotation_matrix: np.ndarray | None = None,
     ) -> np.ndarray:
         """Compose eye gaze + head pose → world-space gaze vector.
-
         Công thức: gaze_world = R_head × gaze_eye_vector
 
         EyeNet trả gaze_eye = hướng mắt TƯƠNG ĐỐI so với đầu (eye-in-head).
@@ -119,9 +148,6 @@ class GazeStage:
 
         return vec.astype(np.float32)
 
-    MAX_HEAD_YAW_FOR_GAZE = 70
-    PROFILE_GAZE_LENGTH_SCALE = 0.65
-
     @staticmethod
     def _eye_centers_from_landmarks(
         landmarks: np.ndarray,
@@ -137,6 +163,33 @@ class GazeStage:
             return cl, cr
         except Exception:
             return None, None
+
+    def _adjust_gaze(self, gaze: np.ndarray | None) -> np.ndarray | None:
+        """Đảo trục Y + cộng offset calibration."""
+        if gaze is None:
+            return None
+        adjusted = gaze.copy()
+        adjusted[1] = -adjusted[1]
+        return adjusted + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
+
+    def _update_tracking(
+        self,
+        gaze: np.ndarray | None,
+        center: np.ndarray | None,
+        last_gaze: np.ndarray | None,
+        last_age: int,
+        last_center: np.ndarray | None,
+    ) -> tuple[np.ndarray | None, int, np.ndarray | None, np.ndarray | None]:
+        """Cập nhật gaze/center tracking, trả về (new_last_gaze, new_age, new_last_center, display_gaze)."""
+        if gaze is not None:
+            last_gaze, last_age = gaze, 0
+        else:
+            last_age += 1
+        if center is not None:
+            last_center = center
+        fallback = last_gaze if last_age <= self.MAX_FALLBACK_AGE else None
+        display_gaze = gaze if gaze is not None else fallback
+        return last_gaze, last_age, last_center, display_gaze
 
     def process(self, ctx: FrameContext) -> FrameContext:
         if self._eye_gaze is None or ctx.landmarks is None:
@@ -158,53 +211,36 @@ class GazeStage:
                 ctx.frame, ctx.landmarks
             )
 
-
-        if gaze_l is not None:
-            gaze_l = gaze_l.copy()
-            gaze_l[1] = -gaze_l[1]
-        if gaze_r is not None:
-            gaze_r = gaze_r.copy()
-            gaze_r[1] = -gaze_r[1]
-
-        if gaze_l is not None:
-            gaze_l = gaze_l + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
-        if gaze_r is not None:
-            gaze_r = gaze_r + np.array([self.pitch_offset, self.yaw_offset], dtype=np.float32)
+        gaze_l = self._adjust_gaze(gaze_l)
+        gaze_r = self._adjust_gaze(gaze_r)
 
         if self._debug_logger is not None:
             self._debug_logger.log_avg(gaze_l, gaze_r, ctx.frame_number)
 
-        if gaze_l is not None:
-            self._last_gaze_l = gaze_l
-            self._last_age_l = 0
-        else:
-            self._last_age_l += 1
-        if gaze_r is not None:
-            self._last_gaze_r = gaze_r
-            self._last_age_r = 0
-        else:
-            self._last_age_r += 1
-        if eye_center_l is not None:
-            self._last_center_l = eye_center_l
-        if eye_center_r is not None:
-            self._last_center_r = eye_center_r
-
-        fallback_l = self._last_gaze_l if self._last_age_l <= self.MAX_FALLBACK_AGE else None
-        fallback_r = self._last_gaze_r if self._last_age_r <= self.MAX_FALLBACK_AGE else None
-        display_gaze_l = gaze_l if gaze_l is not None else fallback_l
-        display_gaze_r = gaze_r if gaze_r is not None else fallback_r
+        self._last_gaze_l, self._last_age_l, self._last_center_l, display_gaze_l = (
+            self._update_tracking(gaze_l, eye_center_l, self._last_gaze_l, self._last_age_l, self._last_center_l)
+        )
+        self._last_gaze_r, self._last_age_r, self._last_center_r, display_gaze_r = (
+            self._update_tracking(gaze_r, eye_center_r, self._last_gaze_r, self._last_age_r, self._last_center_r)
+        )
         display_center_l = eye_center_l if eye_center_l is not None else self._last_center_l
         display_center_r = eye_center_r if eye_center_r is not None else self._last_center_r
 
         if display_center_l is not None and display_center_r is not None:
             eye_dist = np.linalg.norm(display_center_l - display_center_r)
             raw_gaze_length = 60 * (100.0 / max(eye_dist, 1.0))
-            raw_gaze_length = np.clip(raw_gaze_length, 50, 180)
+            raw_gaze_length = np.clip(
+                raw_gaze_length, self.GAZE_LENGTH_MIN, self.GAZE_LENGTH_MAX
+            )
             a = self._gaze_length_alpha
             gaze_length = a * raw_gaze_length + (1.0 - a) * self._prev_gaze_length
             self._prev_gaze_length = gaze_length
         else:
             gaze_length = self._prev_gaze_length
+
+        # Nhắm mắt -> rút ngắn gaze (tránh dài ra khi nhắm mắt + cúi xuống).
+        eye_open_scale = self._eye_open_length_scale(ctx.landmarks)
+        gaze_length *= eye_open_scale
         vec_world = None
         gaze_render_data = None
         is_gaze_fresh = (
@@ -230,6 +266,7 @@ class GazeStage:
                 head_rotation_matrix=ctx.head_rotation_matrix,
             )
 
+            # Liếc ngang kéo dài nhẹ, giới hạn 1.15 để không quá dài.
             yaw_val = np.abs(float(gaze_avg[1]))
             side_factor = np.clip(1.0 + yaw_val / 0.5, 1.0, 1.3)
             gaze_length *= side_factor
@@ -252,7 +289,9 @@ class GazeStage:
                 np.zeros(2, dtype=np.float32), head_pose=ctx.head_pose,
                 head_rotation_matrix=ctx.head_rotation_matrix,
             )
-            profile_gaze_length = gaze_length * self.PROFILE_GAZE_LENGTH_SCALE
+            # Head-fallback (yaw lớn): dùng độ dài riêng, không bị cap GAZE_LENGTH_MAX.
+            # Nhắm mắt vẫn rút ngắn theo eye_open_scale.
+            profile_gaze_length = self.PROFILE_GAZE_LENGTH * eye_open_scale
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
             gaze_render_data = {
                 "vec": head_vec,
@@ -263,11 +302,9 @@ class GazeStage:
                 "opacity_scale": opacity_scale,
                 "fallback": True,
                 "show_crosshair": False,
-                "show_crosshair": False,
             }
             vec_world = head_vec
 
-        # ── Debug overlay ─────────────────────────────────────────────────
         if self._debug_logger is not None and self._debug_logger._enabled:
             self._draw_debug_overlay(
                 ctx.frame,
@@ -278,7 +315,6 @@ class GazeStage:
                 use_head_fallback=not use_eye_gaze,
             )
 
-        # ── On-frame indicator khi dùng head direction ────────────────────
         if not use_eye_gaze:
             h, w = ctx.frame.shape[:2]
             cv2.putText(
@@ -363,7 +399,6 @@ class GazeStage:
                 if er is not None:
                     lines.append((f"  R: {er[0]:+6.0f} {er[1]:+6.0f} {er[2]:+6.0f}", color_value))
 
-        # ── HEAD DIR (PYR) ────────────────────────────────────────────────
         if head_pose is not None:
             yaw_h, pitch_h, roll_h = head_pose
             lines.append(("HEAD DIR (PYR)", color_label))

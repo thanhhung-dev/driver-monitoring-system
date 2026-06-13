@@ -64,7 +64,8 @@ class HeadPoseStage:
     #   r>0 mũi lệch sang phải-ảnh → yaw>0 (theo app convention sau khi flip)
     _KP_SIGN_R = 0.15            # |r| dưới mức này coi là gần chính diện → bỏ qua
     _KP_MIN_EYE_SPAN_PX = 8.0       # eye-span quá nhỏ → keypoint không tin được
-    _KP_PROFILE_MODEL_ABS = 60.0    # model báo |yaw| lớn mà ngược dấu keypoint = artifact
+    _KP_PROFILE_MODEL_ABS = 70.0    # model báo |yaw| lớn mà ngược dấu keypoint = artifact
+                                    # (nâng lên 70 để chỉ cắt gaze ở góc thật ~85°, tắt muộn hơn)
 
     def __init__(
         self,
