@@ -8,7 +8,6 @@ from utils.helpers import draw_bbox
 from utils.helpers import draw_axis
 from utils.helpers import draw_head_direction_arrow
 from utils.general import get_rotation_matrix
-from typing import Tuple, List
 
 class Visualizer:
     def __init__(self):
@@ -16,7 +15,6 @@ class Visualizer:
         self.color_warning = (0, 0, 255)
         self.color_normal = (0, 255, 0)
         self.gaze_history = deque(maxlen=8)
-        # Tách history riêng cho từng mắt để vệt không bị nhảy qua lại
         self.gaze_history_l = deque(maxlen=8)
         self.gaze_history_r = deque(maxlen=8)
 
@@ -42,11 +40,10 @@ class Visualizer:
         # Bounding box với corner-accent
         draw_bbox(frame, bbox, self.color_normal)
 
-        # 3D head-pose axes (chỉ vẽ khi có giá trị yaw/pitch/roll)
+        # 3D head-pose axes
         if head_pose is not None:
             yaw, pitch, roll = head_pose
             draw_axis(frame, yaw, pitch, roll, list(bbox))
-            # Mũi tên đỏ từ mũi chỉ hướng head (giống Qualcomm)
             if landmarks is not None:
                 draw_head_direction_arrow(frame, landmarks, yaw, pitch, roll)
 
@@ -99,63 +96,45 @@ class Visualizer:
     ) -> tuple[tuple[float, float], tuple[float, float], float]:
         """
         Projects a small 3D circle to a 2D ellipse using the Jacobian of the projection.
-        
         Args:
             center_3d: (X, Y, Z) in 3D
             radius: Radius of the 3D circle
             normal_3d: Unit normal vector of the circle's plane
             focal_length: Pinhole camera focal length
             cx, cy: Principal point
-            
         Returns:
             (center_2d, axes_2d, angle_deg) compatible with cv2.ellipse
         """
         X, Y, Z = center_3d
         Z = max(Z, 0.01)
-        
-        # 1. Projected center
         u0 = focal_length * X / Z + cx
         v0 = focal_length * Y / Z + cy
-        
-        # 2. Orthonormal basis in the circle's plane
-        # Find a vector not parallel to normal
         if abs(normal_3d[0]) < 0.9:
             ref = np.array([1.0, 0.0, 0.0])
         else:
             ref = np.array([0.0, 1.0, 0.0])
-        
         u_3d = np.cross(normal_3d, ref)
         u_3d /= np.linalg.norm(u_3d)
         v_3d = np.cross(normal_3d, u_3d)
-        
-        # 3. Jacobian of projection [u, v] = [fX/Z + cx, fY/Z + cy]
-        # J = [[f/Z, 0, -fX/Z^2],
-        #      [0, f/Z, -fY/Z^2]]
         f_Z = focal_length / Z
         f_Z2 = focal_length / (Z * Z)
         J = np.array([
             [f_Z, 0, -X * f_Z2],
             [0, f_Z, -Y * f_Z2]
         ])
-        
-        # 4. Projected basis vectors in 2D
         a = J @ (u_3d * radius)
         b = J @ (v_3d * radius)
-        
-        # 5. Ellipse from two vectors p(theta) = p0 + a*cos(theta) + b*sin(theta)
-        # The axes are the eigenvectors of M = a*a^T + b*b^T
         M = np.outer(a, a) + np.outer(b, b)
-        
-        # Eigenvalues and eigenvectors
         evals, evecs = np.linalg.eigh(M)
         
-        # eigh returns eigenvalues in ascending order
-        # Semi-major axis is sqrt(evals[1]), semi-minor is sqrt(evals[0])
         major_axis = float(np.sqrt(max(evals[1], 1e-6)))
         minor_axis = float(np.sqrt(max(evals[0], 1e-6)))
-        
-        # Angle of the major axis
-        angle_rad = np.arctan2(evecs[1, 1], evecs[0, 1])
+        min_ratio = 0.1
+        minor_axis = max(minor_axis, major_axis * min_ratio)
+        major_vec = evecs[:, 1].copy()
+        if major_vec[1] < 0:  # Always point "downward" in image coords
+            major_vec = -major_vec
+        angle_rad = np.arctan2(major_vec[1], major_vec[0])
         angle_deg = float(np.degrees(angle_rad))
         
         return (u0, v0), (major_axis, minor_axis), angle_deg
@@ -169,7 +148,7 @@ class Visualizer:
         color: tuple[int, int, int] = (255, 255, 0),
         num_dots: int = 6,
         min_radius: int = 1,
-        max_radius: int = 16,       
+        max_radius: int = 14,       
         glow_size: int = 2,        
         eye_depth: float = 1.0,
         focal_length: float | None = None,
@@ -210,54 +189,41 @@ class Visualizer:
                 np.deg2rad(roll_d),
             )
             normal = R_head @ np.array([0.0, 0.0, -1.0])
-
-        # Opacity gradient: mờ khi nhìn thẳng, rõ khi nghiêng.
-        # gaze_strength ≈ sin(gaze_angle), 0 = thẳng, 1 = nghiêng 90°.
+        # Tinh Toan Khi Ngieng
         gaze_strength = np.hypot(vx, vy)
         min_opacity, max_opacity = 0.05, 0.9
         t = float(np.clip(gaze_strength ** 0.6, 0.0, 1.0))
         alpha_global = min_opacity + (max_opacity - min_opacity) * t
-        # opacity_scale từ head-yaw gradient (mờ khi đầu thẳng, rõ khi nghiêng).
         alpha_global *= float(np.clip(opacity_scale, 0.0, 1.0))
 
-        # ──────── TRAIL WITH DEPTH-BASED DEFORMATION ────────
-        start_offset = 0.4  # offset first dot away from eye center
+        start_offset = 0.4  
         for i in range(1, num_dots + 1):
             t = start_offset + (1.0 - start_offset) * i / num_dots
             t_s = t ** 3.0
             
-            # 3D position of the dot
             X = X_e + t_s * L * vx
-            Y = Y_e + t_s * L * (-vy)  # flip Y for image coords
+            Y = Y_e + t_s * L * (-vy)  
             Z = Z_e + t_s * L * vz
             pos_3d = np.array([X, Y, Z])
             
-            # Base radius in pixels, then convert to 3D units
             r_pixel = min_radius + (max_radius - min_radius) * t_s
             r_3d = r_pixel * Z_e / f
             
-            # Project 3D disk (oriented with head Yaw) to 2D ellipse
+  
+            gaze_normal = np.array([vx, -vy, vz]) 
+            gaze_normal /= np.linalg.norm(gaze_normal)
             (u, v), (major, minor), angle_deg = self._project_circle_to_ellipse(
-                pos_3d, r_3d, normal, f, cx, cy
+                pos_3d, r_3d, gaze_normal, f, cx, cy
             )
             
             px, py = int(round(u)), int(round(v))
             if not (0 <= px < W and 0 <= py < H):
                 continue
-
-            # They only become ellipses on-screen via perspective when the head turns.
-            
             alpha = (t ** 2) * alpha_global
-            
-            # Glow size (scales with depth)
             scale_factor = Z_e / max(Z, 0.1)
             curr_glow = glow_size * t * scale_factor
-            
-            # Draw
             overlay = image.copy()
-            
             if curr_glow > 0:
-                # Glow: larger ellipse
                 cv2.ellipse(
                     overlay, (px, py),
                     (int(round(major + curr_glow)), int(round(minor + curr_glow))),

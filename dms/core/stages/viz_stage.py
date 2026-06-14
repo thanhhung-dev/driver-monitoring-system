@@ -41,10 +41,11 @@ class VizStage:
                 kwargs = dict(
                     length=d["length"], focal_length=1000,
                     head_pose=d["head_pose"], opacity_scale=d["opacity_scale"],
+                    show_crosshair=d.get("show_crosshair", True)
                 )
                 if d["fallback"]:
                     kwargs.update(num_dots=7, max_radius=10,
-                                  crosshair_size=0.3, show_crosshair=True)
+                                  crosshair_size=0.3)
                 for center in (d["center_l"], d["center_r"]):
                     if center is not None:
                         self._visualizer.draw_gaze_3d(canvas, center, d["vec"], **kwargs)
