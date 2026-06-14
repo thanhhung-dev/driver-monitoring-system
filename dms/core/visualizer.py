@@ -148,7 +148,7 @@ class Visualizer:
         color: tuple[int, int, int] = (255, 255, 0),
         num_dots: int = 6,
         min_radius: int = 1,
-        max_radius: int = 18,       
+        max_radius: int = 14,       
         glow_size: int = 2,        
         eye_depth: float = 1.0,
         focal_length: float | None = None,
