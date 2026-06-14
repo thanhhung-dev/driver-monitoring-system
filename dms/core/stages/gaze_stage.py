@@ -57,11 +57,10 @@ class GazeStage:
     OPACITY_FULL_DEG = 25.0
     MAX_HEAD_YAW_FOR_GAZE = 70
     PROFILE_GAZE_LENGTH_SCALE = 0.65
-    GAZE_LENGTH_MIN = 50.0
+    GAZE_LENGTH_MIN = 50
     GAZE_LENGTH_MAX = 100
     PROFILE_GAZE_LENGTH = 120
-    # Rút ngắn gaze khi nhắm mắt: >= ngưỡng này coi như mở hẳn (giữ nguyên độ dài),
-    # nhắm hẳn -> còn EYE_CLOSED_LENGTH_SCALE độ dài.
+    # Tinh Khi Nham Mat
     EYE_OPEN_FULL_PERCENT = 30.0
     EYE_CLOSED_LENGTH_SCALE = 0.4
 
