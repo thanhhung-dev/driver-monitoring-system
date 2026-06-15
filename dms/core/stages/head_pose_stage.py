@@ -1,15 +1,29 @@
 import dataclasses
+import os
 
 import cv2
 import numpy as np
 
 from core.frame_context import FrameContext
 from core.head_pose_feedback import HeadPoseFeedback
+from utils.headpose_recorder import RECORDER, HeadPoseRecorder
 from utils.helpers import expand_bbox
 from utils.general import get_rotation_matrix
+from utils.logger import setup_logger
 from utils.onnx_providers import make_session
 
 import onnx
+
+# === DEBUG ============================================================
+# Bật/tắt debug chi tiết khi yaw lọt vùng nguy hiểm (>75°).
+# Cách dùng: set env var DMS_HEADPOSE_DEBUG=1 trước khi chạy main.py.
+#   cmd:     set DMS_HEADPOSE_DEBUG=1 && python main.py
+#   powershell: $env:DMS_HEADPOSE_DEBUG=1; python main.py
+# Tắt lại: xóa biến hoặc set =0.
+# Dùng .strip() vì cmd thường thêm trailing space vào env var.
+_DEBUG = os.environ.get("DMS_HEADPOSE_DEBUG", "0").strip() == "1"
+_debug_log = setup_logger("head_pose_debug")
+# =====================================================================
 
 
 def _rotation_matrix_to_euler(R: np.ndarray) -> np.ndarray:
@@ -162,10 +176,12 @@ class HeadPoseStage:
         # extreme_pose_mode khi tài xế quay mặt về (nếu không, yaw đóng băng ở
         # giá trị bão hòa và hệ thống kẹt extreme = "đứng hình").
         if ctx.bbox is None:
+            RECORDER.log_skip(ctx.frame_number, "no_bbox")
             return ctx
 
         self._counter += 1
         if self._counter < self._interval:
+            RECORDER.log_skip(ctx.frame_number, "skip_interval")
             if self._last_head_pose is not None:
                 return dataclasses.replace(
                     ctx,
@@ -196,8 +212,25 @@ class HeadPoseStage:
         euler = np.degrees(_rotation_matrix_to_euler(R))
         pitch_d, yaw_d, roll_d = -float(euler[0]), float(euler[1]), float(euler[2])
 
+        if _DEBUG and (abs(yaw_d) > 75 or abs(pitch_d) > 75):
+            ortho_err = float(np.linalg.norm(R.T @ R - np.eye(3)))
+            det_R = float(np.linalg.det(R))
+            sy_val = float(np.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2))
+            _debug_log.info(
+                f"[DBG] f={ctx.frame_number} | RAW MODEL "
+                f"yaw={yaw_d:+.1f} pitch={pitch_d:+.1f} roll={roll_d:+.1f} | "
+                f"‖RᵀR−I‖={ortho_err:.4f} det={det_R:+.4f} sy={sy_val:.4f} | "
+                f"flip={ctx.frame_flipped} extreme={ctx.extreme_pose_mode} "
+                f"lost={ctx.face_lost_extreme_pose}"
+            )
+
         # Clamp to plausible human head range ±90°
         if abs(pitch_d) > 90 or abs(yaw_d) > 90:
+            RECORDER.log_reject(
+                ctx.frame_number, ctx.frame_flipped, ctx.extreme_pose_mode,
+                ctx.face_lost_extreme_pose, R, yaw_d, pitch_d, roll_d,
+                None, "clamp_reject", self._last_head_pose,
+            )
             return dataclasses.replace(
                 ctx,
                 head_pose=self._last_head_pose,
@@ -211,6 +244,9 @@ class HeadPoseStage:
         sy_a, sp_a, sr_a = head_pose_angles
         if ctx.frame_flipped:
             sy_a = -sy_a
+
+        # Branch tracker — tên nhánh logic đã chạy (lưu vào CSV).
+        branch = "raw_ok"
 
         # ── Sửa DẤU + phát hiện profile bằng SCRFD keypoints ───────────────
         # Keypoint là tín hiệu hình học 2D độc lập, đáng tin hơn model head
@@ -230,13 +266,18 @@ class HeadPoseStage:
                 # NGƯỢC chiều keypoint) → bão hòa để kích hoạt extreme.
                 sy_a = kp_sign * self._YAW_SATURATION_DEG
                 forced_profile = True
+                branch = "kp_forced_prof"
             elif model_abs >= 10.0:
                 # Chỉ sửa DẤU, giữ ĐỘ LỚN của model.
                 sy_a = kp_sign * model_abs
+                branch = "kp_fix_sign"
 
         head_pose_angles = (sy_a, sp_a, sr_a)
 
         # ── Fallback khi KHÔNG có keypoint cue (giữ logic chống nhảy cũ) ────
+        prev_yaw_for_log = (
+            self._last_head_pose[0] if self._last_head_pose is not None else None
+        )
         if self._last_head_pose is not None and not forced_profile:
             last_yaw = self._last_head_pose[0]
             big_jump = abs(sy_a - last_yaw) > self._MAX_YAW_JUMP
@@ -250,7 +291,13 @@ class HeadPoseStage:
                 if is_mirror_flip:
                     sy_a = float(np.sign(last_yaw) * self._YAW_SATURATION_DEG)
                     head_pose_angles = (sy_a, sp_a, sr_a)
+                    branch = "heur_mirror_flip"
                 elif big_jump and not ctx.extreme_pose_mode:
+                    RECORDER.log_reject(
+                        ctx.frame_number, ctx.frame_flipped, ctx.extreme_pose_mode,
+                        ctx.face_lost_extreme_pose, R, yaw_d, pitch_d, roll_d,
+                        kp_sign, "heur_reject", self._last_head_pose,
+                    )
                     return dataclasses.replace(
                         ctx,
                         head_pose=self._last_head_pose,
@@ -259,6 +306,11 @@ class HeadPoseStage:
             elif big_jump and not ctx.extreme_pose_mode:
                 # Đã có dấu từ keypoint nhưng bước nhảy vẫn vô lý (ngoài profile)
                 # → coi là outlier, giữ giá trị cũ.
+                RECORDER.log_reject(
+                    ctx.frame_number, ctx.frame_flipped, ctx.extreme_pose_mode,
+                    ctx.face_lost_extreme_pose, R, yaw_d, pitch_d, roll_d,
+                    kp_sign, "heur_reject", self._last_head_pose,
+                )
                 return dataclasses.replace(
                     ctx,
                     head_pose=self._last_head_pose,
@@ -275,6 +327,25 @@ class HeadPoseStage:
             np.deg2rad(sp_d), np.deg2rad(sy_d), np.deg2rad(sr_d),
         )
         self._last_R = R_smooth
+
+        RECORDER.log(
+            ctx.frame_number, ctx.frame_flipped, ctx.extreme_pose_mode,
+            ctx.face_lost_extreme_pose, R, yaw_d, pitch_d, roll_d,
+            kp_sign, forced_profile, branch,
+            sy_a, sp_a, sr_a, prev_yaw_for_log,
+        )
+
+        if _DEBUG and (abs(sy_a) > 75 or abs(sp_a) > 75):
+            prev_yaw = (
+                self._last_head_pose[0]
+                if self._last_head_pose is not None else None
+            )
+            _debug_log.info(
+                f"[DBG] f={ctx.frame_number} | OUT "
+                f"yaw={sy_a:+.1f} pitch={sp_a:+.1f} | "
+                f"raw={raw_model_yaw:+.1f} kp_sign={kp_sign} "
+                f"forced_profile={forced_profile} | prev_yaw={prev_yaw}"
+            )
 
         return dataclasses.replace(
             ctx,
