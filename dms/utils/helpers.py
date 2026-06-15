@@ -156,9 +156,10 @@ def compute_similarity(feat1: np.ndarray, feat2: np.ndarray) -> np.float32:
 def draw_bbox(
     image: np.ndarray,
     bbox: list[int],
-    color: Tuple[int, int, int] = (255, 0, 255),
+    color: Tuple[int, int, int] = (255, 255, 255),
     thickness: int = 2,
-    proportion: float = 0.2,
+    proportion: float = 0.07,
+    fixed_size: Tuple[int, int] | None = None,
 ) -> None:
     """Draw a bounding box with corner accents on the image (in-place).
 
@@ -168,8 +169,14 @@ def draw_bbox(
         color: BGR color tuple.
         thickness: Corner line thickness.
         proportion: Corner accent length as fraction of the shorter bbox side.
+        fixed_size: Optional (width, height) to override bbox size, centered on bbox.
     """
     x1, y1, x2, y2 = map(int, bbox)
+    if fixed_size is not None:
+        fw, fh = fixed_size
+        cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+        x1, y1 = cx - fw // 2, cy - fh // 2
+        x2, y2 = cx + fw // 2, cy + fh // 2
     width = x2 - x1
     height = y2 - y1
 

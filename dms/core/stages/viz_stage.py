@@ -29,9 +29,12 @@ class VizStage:
             if ctx.landmarks is not None and not ctx.extreme_pose_mode:
                 self._visualizer.draw_full_mesh(canvas, ctx.landmarks)
             hp = None if ctx.extreme_pose_mode else ctx.head_pose
+            # Chỉ vẽ bbox SCRFD khi extreme (|yaw|>85°). Bình thường (0–85°)
+            # ẩn bbox, vẫn giữ mesh + trục head-pose.
+            draw_box = ctx.extreme_pose_mode
             self._visualizer.draw_face_info(
                 canvas, ctx.bbox, ctx.landmarks,
-                ctx.driver_state, head_pose=hp,
+                ctx.driver_state, head_pose=hp, draw_box=draw_box,
             )
             if ctx.face_lost_extreme_pose:
                 self._visualizer.draw_extreme_pose_warning(canvas)

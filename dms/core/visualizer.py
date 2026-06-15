@@ -13,7 +13,7 @@ class Visualizer:
     def __init__(self):
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.color_warning = (0, 0, 255)
-        self.color_normal = (0, 255, 0)
+        self.color_normal = (255, 255, 255)
         self.gaze_history = deque(maxlen=8)
         self.gaze_history_l = deque(maxlen=8)
         self.gaze_history_r = deque(maxlen=8)
@@ -26,7 +26,7 @@ class Visualizer:
         cv2.putText(frame, "No face detected", (20, 80), self.font, 1, self.color_warning, 2)
 
 
-    def draw_face_info(self, frame, bbox, landmarks, driver_state, head_pose=None):
+    def draw_face_info(self, frame, bbox, landmarks, driver_state, head_pose=None, draw_box=True):
         """Vẽ bbox + trục head-pose (nếu có).
 
         Args:
@@ -36,9 +36,11 @@ class Visualizer:
                           trực tiếp trong pipeline qua FaceMap3DMMDetector.draw_full_mesh.
             driver_state: Trạng thái driver (chưa dùng, để mở rộng cảnh báo).
             head_pose:    Tuple (yaw, pitch, roll) độ, hoặc None để không vẽ trục.
+            draw_box:     False để ẩn bbox SCRFD (vùng transition 80–85°).
         """
         # Bounding box với corner-accent
-        draw_bbox(frame, bbox, self.color_normal)
+        if draw_box:
+            draw_bbox(frame, bbox, self.color_normal, fixed_size=(150, 150))
 
         # 3D head-pose axes
         if head_pose is not None:
