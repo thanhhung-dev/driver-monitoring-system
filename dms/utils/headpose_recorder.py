@@ -66,6 +66,11 @@ _COLUMNS = [
     "kp_sign", "forced_profile", "branch",
     "out_yaw", "out_pitch", "out_roll",
     "prev_yaw", "jump",
+    # Chất lượng ảnh đầu vào — quan trọng để bắt tương quan sáng↔flip:
+    "brightness",      # mean intensity crop (0-255); thấp = tối
+    "contrast",        # std intensity crop; thấp = phẳng (model khó rút feature)
+    "eye_span_px",     # khoảng cách 2 mắt SCRFD; nhỏ = profile/mất mắt
+    "nose_in_bbox",    # 1 nếu mũi trong bbox, 0 nếu tràn ra ngoài
 ]
 
 
@@ -114,6 +119,10 @@ class HeadPoseRecorder:
         kp_sign,
         branch: str,
         last_head_pose,
+        brightness=None,
+        contrast=None,
+        eye_span_px=None,
+        nose_in_bbox=None,
     ) -> None:
         """Ghi 1 dòng cho frame bị reject (clamp hoặc heuristic) — giữ giá trị cũ.
 
@@ -126,6 +135,10 @@ class HeadPoseRecorder:
             raw_yaw, raw_pitch, raw_roll, kp_sign, False, branch,
             out[0], out[1], out[2],
             last_head_pose[0] if last_head_pose is not None else None,
+            brightness=brightness,
+            contrast=contrast,
+            eye_span_px=eye_span_px,
+            nose_in_bbox=nose_in_bbox,
         )
 
     def log(
@@ -145,6 +158,10 @@ class HeadPoseRecorder:
         out_pitch: float,
         out_roll: float,
         prev_yaw,
+        brightness=None,
+        contrast=None,
+        eye_span_px=None,
+        nose_in_bbox=None,
     ) -> None:
         if not self.enabled or self._writer is None or R is None:
             return
@@ -177,6 +194,10 @@ class HeadPoseRecorder:
         row["out_roll"] = f"{out_roll:+.2f}"
         row["prev_yaw"] = "" if prev_yaw is None else f"{prev_yaw:+.2f}"
         row["jump"] = "" if jump == "" else f"{jump:.2f}"
+        row["brightness"] = "" if brightness is None else f"{brightness:.1f}"
+        row["contrast"] = "" if contrast is None else f"{contrast:.1f}"
+        row["eye_span_px"] = "" if eye_span_px is None else f"{eye_span_px:.1f}"
+        row["nose_in_bbox"] = "" if nose_in_bbox is None else int(nose_in_bbox)
         self._writer.writerow(row)
         self._fh.flush()
 
