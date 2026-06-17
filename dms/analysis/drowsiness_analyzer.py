@@ -1,8 +1,93 @@
 from collections import deque
 from enum import Enum
-from typing import List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+
+# Default fusion weights
+_DEFAULT_WEIGHTS = {
+    "perclos": 0.45,
+    "ear_inv": 0.25,
+    "yawn": 0.20,
+    "head_nod": 0.10,
+}
+
+# Track previous attrib mode to log only on transition
+_prev_attrib_mode: str = "none"
+
+
+def _classify_attrib_mode(attribs: Optional[Dict[str, float]]) -> str:
+    """Return a human-readable label for the current attribute combination."""
+    if attribs is None:
+        return "none"
+    sg = attribs.get("sunglasses", 0.0) > 0.5
+    gl = attribs.get("glasses", 0.0) > 0.5
+    mk = attribs.get("mask", 0.0) > 0.5
+    if sg and mk:
+        return "sunglasses+mask"
+    if sg:
+        return "sunglasses"
+    if gl and mk:
+        return "glasses+mask"
+    if gl:
+        return "glasses"
+    if mk:
+        return "mask"
+    return "normal"
+
+
+def _adjust_weights_for_attribs(
+    attribs: Optional[Dict[str, float]],
+) -> Dict[str, float]:
+    """Adjust drowsiness fusion weights based on detected facial attributes.
+
+    EAR is now driven by the Qualcomm FaceAttribNet eye-openness output, which
+    is trained to work through eyeglasses/sunglasses, so eye-based features
+    (PERCLOS, ear_inv) are kept reliable regardless of eyewear.
+
+    - mask → disable yawn (mouth occluded), redistribute its weight
+    """
+    global _prev_attrib_mode
+    w = dict(_DEFAULT_WEIGHTS)
+
+    if attribs is None:
+        mode = "none"
+        if mode != _prev_attrib_mode:
+            logger.info("[attrib] No attributes → using default weights")
+            _prev_attrib_mode = mode
+        return w
+
+    sunglasses = attribs.get("sunglasses", 0.0)
+    glasses = attribs.get("glasses", 0.0)
+    mask = attribs.get("mask", 0.0)
+
+    # Mask: mouth invisible → skip yawn entirely, redistribute its weight
+    # across the remaining eye- and head-based features.
+    if mask > 0.5:
+        yawn_redist = w["yawn"]
+        w["yawn"] = 0.0
+        w["perclos"] += yawn_redist * 0.6
+        w["ear_inv"] += yawn_redist * 0.2
+        w["head_nod"] += yawn_redist * 0.2
+
+    # Log on mode transition
+    mode = _classify_attrib_mode(attribs)
+    if mode != _prev_attrib_mode:
+        logger.info(
+            "[attrib] Mode changed: %s → %s | "
+            "sunglasses=%.2f glasses=%.2f mask=%.2f | "
+            "weights: perclos=%.2f ear=%.2f yawn=%.2f head=%.2f",
+            _prev_attrib_mode, mode,
+            sunglasses, glasses, mask,
+            w["perclos"], w["ear_inv"], w["yawn"], w["head_nod"],
+        )
+        _prev_attrib_mode = mode
+
+    return w
 
 
 class DriverState(Enum):
@@ -90,7 +175,10 @@ class DrowsinessAnalyzer:
     def __init__(
         self,
         fps: int = 15,
-        ear_threshold: float = 0.21,
+        # EAR threshold is now probability-based [0,1] since we use the
+        # Qualcomm FaceAttribNet eye-openness output by default.
+        # Landmark EAR (geometric, ~0.15–0.35) is only a fallback.
+        ear_threshold: float = 0.5,
         mar_threshold: float = 0.65,
         yaw_threshold: float = 30.0,
         perclos_window_sec: float = 60.0,
@@ -127,10 +215,22 @@ class DrowsinessAnalyzer:
 
         # Latest values (for HUD display)
         self.ear: float = 0.0
+        self.ear_source: str = "model"  # "model" (FaceAttribNet) or "landmark" (fallback)
+        self._prev_ear_source: Optional[str] = None  # log only on source change
         self.mar: float = 0.0
         self.perclos: float = 0.0
         self.drowsy_score: float = 0.0
         self.state: DriverState = DriverState.AWAKE
+        self._prev_state: DriverState = DriverState.AWAKE
+
+        logger.info(
+            "[drowsiness] DrowsinessAnalyzer initialized | "
+            "ear_threshold=%.2f (prob-based) mar_threshold=%.2f "
+            "yaw_threshold=%.1f drowsy=[%.2f,%.2f] perclos_sleep=%.1f",
+            self.ear_threshold, self.mar_threshold, self.yaw_threshold,
+            self.drowsy_score_low, self.drowsy_score_high,
+            self.perclos_sleep,
+        )
 
     # ── Feature extraction ──────────────────────────────────────────────
 
@@ -168,12 +268,61 @@ class DrowsinessAnalyzer:
         landmarks: List[Tuple[int, int]],
         pitch: float,
         yaw: float,
+        attribs: Optional[Dict[str, float]] = None,
     ) -> DriverState:
-        """Run full pipeline for one frame. Returns the driver state."""
+        """Run full pipeline for one frame. Returns the driver state.
+
+        Args:
+            landmarks: 68-point facial landmarks.
+            pitch: Head pitch in degrees.
+            yaw: Head yaw in degrees.
+            attribs: Optional dict from FaceAttribDetector with keys:
+                left_eye_open, right_eye_open, glasses, mask, sunglasses.
+                Used to adapt fusion weights (e.g., disable EAR under sunglasses).
+        """
 
         # 1. Feature extraction
-        raw_ear = self._extract_ear(landmarks)
+        # Eye openness: prefer the Qualcomm FaceAttribNet model output
+        # (left_eye_open / right_eye_open probabilities in [0,1]); fall back
+        # to the geometric landmark EAR only when the model did not run.
+        raw_ear_landmark = self._extract_ear(landmarks)
         raw_mar = self._extract_mar(landmarks)
+
+        model_ear = None
+        if attribs is not None:
+            left_open = attribs.get("left_eye_open", None)
+            right_open = attribs.get("right_eye_open", None)
+            if left_open is not None and right_open is not None:
+                model_ear = (left_open + right_open) / 2.0
+
+        if model_ear is not None:
+            raw_ear = model_ear
+            self.ear_source = "model"
+        else:
+            # Fallback: geometric EAR from 68-point landmarks.
+            # NOTE: range differs (~0.15–0.35), so ear_threshold (0.5) is
+            # biased toward model usage. Re-enable model ASAP.
+            raw_ear = raw_ear_landmark
+            self.ear_source = "landmark"
+
+        # Log on EAR source transition (model ↔ landmark)
+        if self.ear_source != self._prev_ear_source:
+            if self.ear_source == "model":
+                logger.info(
+                    "[drowsiness] EAR source → model (FaceAttribNet) | "
+                    "left_eye_open=%.3f right_eye_open=%.3f raw_ear=%.3f",
+                    attribs.get("left_eye_open", 0.0) if attribs else 0.0,
+                    attribs.get("right_eye_open", 0.0) if attribs else 0.0,
+                    raw_ear,
+                )
+            else:
+                logger.info(
+                    "[drowsiness] EAR source → landmark (fallback) | "
+                    "attribs=%s raw_ear=%.3f",
+                    "missing" if attribs is None else "no eye_open",
+                    raw_ear,
+                )
+            self._prev_ear_source = self.ear_source
 
         # 2. Temporal smoothing
         self.ear = self._ema_ear.update(raw_ear)
@@ -196,19 +345,24 @@ class DrowsinessAnalyzer:
             self.drowsy_score = 0.0
             return self.state
 
-        # 5. Drowsy score fusion
+        # 5. Drowsy score fusion — weights adapt to facial attributes
+        w = _adjust_weights_for_attribs(attribs)
+
         perclos_norm = min(self.perclos / 100.0, 1.0)
-        ear_inv = max(1.0 - (self.ear / 0.35), 0.0)  # 0.35 ≈ wide open
+        # ear_inv: probability that the eyes are closed.
+        # self.ear is now a model probability [0,1] (1 = fully open),
+        # so ear closed-ness is simply 1 - ear.
+        ear_inv = max(1.0 - self.ear, 0.0)
         # Normalize yawn: cap at 5 yawns/minute
         yawn_norm = min(yawn_count / 5.0, 1.0)
         # Head nod: pitch < -15° => nodding
         head_nod = max(min((-smooth_pitch - 15.0) / 15.0, 1.0), 0.0)
 
         self.drowsy_score = (
-            0.45 * perclos_norm
-            + 0.25 * ear_inv
-            + 0.20 * yawn_norm
-            + 0.10 * head_nod
+            w["perclos"] * perclos_norm
+            + w["ear_inv"] * ear_inv
+            + w["yawn"] * yawn_norm
+            + w["head_nod"] * head_nod
         )
 
         # 6. State machine
@@ -218,5 +372,25 @@ class DrowsinessAnalyzer:
             self.state = DriverState.DROWSY
         else:
             self.state = DriverState.AWAKE
+
+        # Log state transitions
+        if self.state != self._prev_state:
+            logger.info(
+                "[drowsiness] State: %s → %s | "
+                "score=%.3f perclos=%.1f%% ear=%.3f mar=%.3f",
+                self._prev_state.value, self.state.value,
+                self.drowsy_score, self.perclos, self.ear, self.mar,
+            )
+            self._prev_state = self.state
+
+        # Debug: per-frame values (only when debug logging enabled)
+        if logger.isEnabledFor(logging.DEBUG):
+            attrib_mode = _classify_attrib_mode(attribs)
+            logger.debug(
+                "[drowsiness] ear=%.3f(%s) mar=%.3f perclos=%.1f%% "
+                "score=%.3f state=%s attrib_mode=%s",
+                self.ear, self.ear_source, self.mar, self.perclos,
+                self.drowsy_score, self.state.value, attrib_mode,
+            )
 
         return self.state
