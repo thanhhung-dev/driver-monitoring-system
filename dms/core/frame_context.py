@@ -34,6 +34,10 @@ class FrameContext:
     frame_flipped: bool = False
     face_lost_extreme_pose: bool = False
     extreme_pose_mode: bool = False
+    # Head pose ở full profile (~90°): model + keypoint đều mất tín hiệu.
+    # Khi True → tầng attention/gaze nên dùng hướng dự đoán (latch_sign) thay
+    # vì giá trị số (vì số ở vùng này là rác).
+    full_profile_locked: bool = False
     gaze_render_data: dict | None = None
 
     # Analysis layer results
