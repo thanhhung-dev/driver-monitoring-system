@@ -1,8 +1,11 @@
-from core.frame_context import FrameContext
-from core.visualizer import Visualizer
-from input.video_capture import VideoCapture
 import numpy as np
 import cv2
+
+from infrastructure.camera import VideoCapture
+from pipeline.context import FrameContext
+from presentation.opencv.visualizer import Visualizer
+
+
 class VizStage:
     """Visualization stage: draws mesh, face info, FPS, and shows the frame.
 

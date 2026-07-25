@@ -2,7 +2,7 @@
 Gaze Debug Helper - Log và classify hướng nhìn real-time.
 
 Sử dụng:
-  từ code:  from utils.gaze_debug_helper import GazeDebugLogger
+  từ code:  from features.gaze.debug import GazeDebugLogger
   trong pipeline:  debug_logger.log(pitch, yaw, frame_number)
 
 Output: in ra terminal hướng nhìn + pitch/yaw raw values.

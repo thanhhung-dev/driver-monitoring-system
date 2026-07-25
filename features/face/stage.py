@@ -2,9 +2,9 @@ import dataclasses
 
 import numpy as np
 
-from core.frame_context import FrameContext
-from core.head_pose_feedback import HeadPoseFeedback
-from detection.face_detector import FaceDetector
+from features.face.detector import FaceDetector
+from features.head_pose.feedback import HeadPoseFeedback
+from pipeline.context import FrameContext
 
 
 class DetectStage:

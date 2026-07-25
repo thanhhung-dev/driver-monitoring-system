@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from core.frame_context import FrameContext
+from pipeline.context import FrameContext
 
 
 class Stage(Protocol):

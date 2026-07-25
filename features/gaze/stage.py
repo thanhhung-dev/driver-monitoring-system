@@ -3,18 +3,17 @@ import numpy as np
 
 import dataclasses
 
-from core.frame_context import FrameContext
-from core.visualizer import Visualizer
-from detection.eye_gaze import EyeGazeEstimation, _eye_indices
-from utils.gaze_debug_helper import GazeDebugLogger, classify_gaze, direction_arrow
-from utils.general import get_rotation_matrix
-from utils.telemetry import (
+from features.gaze.debug import GazeDebugLogger, classify_gaze, direction_arrow
+from features.gaze.estimator import EyeGazeEstimation, _eye_indices
+from features.gaze.telemetry import (
     BlinkRateTracker,
     classify_gaze_zone,
     compute_eye_loc_mm,
     compute_head_loc_mm,
     eye_openness_percent,
 )
+from pipeline.context import FrameContext
+from utils.general import get_rotation_matrix
 
 
 class GazeStage:
@@ -31,7 +30,7 @@ class GazeStage:
     def __init__(
         self,
         eye_gaze: EyeGazeEstimation | None,
-        visualizer: Visualizer | None,
+        visualizer: object | None,
         pitch_offset: float = 0.0,
         yaw_offset: float = 0.0,
         debug_logger: GazeDebugLogger | None = None,

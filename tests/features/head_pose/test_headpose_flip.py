@@ -2,8 +2,8 @@
 Test chẩn đoán flip yaw khi head pose ở góc lớn (>~75°).
 
 CHẠY:
-    cd D:\\Workspace\\driver_monitoring\\dms
-    python -m test.test_headpose_flip
+    cd D:\\Workspace\\driver_monitoring
+    python tests/features/head_pose/test_headpose_flip.py
 
 GỒM 3 PHẦN:
     A. test_formula_sweep()  — SYNTHETIC, KHÔNG dùng model.
@@ -34,17 +34,17 @@ import numpy as np
 import cv2
 import onnx
 
-# Cho phép chạy cả `python test/test_headpose_flip.py` lẫn `python -m test...`
+# Cho phép chạy trực tiếp từ repository root.
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_ROOT = os.path.dirname(_HERE)
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(_HERE)))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 from utils.onnx_providers import make_session  # noqa: E402
 from utils.helpers import expand_bbox  # noqa: E402
 from utils.general import get_rotation_matrix  # noqa: E402
-from detection.face_detector import FaceDetector  # noqa: E402
-from core.stages.head_pose_stage import _rotation_matrix_to_euler  # noqa: E402
+from features.face.detector import FaceDetector  # noqa: E402
+from features.head_pose.stage import _rotation_matrix_to_euler  # noqa: E402
 
 # ImageNet normalization (giống hệt HeadPoseStage._preprocess)
 _MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
@@ -288,7 +288,7 @@ def run_on_image(session, inp_name: str, path: str, save_crop: bool = True):
 
 
 def main():
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    root = _ROOT
     model_path = os.path.join(root, "models", "resnet50.onnx")
     if not os.path.exists(model_path):
         print(f"[ERR] Không thấy model: {model_path}")

@@ -19,10 +19,12 @@ def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
         log_level_str = config.get("system", {}).get("log_level", "INFO")
         log_level = getattr(logging, log_level_str, logging.INFO)
         log_file = config.get("system", {}).get("log_file")
+        if log_file and not os.path.isabs(log_file):
+            config_dir = os.path.dirname(os.path.abspath(config_path))
+            log_file = os.path.join(config_dir, log_file)
     
     logger = logging.getLogger(name)
     logger.setLevel(log_level)
-    
     
     # Tranh Spam messages nhieu lan
     if logger.handlers:
@@ -51,4 +53,3 @@ def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
         logger.addHandler(file_handler)
  
     return logger
-    

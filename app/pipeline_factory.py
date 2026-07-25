@@ -1,58 +1,62 @@
+from pathlib import Path
+
 import yaml
 
+from alerting.alert_manager import AlertManager
+from app.application import Application
+from features.distraction.analyzer import DistractionAnalyzer
+from features.distraction.stage import DistractionStage
+from features.drowsiness.analyzer import DrowsinessAnalyzer
+from features.drowsiness.stage import DrowsinessStage
+from features.face.attribute_detector import FaceAttribDetector
+from features.face.attribute_stage import AttribStage
+from features.face.detector import FaceDetector
+from features.face.stage import DetectStage
+from features.gaze.debug import GazeDebugLogger
+from features.gaze.estimator import EyeGazeEstimation
+from features.gaze.stage import GazeStage
+from features.head_pose.feedback import HeadPoseFeedback
+from features.head_pose.stage import HeadPoseStage
+from features.landmarks.detector import FaceMap3DMMDetector
+from features.landmarks.stage import LandmarkStage
+from features.risk.engine import RiskEngine
+from features.risk.stage import RiskStage
+from infrastructure.camera import VideoCapture
+from infrastructure.capture_stage import CaptureStage
+from infrastructure.database import DBManager
+from infrastructure.event_logger import EventLogger
+from pipeline.event_bus import EventBus
+from pipeline.runner import DMSPipeline
+from presentation.opencv.debug_stage import DebugStage
+from presentation.opencv.stage import VizStage
+from presentation.opencv.visualizer import Visualizer
 from utils.logger import setup_logger
-from input.video_capture import VideoCapture
-from detection.face_detector import FaceDetector
-from detection.facemap_3dmm import FaceMap3DMMDetector
-from detection.face_attrib_detector import FaceAttribDetector
-from analysis.drowsiness_analyzer import DrowsinessAnalyzer
-from analysis.distraction_analyzer import DistractionAnalyzer
-from analysis.risk_engine import RiskEngine
-from core.pipeline import DMSPipeline
-from core.event_bus import EventBus
-from core.head_pose_feedback import HeadPoseFeedback
-from core.visualizer import Visualizer
-from detection.eye_gaze import EyeGazeEstimation
-from core.stages import (
-    CaptureStage,
-    DetectStage,
-    LandmarkStage,
-    HeadPoseStage,
-    GazeStage,
-    AttribStage,
-    DrowsinessStage,
-    DistractionStage,
-    RiskStage,
-    DebugStage,
-    VizStage,
-)
-from action.alert_manager import AlertManager
-from action.event_logger import EventLogger
-from storage.db_manager import DBManager
-from utils.gaze_debug_helper import GazeDebugLogger
 
-CONFIG_PATH = "config.yaml"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 
 
-def _load_config(path: str) -> dict:
+def _load_config(path: str | Path) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
 
 
-def main():
-    logger = setup_logger("Main")
+def create_application(config_path: str | Path = CONFIG_PATH) -> Application:
+    """Construct the application and its ordered processing pipeline."""
+    config_path = Path(config_path).resolve()
+    logger = setup_logger("Main", str(config_path))
     logger.info("Initializing Driver Monitoring System...")
 
-    config = _load_config(CONFIG_PATH)
+    config = _load_config(config_path)
     model_cfg = config.get("models", {})
     analysis_cfg = config.get("analysis", {})
     action_cfg = config.get("action", {})
 
     # 1. Input
-    capture = VideoCapture(config_path=CONFIG_PATH)
+    capture = VideoCapture(config_path=str(config_path))
 
     # 2. AI Models
-    face_detector = FaceDetector(model_path="models/det_2.5g.onnx")
+    face_detector = FaceDetector(model_path=str(PROJECT_ROOT / "models/det_2.5g.onnx"))
     facemap = FaceMap3DMMDetector() if model_cfg.get("facemap", True) else None
     attrib_detector = FaceAttribDetector() if model_cfg.get("attrib", True) else None
     eye_gaze = EyeGazeEstimation() if model_cfg.get("eye_gaze", False) else None
@@ -64,7 +68,7 @@ def main():
     head_pose = None
     if model_cfg.get("head_pose", False):
         head_pose = HeadPoseStage(
-            model_path="models/resnet50.onnx",
+            model_path=str(PROJECT_ROOT / "models/resnet50.onnx"),
             feedback=head_pose_feedback,
         )
 
@@ -103,14 +107,17 @@ def main():
     logger_cfg = action_cfg.get("logger", {})
     event_logger = None
     if logger_cfg.get("enabled", True):
-        db_manager = DBManager(db_path=logger_cfg.get("db_path", "data/dms.db"))
+        db_path = Path(logger_cfg.get("db_path", "data/dms.db"))
+        if not db_path.is_absolute():
+            db_path = PROJECT_ROOT / db_path
+        db_manager = DBManager(db_path=str(db_path))
         event_logger = EventLogger(
             db_manager=db_manager,
+            log_dir=str(PROJECT_ROOT / "logs"),
             log_file=logger_cfg.get("log_file", "events.jsonl"),
             min_severity_to_log=logger_cfg.get("min_severity", "medium"),
         )
         event_bus.subscribe("risk", event_logger.on_risk_event)
-        event_logger.start()
 
     # 5. UI
     visualizer = Visualizer() if model_cfg.get("visualizer", True) else None
@@ -149,16 +156,9 @@ def main():
     else:
         logger.info("Running in SEQUENTIAL mode")
 
-    # 7. Run
-    try:
-        pipeline.start(capture)
-    except KeyboardInterrupt:
-        logger.info("User stopped the system.")
-    finally:
-        if event_logger:
-            event_logger.stop()
-        logger.info("System shutdown")
-
-
-if __name__ == "__main__":
-    main()
+    return Application(
+        pipeline=pipeline,
+        capture=capture,
+        logger=logger,
+        event_logger=event_logger,
+    )

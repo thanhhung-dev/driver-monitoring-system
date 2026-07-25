@@ -4,9 +4,9 @@ import os
 import cv2
 import numpy as np
 
-from core.frame_context import FrameContext
-from core.head_pose_feedback import HeadPoseFeedback
-from utils.headpose_recorder import RECORDER, HeadPoseRecorder
+from features.head_pose.feedback import HeadPoseFeedback
+from features.head_pose.recorder import RECORDER, HeadPoseRecorder
+from pipeline.context import FrameContext
 from utils.helpers import expand_bbox
 from utils.general import get_rotation_matrix
 from utils.logger import setup_logger

@@ -4,11 +4,11 @@ Runs after DrowsinessStage and DistractionStage, combines their scores
 via RiskEngine, and publishes RiskEvent to EventBus.
 """
 
-from analysis.events import RiskEvent
-from analysis.risk_engine import RiskEngine
-from core.event_bus import EventBus
-from core.frame_context import FrameContext
-from core.stages.base import Stage
+from features.risk.engine import RiskEngine
+from features.risk.events import RiskEvent
+from pipeline.context import FrameContext
+from pipeline.event_bus import EventBus
+from pipeline.stage import Stage
 
 
 class RiskStage:

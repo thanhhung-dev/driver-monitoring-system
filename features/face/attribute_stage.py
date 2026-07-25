@@ -1,8 +1,8 @@
 import dataclasses
 import logging
 
-from core.frame_context import FrameContext
-from detection.face_attrib_detector import FaceAttribDetector
+from features.face.attribute_detector import FaceAttribDetector
+from pipeline.context import FrameContext
 
 logger = logging.getLogger(__name__)
 

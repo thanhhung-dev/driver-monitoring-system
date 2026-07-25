@@ -1,7 +1,7 @@
 import dataclasses
 
-from core.frame_context import FrameContext
-from analysis.drowsiness_analyzer import DrowsinessAnalyzer
+from features.drowsiness.analyzer import DrowsinessAnalyzer
+from pipeline.context import FrameContext
 
 
 class DrowsinessStage:

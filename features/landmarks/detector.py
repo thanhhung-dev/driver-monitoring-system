@@ -5,7 +5,7 @@ import onnxruntime
 import torch
 from typing import Optional, Tuple, List
 import onnx
-from utils import facial_constants as fc
+from features.landmarks import constants as fc
 from utils.onnx_providers import make_session
 from onnx.external_data_helper import load_external_data_for_model
 
@@ -24,7 +24,7 @@ class FaceMap3DMMDetector:
     ) -> None:
         self.bbox_pad_ratio_x = bbox_pad_ratio_x
         self.bbox_pad_ratio_y = bbox_pad_ratio_y
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         model_dir = os.path.join(base_dir, model_dir)
 
         onnx_path = os.path.join(model_dir, "facemap_3dmm.onnx")
@@ -166,5 +166,3 @@ class FaceMap3DMMDetector:
 
         landmarks_list = [(int(x), int(y)) for x, y in landmark]
         return landmarks_list, head_pose
-
-        

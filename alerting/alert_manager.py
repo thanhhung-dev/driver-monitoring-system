@@ -7,7 +7,7 @@ throttling to avoid spam.
 import time
 from typing import Optional
 
-from analysis.events import RiskEvent, Severity
+from features.risk.events import RiskEvent, Severity
 
 
 class AlertManager:

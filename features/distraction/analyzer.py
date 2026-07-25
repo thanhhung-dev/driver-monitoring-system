@@ -9,7 +9,7 @@ Computes a distraction score (0.0 = focused, 1.0 = fully distracted) based on:
 from collections import deque
 from typing import Optional
 
-from analysis.drowsiness_analyzer import EMAFilter
+from features.drowsiness.analyzer import EMAFilter
 
 
 class DistractionAnalyzer:

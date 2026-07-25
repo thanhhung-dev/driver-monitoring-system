@@ -16,8 +16,8 @@ Chỉ thêm phần matplotlib:
   • plot_gaze_on_crop   : 2D arrow trên eye-crop 160×96 đã preprocess
   • plot_gaze_on_frame  : arrow vẽ trên full frame tại eye center
 
-Cách chạy (từ thư mục dms/):
-    python ../scripts/debug_eye_gaze.py data/image.png
+Cách chạy (từ thư mục gốc repository):
+    python scripts/debug_eye_gaze.py data/image.png
 """
 from __future__ import annotations
 
@@ -31,14 +31,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (đăng ký projection='3d')
 
-# ── Thêm dms/ vào sys.path để import được package nội bộ ──────────────────
-_DMS_DIR = Path(__file__).resolve().parent.parent / "dms"
-if str(_DMS_DIR) not in sys.path:
-    sys.path.insert(0, str(_DMS_DIR))
+# ── Thêm repository root vào sys.path để import được package nội bộ ───────
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
-from detection.eye_gaze import EyeGazeEstimation, _eye_indices  # noqa: E402
-from detection.face_detector import FaceDetector  # noqa: E402
-from detection.facemap_3dmm import FaceMap3DMMDetector  # noqa: E402
+from features.face.detector import FaceDetector  # noqa: E402
+from features.gaze.estimator import EyeGazeEstimation, _eye_indices  # noqa: E402
+from features.landmarks.detector import FaceMap3DMMDetector  # noqa: E402
 
 
 # ════════════════════════════════════════════════════════════════════════
@@ -266,10 +266,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Debug EyeGaze trên 1 ảnh.")
     parser.add_argument(
         "image", nargs="?", default="data/image.png",
-        help="Đường dẫn ảnh (mặc định: data/image.png — chạy từ dms/).",
+        help="Đường dẫn ảnh (mặc định: data/image.png — chạy từ repository root).",
     )
     args = parser.parse_args()
 
-    # Auto-chdir về dms/ để FaceDetector('models/...') tìm thấy model file
-    os.chdir(_DMS_DIR)
+    # Auto-chdir về repository root để model path tương đối luôn chính xác.
+    os.chdir(_PROJECT_ROOT)
     main(args.image)

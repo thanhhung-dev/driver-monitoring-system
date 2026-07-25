@@ -1,9 +1,8 @@
-# core/visualizer.py
 from collections import deque
 
 import cv2
 import numpy as np
-from utils import facial_constants as fc
+from features.landmarks import constants as fc
 from utils.helpers import draw_bbox
 from utils.helpers import draw_axis
 from utils.helpers import draw_head_direction_arrow

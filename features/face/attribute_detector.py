@@ -28,7 +28,7 @@ class FaceAttribDetector:
         self,
         model_dir: str = "models/Facial-Attribute-Detection",
     ) -> None:
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         model_dir = os.path.join(base_dir, model_dir)
 
         onnx_path = os.path.join(model_dir, "model.onnx")

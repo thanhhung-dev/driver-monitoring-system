@@ -3,7 +3,7 @@ from queue import Queue, Empty, Full
 
 import torch
 
-from core.frame_context import FrameContext
+from pipeline.context import FrameContext
 
 
 class ProducerStage:

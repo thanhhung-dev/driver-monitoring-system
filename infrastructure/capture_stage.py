@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from core.frame_context import FrameContext
-from input.video_capture import VideoCapture
+from infrastructure.camera import VideoCapture
+from pipeline.context import FrameContext
 
 
 class CaptureStage:

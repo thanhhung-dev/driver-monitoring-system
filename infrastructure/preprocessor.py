@@ -1,4 +1,4 @@
-# dms/input/preprocessor.py
+# input/preprocessor.py
 import cv2
 import numpy as np
 import time

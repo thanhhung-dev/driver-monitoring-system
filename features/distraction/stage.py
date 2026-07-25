@@ -6,9 +6,9 @@ and updates the context with results.
 
 import time
 
-from analysis.distraction_analyzer import DistractionAnalyzer
-from core.frame_context import FrameContext
-from core.stages.base import Stage
+from features.distraction.analyzer import DistractionAnalyzer
+from pipeline.context import FrameContext
+from pipeline.stage import Stage
 
 
 class DistractionStage:

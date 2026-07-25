@@ -53,7 +53,8 @@ class VideoCapture:
 
     IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
-    def __init__(self, config_path: str = "dms/config.yaml") -> None:
+    def __init__(self, config_path: str = "config.yaml") -> None:
+        self._config_dir = os.path.dirname(os.path.abspath(config_path))
         self.logger = setup_logger("VideoCapture", config_path)
         self._config = self._load_config(config_path)
         self._cap: cv2.VideoCapture | None = None
@@ -84,24 +85,30 @@ class VideoCapture:
         width: int = cam_cfg["resolution"]["width"]
         height: int = cam_cfg["resolution"]["height"]
 
+        resolved_source = source
+        if isinstance(source, str) and not os.path.isabs(source):
+            resolved_source = os.path.join(self._config_dir, source)
+
         # Detect source type: image file / video file / camera
         if isinstance(source, str) and source.lower().endswith(self.IMAGE_EXTS):
             self._is_image_file = True
             self._is_video_file = False
-            if not os.path.exists(source):
+            if not os.path.exists(resolved_source):
                 raise CameraNotFoundError(
-                    f"[ERROR-CAM-001] Image file not found: {source}"
+                    f"[ERROR-CAM-001] Image file not found: {resolved_source}"
                 )
-            self._image_frame = cv2.imread(source)
+            self._image_frame = cv2.imread(resolved_source)
             if self._image_frame is None:
                 raise CameraNotFoundError(
-                    f"[ERROR-CAM-001] Cannot read image: {source}"
+                    f"[ERROR-CAM-001] Cannot read image: {resolved_source}"
                 )
-            self.logger.info(f"Image source loaded: {source} (shape={self._image_frame.shape})")
+            self.logger.info(
+                f"Image source loaded: {resolved_source} (shape={self._image_frame.shape})"
+            )
             return
 
         self._is_video_file = bool(source)
-        input_source = source if source else device_id
+        input_source = resolved_source if source else device_id
         self.logger.info(f"Opening video source: {input_source} ...")
         self._cap = cv2.VideoCapture(input_source)
 

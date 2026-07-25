@@ -2,8 +2,8 @@
 Phân tích logs/headpose_trace.csv → chẩn đoán nguyên nhân flip yaw real-time.
 
 CHẠY:
-    cd D:\\Workspace\\driver_monitoring\\dms
-    python -m test.analyze_headpose_trace [path_csv]
+    cd D:\\Workspace\\driver_monitoring
+    python scripts/analyze_headpose_trace.py [path_csv]
 
 Mặc định đọc logs/headpose_trace.csv. In ra:
   1. Tổng quan: tổng frame, số frame per branch

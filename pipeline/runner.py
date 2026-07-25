@@ -5,10 +5,10 @@ import cv2
 import numpy as np
 import torch
 
-from input.video_capture import VideoCapture, CameraNotFoundError
-from core.frame_context import FrameContext
-from core.event_bus import EventBus
-from core.threading_stage import ProducerStage
+from infrastructure.camera import CameraNotFoundError, VideoCapture
+from pipeline.context import FrameContext
+from pipeline.event_bus import EventBus
+from pipeline.threading_stage import ProducerStage
 
 
 class DMSPipeline:

@@ -8,7 +8,7 @@ L2CS-Net architecture:
 Pretrained weights: Google Drive (from Ahmednull/L2CS-Net)
 
 Usage:
-  python scripts/export_l2cs.py --weights path/to/l2cs.pkl --output dms/models/l2cs-net/l2cs.onnx
+  python scripts/export_l2cs.py --weights path/to/l2cs.pkl --output models/l2cs-net/l2cs.onnx
 """
 
 import argparse
@@ -66,7 +66,7 @@ def bins_to_angle(bin_probs: np.ndarray) -> float:
 def main():
     parser = argparse.ArgumentParser(description="Export L2CS-Net to ONNX")
     parser.add_argument("--weights", required=True, help="Path to L2CS .pkl weights")
-    parser.add_argument("--output", default="dms/models/l2cs-net/l2cs.onnx", help="Output ONNX path")
+    parser.add_argument("--output", default="models/l2cs-net/l2cs.onnx", help="Output ONNX path")
     parser.add_argument("--validate", action="store_true", help="Run validation after export")
     args = parser.parse_args()
 

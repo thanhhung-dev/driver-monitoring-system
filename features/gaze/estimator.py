@@ -77,7 +77,7 @@ class EyeGazeEstimation:
         # smoothing EMA che được sự "lệch" 1 frame giữa 2 mắt.
         self._alternate_eyes = True
         self._eye_turn = 0   # 0 = trái, 1 = phải
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         model_dir = os.path.join(base_dir, model_dir)
 
         onnx_path = os.path.join(model_dir, "eyegaze.onnx")

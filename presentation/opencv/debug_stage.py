@@ -1,6 +1,6 @@
 import numpy as np
 
-from core.frame_context import FrameContext
+from pipeline.context import FrameContext
 from utils.logger import setup_logger
 
 

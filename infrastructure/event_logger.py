@@ -9,8 +9,8 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from analysis.events import RiskEvent
-from storage.db_manager import DBManager
+from features.risk.events import RiskEvent
+from infrastructure.database import DBManager
 
 
 class EventLogger:

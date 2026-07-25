@@ -1,7 +1,7 @@
 import dataclasses
 
-from core.frame_context import FrameContext
-from detection.facemap_3dmm import FaceMap3DMMDetector
+from features.landmarks.detector import FaceMap3DMMDetector
+from pipeline.context import FrameContext
 
 
 class LandmarkStage:
