@@ -844,51 +844,34 @@ The engine emits a `RiskEvent` with `event_type`, `severity` (LOW / MEDIUM / HIG
 
 ```
 driver_monitoring/
-├── dms/
-│   ├── main.py                 # System entry point
-│   ├── config.yaml             # Camera, log, and module toggles
-│   ├── requirements.txt        # Python dependencies
-│   │
-│   ├── core/                   # Pipeline and Visualizer
-│   │   ├── pipeline.py
-│   │   └── visualizer.py
-│   │
-│   ├── input/                  # Input data handling
-│   │   ├── video_capture.py
-│   │   └── preprocessor.py
-│   │
-│   ├── detection/              # AI detection models
-│   │   ├── face_detector.py        # Face detection (ONNX)
-│   │   ├── facemap_3dmm.py         # 3DMM landmarks
-│   │   ├── face_attrib_detector.py # Facial attribute classifier
-│   │   ├── FaceAttribNet.py
-│   │   ├── mobilenetv2.py          # Head pose estimation
-│   │   ├── eye-gaze.py             # (experimental) Eye gaze
-│   │   └── common.py
-│   │
-│   ├── analysis/               # Behavior analysis
-│   │   └── drowsiness_analyzer.py
-│   │
-│   ├── action/                 # Alerts and reactions
-│   ├── storage/                # Database and file storage
-│   │
-│   ├── models/                 # Model weights (.onnx / .pt / .task)
-│   │   ├── det_2.5g.onnx
-│   │   ├── mobilenetv2.pt
-│   │   └── face_landmarker.task
-│   │
-│   ├── utils/                  # Common utilities
-│   │   ├── logger.py
-│   │   ├── helpers.py
-│   │   └── general.py
-│   │
-│   ├── data/                   # Test videos and images
-│   ├── logs/                   # Log files
-│   └── test/                   # Unit tests
-│
-├── scripts/                    # Utility scripts
-└── README.md
+|-- main.py                     # Thin executable entry point
+|-- app/                        # Bootstrap, lifecycle, dependency assembly
+|-- pipeline/                   # Shared frame context and pipeline runner
+|-- features/                   # Feature-first detection and analysis modules
+|   |-- face/                   # Face and facial-attribute detection
+|   |-- landmarks/              # Landmark detection and constants
+|   |-- head_pose/              # Head-pose estimation and feedback
+|   |-- gaze/                   # Eye-gaze estimation and telemetry
+|   |-- drowsiness/             # Drowsiness analysis
+|   |-- distraction/            # Distraction analysis
+|   `-- risk/                   # Risk events and aggregation
+|-- infrastructure/             # Camera, database, preprocessing, event logging
+|-- presentation/opencv/        # OpenCV visualization and debug stages
+|-- alerting/                    # Risk-event alert handlers
+|-- utils/                      # Reusable model and image helpers
+|-- models/                     # Model weights
+|-- data/                       # Test media and local database
+|-- logs/                       # Runtime logs
+|-- tests/                      # Automated and diagnostic tests
+|-- scripts/                    # Developer utilities
+|-- config.yaml                 # Camera, log, and module toggles
+`-- requirements.txt            # Python dependencies
 ```
+
+Dependency flow is kept one-way: `main -> app -> pipeline/features ->
+infrastructure/presentation/alerting`. Feature-specific code stays inside its
+feature package; only genuinely shared contracts and helpers belong in
+`pipeline/` or `utils/`.
 
 ---
 
@@ -939,7 +922,6 @@ source venv/bin/activate
 ### 12.3 Install dependencies
 
 ```bash
-cd dms
 pip install -r requirements.txt
 ```
 
@@ -947,7 +929,7 @@ pip install -r requirements.txt
 
 ### 12.4 Download model weights
 
-Place the following files into `dms/models/`:
+Place the following files into `models/`:
 
 | File | Description |
 |---|---|
@@ -959,7 +941,7 @@ Place the following files into `dms/models/`:
 
 ## 13. Configuration
 
-Configuration is stored in `dms/config.yaml`:
+Configuration is stored in `config.yaml`:
 
 ```yaml
 camera:
@@ -990,21 +972,19 @@ models:
 ## 14. Usage
 
 ```bash
-cd dms
 python main.py
 ```
 
 - The OpenCV window shows the video with bounding boxes, landmarks, and alerts (when `visualizer` is enabled).
 - Press **`q`** (or `Ctrl+C` in the terminal) to quit.
-- Logs are written to `dms/logs/dms.log`.
+- Logs are written to `logs/dms.log`.
 
 ---
 
 ## 15. Testing
 
 ```bash
-cd dms
-python -m pytest test/
+python -m pytest tests/
 ```
 
 ---

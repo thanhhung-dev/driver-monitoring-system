@@ -1,0 +1,48 @@
+camera:
+  # Use device_id (int) for camera, or source (string path) for video file
+  # source: "data/Dataset2.mp4"
+  # source: "data/test3.mp4"
+  source: "data/0601.mp4"
+  # source: "data/dataset.mp4"
+  # source: "data/image.png"
+  # source: 0
+  device_id: 0
+  resolution:
+    width: 640
+    height: 480
+  frame_timeout_ms: 2000
+system:
+  log_level: INFO
+  log_file: logs/dms.log
+  threaded: true
+models:
+  facemap: true          # FaceMap 3DMM landmark
+  attrib: false           # Facial attribute (eyes/glasses/mask...)
+  head_pose: true       # MobileNetV2 head pose
+  analyzer: false         # Drowsiness analyzer
+  visualizer: true       # Hiển thị cửa sổ OpenCV
+  eye_gaze: true
+analysis:
+  distraction:
+    enabled: true
+    gaze_threshold: 0.4
+    yaw_threshold: 25.0
+    lookaway_duration_sec: 2.0
+  risk:
+    enabled: true
+    w_drowsiness: 0.45
+    w_distraction: 0.35
+    w_activity: 0.20
+    threshold_warning: 0.4
+    threshold_critical: 0.7
+action:
+  alerts:
+    enabled: true
+    cooldown_sec: 5.0
+  logger:
+    enabled: true
+    db_path: "data/dms.db"
+    log_file: "events.jsonl"
+    min_severity: "medium"
+debug:
+  gaze_logging: true
