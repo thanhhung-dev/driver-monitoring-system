@@ -276,7 +276,7 @@ def run_on_image(session, inp_name: str, path: str, save_crop: bool = True):
     print(f"‖RᵀR − I‖ = {ortho_err:.6f}   (≈0 = R hợp lệ)")
     print(f"det(R)    = {det_R:+.6f}     (≈+1 = xoay đúng, ≈−1 = reflection)")
     print(f"sy        = {sy:.6f}     (≈0 = GẦN GIMBAL LOCK)")
-    pitch_d, yaw_d, roll_d = -float(euler_deg[0]), float(euler_deg[1]), float(euler_deg[2])
+    pitch_d, yaw_d, roll_d = float(euler_deg[0]), float(euler_deg[1]), float(euler_deg[2])
     print(f"Euler [pitch,yaw,roll] = [{pitch_d:+.2f}, {yaw_d:+.2f}, {roll_d:+.2f}] độ")
     for note in _verdict(ortho_err, det_R, sy):
         print(f"  → {note}")

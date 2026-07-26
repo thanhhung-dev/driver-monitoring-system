@@ -279,7 +279,9 @@ def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
         size = corner_size
 
     y = np.deg2rad(yaw)
-    p = np.deg2rad(pitch)
+    # App convention is pitch+ = looking up; image-space rotation uses the
+    # opposite X-axis sign so the projected Z axis points upward.
+    p = np.deg2rad(-pitch)
     r = np.deg2rad(roll)
 
     Rx = np.array([[1, 0, 0],
@@ -354,7 +356,8 @@ def draw_head_direction_arrow(
 
     # Rotation matrix đầy đủ
     y = np.deg2rad(yaw)
-    p = np.deg2rad(pitch)
+    # App convention is pitch+ = looking up; invert for image projection.
+    p = np.deg2rad(-pitch)
     r = np.deg2rad(roll)
 
     Rx = np.array([[1, 0, 0],

@@ -17,18 +17,18 @@ class DetectStage:
     - The previous frame's head yaw is read from a shared HeadPoseFeedback
       holder (HeadPoseStage runs after DetectStage, so it cannot be read from
       the current ctx).
-    - Enter extreme_pose_mode when |yaw| > ENTER_EXTREME_YAW (80°), exit when
-      |yaw| < EXIT_EXTREME_YAW (75°). Hysteresis tránh nhấp nháy ở biên.
+    - Enter extreme_pose_mode when |yaw| >= ENTER_EXTREME_YAW (88°), exit when
+      |yaw| < EXIT_EXTREME_YAW (80°). Hysteresis tránh nhấp nháy ở biên.
     - In extreme mode SCRFD vẫn chạy để bám bbox; landmark/gaze/attrib/
       drowsiness bị skip. Head pose VẪN chạy (kể cả khi mất mặt nghiêng, trên
       bbox gần nhất) để liên tục đo yaw và thoát extreme đúng lúc khi tài xế
-      quay mặt về (<75°).
+      quay mặt về (<80°).
     - When SCRFD mất mặt nghiêng → giữ bbox gần nhất (face_lost_extreme_pose
       = True) để vẫn còn khung detection. Nếu mất mặt quá MAX_LOST_FRAMES frame
       → reset hẳn về normal (xoá bbox + yaw cũ) để không kẹt extreme vĩnh viễn.
     """
 
-    ENTER_EXTREME_YAW = 85.0
+    ENTER_EXTREME_YAW = 88.0
     EXIT_EXTREME_YAW = 80.0
     MAX_LOST_FRAMES = 15  # ~1s @ 15 FPS: mất mặt lâu hơn → reset về normal
 
@@ -77,7 +77,7 @@ class DetectStage:
         return self._feedback.last_head_pose if self._feedback is not None else None
 
     def _update_extreme_mode(self) -> None:
-        """Hysteresis: vào extreme khi |yaw|>enter, ra khi |yaw|<exit.
+        """Hysteresis: vào extreme khi |yaw|>=enter, ra khi |yaw|<exit.
 
         Yaw được EMA smooth trước khi so ngưỡng để chống noise từ model
         ở góc extreme (dao động ±5-10° giữa các frame).
@@ -99,7 +99,7 @@ class DetectStage:
         else:
             # Chưa extreme → VÀO NGAY trên yaw thô (head pose / keypoint đã ép
             # bão hòa 88° khi tới profile) để không bị EMA làm trễ vào extreme.
-            if raw_yaw > self._enter_yaw:
+            if raw_yaw >= self._enter_yaw:
                 self._extreme_mode = True
                 self._yaw_ema = raw_yaw
 

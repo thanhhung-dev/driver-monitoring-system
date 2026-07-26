@@ -46,6 +46,12 @@ def _rotation_matrix_to_euler(R: np.ndarray) -> np.ndarray:
     ], dtype=np.float64)
 
 
+def _rotation_matrix_to_head_pose(R: np.ndarray) -> tuple[float, float, float]:
+    """Return (yaw, pitch, roll) in degrees; positive pitch means looking up."""
+    pitch, yaw, roll = np.degrees(_rotation_matrix_to_euler(R))
+    return float(yaw), float(pitch), float(roll)
+
+
 class HeadPoseStage:
     """Head pose estimation using ResNet50 ONNX with interval-based skipping.
 
@@ -66,8 +72,8 @@ class HeadPoseStage:
     # nhầm các bước nhảy lớn ngẫu nhiên lúc mặt còn gần chính diện.
     _FLIP_NEAR_PROFILE_DEG = 55.0
 
-    # Giá trị yaw bão hòa khi phát hiện lật gương. Lớn hơn ENTER_EXTREME_YAW
-    # (85°) của DetectStage → kích hoạt extreme_pose_mode ở frame kế tiếp thay
+    # Giá trị yaw bão hòa khi phát hiện lật gương. Bằng ENTER_EXTREME_YAW
+    # (88°) của DetectStage → kích hoạt extreme_pose_mode ở frame kế tiếp thay
     # vì kẹt dưới ngưỡng. Giữ <90° để không bị clamp loại bỏ.
     _YAW_SATURATION_DEG = 88.0
 
@@ -277,8 +283,7 @@ class HeadPoseStage:
         R = np.asarray(outs[0], dtype=np.float64).reshape(3, 3)
 
         # Euler angles — ZYX convention, same as compute_euler_angles_from_rotation_matrices.
-        euler = np.degrees(_rotation_matrix_to_euler(R))
-        pitch_d, yaw_d, roll_d = -float(euler[0]), float(euler[1]), float(euler[2])
+        yaw_d, pitch_d, roll_d = _rotation_matrix_to_head_pose(R)
 
         if _DEBUG and (abs(yaw_d) > 75 or abs(pitch_d) > 75):
             ortho_err = float(np.linalg.norm(R.T @ R - np.eye(3)))
