@@ -259,28 +259,19 @@ class Visualizer:
             cv2.ellipse(overlay_end, (end_x, end_y), (major_i, minor_i), ang_end, 0, 360, color, -1, cv2.LINE_AA)
 
             if show_crosshair and crosshair_size > 0:
-                bar_len_3d = (crosshair_size + major_i) * Z_e / f
-
-                def _proj(p):
-                    return (int(round(f * p[0] / max(p[2], 0.1) + cx)),
-                            int(round(f * p[1] / max(p[2], 0.1) + cy)))
-
-                if R_head is not None:
-                    vec_up = R_head @ np.array([0.0, -1.0, 0.0])
-                else:
-                    vec_up = np.array([0.0, -1.0, 0.0])
-                # Vertical bar
-                p1_v = pos_end_3d - vec_up * bar_len_3d
-                p2_v = pos_end_3d + vec_up * bar_len_3d
-                cv2.line(overlay_end, _proj(p1_v), _proj(p2_v), (0, 255, 255), 2, cv2.LINE_AA)
-                # Horizontal bar (perpendicular to vertical, forms "+" crosshair)
-                vec_right = np.cross(v_unit, vec_up)
-                n_r = np.linalg.norm(vec_right)
-                if n_r > 1e-6:
-                    vec_right /= n_r
-                    p1_h = pos_end_3d - vec_right * bar_len_3d
-                    p2_h = pos_end_3d + vec_right * bar_len_3d
-                    cv2.line(overlay_end, _proj(p1_h), _proj(p2_h), (0, 255, 255), 2, cv2.LINE_AA)
+                bar_len_px = max(2, int(round((crosshair_size + major_i) * 1.0)))
+                cv2.line(
+                    overlay_end,
+                    (end_x - bar_len_px, end_y),
+                    (end_x + bar_len_px, end_y),
+                    (0, 255, 255), 2, cv2.LINE_AA,
+                )
+                cv2.line(
+                    overlay_end,
+                    (end_x, end_y - bar_len_px),
+                    (end_x, end_y + bar_len_px),
+                    (0, 255, 255), 2, cv2.LINE_AA,
+                )
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
         
         return image
