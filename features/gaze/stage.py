@@ -224,18 +224,7 @@ class GazeStage:
         display_center_l = eye_center_l if eye_center_l is not None else self._last_center_l
         display_center_r = eye_center_r if eye_center_r is not None else self._last_center_r
 
-        if display_center_l is not None and display_center_r is not None:
-            eye_dist = np.linalg.norm(display_center_l - display_center_r)
-            raw_gaze_length = 60 * (100.0 / max(eye_dist, 1.0))
-            raw_gaze_length = np.clip(
-                raw_gaze_length, self.GAZE_LENGTH_MIN, self.GAZE_LENGTH_MAX
-            )
-            a = self._gaze_length_alpha
-            gaze_length = a * raw_gaze_length + (1.0 - a) * self._prev_gaze_length
-            self._prev_gaze_length = gaze_length
-        else:
-            gaze_length = self._prev_gaze_length
-
+        gaze_length = self.GAZE_LENGTH_MAX
         # Nhắm mắt -> rút ngắn gaze (tránh dài ra khi nhắm mắt + cúi xuống).
         eye_open_scale = self._eye_open_length_scale(ctx.landmarks)
         gaze_length *= eye_open_scale
@@ -266,7 +255,7 @@ class GazeStage:
 
             # Liếc ngang kéo dài nhẹ, giới hạn 1.15 để không quá dài.
             yaw_val = np.abs(float(gaze_avg[1]))
-            side_factor = np.clip(1.0 + yaw_val / 0.5, 1.0, 1.3)
+            side_factor = np.clip(1.0 + yaw_val / 0.5, 1.0, 1.15)
             gaze_length *= side_factor
 
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
@@ -283,12 +272,24 @@ class GazeStage:
             vec_world = vec
 
         elif ctx.head_pose is not None and not use_eye_gaze:
-            head_vec = self._pitchyaw_to_vec(
-                np.zeros(2, dtype=np.float32), head_pose=ctx.head_pose,
-                head_rotation_matrix=ctx.head_rotation_matrix,
-            )
-            # Head-fallback (yaw lớn): dùng độ dài riêng, không bị cap GAZE_LENGTH_MAX.
-            # Nhắm mắt vẫn rút ngắn theo eye_open_scale.
+            #TODO Đang Trùng Logic Với Draw direction arrow  -> common Nó sau
+            yaw_h, pitch_h, roll_h = ctx.head_pose
+            y = np.deg2rad(yaw_h)
+            p = np.deg2rad(-pitch_h)  
+            r = np.deg2rad(roll_h)
+
+            Rx = np.array([[1, 0, 0],
+                        [0, np.cos(p), -np.sin(p)],
+                        [0, np.sin(p),  np.cos(p)]])
+            Ry = np.array([[ np.cos(y), 0, np.sin(y)],
+                        [ 0,         1, 0        ],
+                        [-np.sin(y), 0, np.cos(y)]])
+            Rz = np.array([[np.cos(r), -np.sin(r), 0],
+                        [np.sin(r),  np.cos(r), 0],
+                        [0,          0,         1]])
+            R = Rz @ Ry @ Rx
+            head_vec = (R @ np.array([0.0, 0.0, 1.0])).astype(np.float32)
+
             profile_gaze_length = self.PROFILE_GAZE_LENGTH * eye_open_scale
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)
             gaze_render_data = {
@@ -302,16 +303,6 @@ class GazeStage:
                 "show_crosshair": False,
             }
             vec_world = head_vec
-
-        if self._debug_logger is not None and self._debug_logger._enabled:
-            self._draw_debug_overlay(
-                ctx.frame,
-                display_gaze_l, display_gaze_r,
-                ctx.head_pose,
-                ctx.landmarks,
-                display_center_l, display_center_r,
-                use_head_fallback=not use_eye_gaze,
-            )
 
         if not use_eye_gaze:
             h, w = ctx.frame.shape[:2]

@@ -251,6 +251,8 @@ def draw_bbox_info(
 # Head pose visualization
 # ─────────────────────────────────────────────────────────────────────────────
 
+
+
 def draw_axis(image: np.ndarray, yaw: float, pitch: float, roll: float,
               bbox: list, size_ratio: float = 0.5,
               corner: str = "top-right", corner_size: int = 60, margin: int = 20) -> None:

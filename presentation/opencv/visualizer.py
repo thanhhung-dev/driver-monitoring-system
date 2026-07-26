@@ -149,7 +149,7 @@ class Visualizer:
         color: tuple[int, int, int] = (255, 255, 0),
         num_dots: int = 6,
         min_radius: int = 1,
-        max_radius: int = 14,       
+        max_radius: int = 12,       
         glow_size: int = 2,        
         eye_depth: float = 1.0,
         focal_length: float | None = None,
@@ -203,7 +203,7 @@ class Visualizer:
             t_s = t ** 3.0
             
             X = X_e + t_s * L * vx
-            Y = Y_e + t_s * L * (-vy)  
+            Y = Y_e + t_s * L * vy
             Z = Z_e + t_s * L * vz
             pos_3d = np.array([X, Y, Z])
             
@@ -211,7 +211,7 @@ class Visualizer:
             r_3d = r_pixel * Z_e / f
             
   
-            gaze_normal = np.array([vx, -vy, vz]) 
+            gaze_normal = np.array([vx, vy, vz])
             gaze_normal /= np.linalg.norm(gaze_normal)
             (u, v), (major, minor), angle_deg = self._project_circle_to_ellipse(
                 pos_3d, r_3d, gaze_normal, f, cx, cy
@@ -240,7 +240,7 @@ class Visualizer:
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
         X_end = X_e + L * vx
-        Y_end = Y_e + L * (-vy)
+        Y_end = Y_e + L * vy
         Z_end = Z_e + L * vz
         pos_end_3d = np.array([X_end, Y_end, Z_end])
         
