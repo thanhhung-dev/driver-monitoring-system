@@ -1,9 +1,0 @@
-onnx
-onnxruntime          # use onnxruntime-gpu instead if CUDA is available
-opencv-python
-numpy
-scikit-image
-faiss-cpu
-dlib==19.22.1
-PyYAML==6.0
-pygame==2.1.2

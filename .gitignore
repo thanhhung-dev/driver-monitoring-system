@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+
+# Runtime output
+logs/
+dms.log
+output.mp4
+data/daraset.mp4
+data/*.mp4
+
+# Model weights
+*.data
+*.pth
+*.pt
+models/**/*.data
+
+# Local Claude tooling
+claudekit/
+.claude/
