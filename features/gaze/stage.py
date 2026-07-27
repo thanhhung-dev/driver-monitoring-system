@@ -57,7 +57,7 @@ class GazeStage:
     MAX_HEAD_YAW_FOR_GAZE = 70
     PROFILE_GAZE_LENGTH_SCALE = 0.65
     GAZE_LENGTH_MIN = 50
-    GAZE_LENGTH_MAX = 70
+    GAZE_LENGTH_MAX = 90
     PROFILE_GAZE_LENGTH = 120
     # Tinh Khi Nham Mat
     EYE_OPEN_FULL_PERCENT = 30.0
@@ -255,7 +255,7 @@ class GazeStage:
 
             # Liếc ngang kéo dài nhẹ, giới hạn 1.15 để không quá dài.
             yaw_val = np.abs(float(gaze_avg[1]))
-            side_factor = np.clip(1.0 + yaw_val / 0.5, 1.0, 1.15)
+            side_factor = np.clip(1.0 + yaw_val / 0.5, 1.0, 1.3)
             gaze_length *= side_factor
 
             opacity_scale = self._gaze_opacity_scale(ctx.head_pose)

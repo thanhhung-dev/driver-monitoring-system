@@ -6,7 +6,6 @@ from features.landmarks import constants as fc
 from utils.helpers import draw_bbox
 from utils.helpers import draw_axis
 from utils.helpers import draw_head_direction_arrow
-from utils.general import get_rotation_matrix
 
 class Visualizer:
     def __init__(self):
@@ -39,7 +38,8 @@ class Visualizer:
         """
         # Bounding box với corner-accent
         if draw_box:
-            draw_bbox(frame, bbox, self.color_normal, fixed_size=(150, 150))
+            draw_bbox(frame, bbox, self.color_normal, fixed_size=(250, 250))
+
 
         # 3D head-pose axes
         if head_pose is not None:
@@ -149,12 +149,15 @@ class Visualizer:
         color: tuple[int, int, int] = (255, 255, 0),
         num_dots: int = 6,
         min_radius: int = 1,
-        max_radius: int = 12,       
-        glow_size: int = 2,        
+        max_radius: int = 14,
+        glow_size: int = 1,
         eye_depth: float = 1.0,
+        start_offset: float = 0.15,
+        dot_spacing_power: float = 2.0,
         focal_length: float | None = None,
         head_pose: tuple[float, float, float] | None = None,
         crosshair_size: float = 2.0,
+        crosshair_thickness: int = 1,
         opacity_scale: float = 1.0,
         show_crosshair: bool = True,
     ) -> np.ndarray:
@@ -180,16 +183,6 @@ class Visualizer:
         X_e = (x0 - cx) * Z_e / f
         Y_e = (y0 - cy) * Z_e / f
         L = float(length) * Z_e / (float(length) + f) if length else 0.0
-        normal = np.array([0.0, 0.0, -1.0])
-        R_head = None
-        if head_pose is not None:
-            yaw_d, pitch_d, roll_d = head_pose
-            R_head = get_rotation_matrix(
-                np.deg2rad(pitch_d),
-                np.deg2rad(yaw_d),
-                np.deg2rad(roll_d),
-            )
-            normal = R_head @ np.array([0.0, 0.0, -1.0])
         # Tinh Toan Khi Ngieng
         gaze_strength = np.hypot(vx, vy)
         min_opacity, max_opacity = 0.05, 0.9
@@ -197,22 +190,25 @@ class Visualizer:
         alpha_global = min_opacity + (max_opacity - min_opacity) * t
         alpha_global *= float(np.clip(opacity_scale, 0.0, 1.0))
 
-        start_offset = 0.4  
-        for i in range(1, num_dots + 1):
-            t = start_offset + (1.0 - start_offset) * i / num_dots
-            t_s = t ** 3.0
-            
-            X = X_e + t_s * L * vx
-            Y = Y_e + t_s * L * vy
-            Z = Z_e + t_s * L * vz
+        gaze_normal = np.array([vx, vy, vz])
+        gaze_normal /= np.linalg.norm(gaze_normal)
+        progress_denominator = max(num_dots - 1, 1)
+        spacing_power = max(float(dot_spacing_power), 1.0)
+        eye_to_gaze_offset = float(np.clip(start_offset, 0.0, 1.0))
+        for i in range(num_dots):
+            normalized_progress = i / progress_denominator
+            spacing_progress = normalized_progress ** spacing_power
+            distance_progress = eye_to_gaze_offset + (1.0 - eye_to_gaze_offset) * spacing_progress
+            radius_progress = normalized_progress
+
+            X = X_e + distance_progress * L * vx
+            Y = Y_e + distance_progress * L * vy
+            Z = Z_e + distance_progress * L * vz
             pos_3d = np.array([X, Y, Z])
-            
-            r_pixel = min_radius + (max_radius - min_radius) * t_s
+
+            r_pixel = min_radius + (max_radius - min_radius) * radius_progress
             r_3d = r_pixel * Z_e / f
-            
-  
-            gaze_normal = np.array([vx, vy, vz])
-            gaze_normal /= np.linalg.norm(gaze_normal)
+
             (u, v), (major, minor), angle_deg = self._project_circle_to_ellipse(
                 pos_3d, r_3d, gaze_normal, f, cx, cy
             )
@@ -220,9 +216,9 @@ class Visualizer:
             px, py = int(round(u)), int(round(v))
             if not (0 <= px < W and 0 <= py < H):
                 continue
-            alpha = (t ** 2) * alpha_global
+            alpha = alpha_global
             scale_factor = Z_e / max(Z, 0.1)
-            curr_glow = glow_size * t * scale_factor
+            curr_glow = glow_size * (0.5 + 0.5 * radius_progress) * scale_factor
             overlay = image.copy()
             if curr_glow > 0:
                 cv2.ellipse(
@@ -250,27 +246,29 @@ class Visualizer:
         
         if 0 <= end_x < W and 0 <= end_y < H:
             overlay_end = image.copy()
-            r_end_3d = 4.0 * Z_e / f
+            marker_radius = max_radius + max(2.0, crosshair_size)
+            r_end_3d = marker_radius * Z_e / f
             _, (maj_end, min_end), ang_end = self._project_circle_to_ellipse(
-                pos_end_3d, r_end_3d, normal, f, cx, cy
+                pos_end_3d, r_end_3d, gaze_normal, f, cx, cy
             )
             major_i = max(1, int(round(maj_end)))
             minor_i = max(1, int(round(min_end)))
             cv2.ellipse(overlay_end, (end_x, end_y), (major_i, minor_i), ang_end, 0, 360, color, -1, cv2.LINE_AA)
 
             if show_crosshair and crosshair_size > 0:
-                bar_len_px = max(2, int(round((crosshair_size + major_i) * 1.0)))
+                bar_len = max(1, int(round(crosshair_size + major_i)))
+                crosshair_color = (0, 255, 255)
                 cv2.line(
                     overlay_end,
-                    (end_x - bar_len_px, end_y),
-                    (end_x + bar_len_px, end_y),
-                    (0, 255, 255), 2, cv2.LINE_AA,
+                    (end_x, end_y - bar_len),
+                    (end_x, end_y + bar_len),
+                    crosshair_color, crosshair_thickness, cv2.LINE_AA,
                 )
                 cv2.line(
                     overlay_end,
-                    (end_x, end_y - bar_len_px),
-                    (end_x, end_y + bar_len_px),
-                    (0, 255, 255), 2, cv2.LINE_AA,
+                    (end_x - bar_len, end_y),
+                    (end_x + bar_len, end_y),
+                    crosshair_color, crosshair_thickness, cv2.LINE_AA,
                 )
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
         
