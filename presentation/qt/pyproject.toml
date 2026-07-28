@@ -1,0 +1,6 @@
+[project]
+name = "PySide QtQuick Project"
+
+[tool.pyside6-project]
+files = ["gui_manager.py", "stage.py", "main_window.ui"]
+main = "gui_manager.py"

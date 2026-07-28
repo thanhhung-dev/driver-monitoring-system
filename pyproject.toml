@@ -1,0 +1,8 @@
+[project]
+name = "driver-monitoring-system"
+version = "1.0.0"
+description = "Driver Monitoring System using PySide6 and OpenCV"
+dependencies = [
+    "PySide6",
+    "opencv-python"
+]

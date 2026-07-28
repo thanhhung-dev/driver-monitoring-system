@@ -12,3 +12,21 @@
 <p align="center">
   If you find this project useful, please <b>star</b> the repo to support the author.
 </p>
+
+## Qt Integration
+
+This project can use Qt for a GUI launcher window via `PySide6`.
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the Qt demo window:
+
+```bash
+python app/qt_gui.py
+```
+
+This will open a Qt-based IDE-style application window for the project.

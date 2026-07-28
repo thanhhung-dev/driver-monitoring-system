@@ -36,3 +36,13 @@ models/**/*.data
 # Local Claude tooling
 claudekit/
 .claude/
+
+# Qt Creator
+.qtcreator/
+*.pro.user
+*.pro.user.*
+*.pyproject.user
+CMakeLists.txt.user
+build/
+build-*/
+.pb
