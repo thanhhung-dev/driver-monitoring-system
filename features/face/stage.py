@@ -84,6 +84,9 @@ class DetectStage:
         """
         prev = self._prev_head_pose()
         if prev is None:
+            self._extreme_mode = False
+            self._yaw_ema = None
+            self._lost_counter = 0
             return
         raw_yaw = abs(float(prev[0]))
         if self._extreme_mode:
@@ -119,6 +122,13 @@ class DetectStage:
             self._last_det, self._last_kpss = det, kpss
         else:
             det, kpss = self._last_det, self._last_kpss
+
+        ctx = dataclasses.replace(
+            ctx,
+            face_detections=det,
+            face_keypoints=kpss,
+            face_detection_fresh=need_detect,
+        )
 
         has_face = det is not None and len(det) > 0
         if has_face:

@@ -160,6 +160,9 @@ class EMAFilter:
             self._value = self.alpha * raw + (1 - self.alpha) * self._value
         return self._value
 
+    def reset(self) -> None:
+        self._value = None
+
     @property
     def value(self) -> float:
         return self._value if self._value is not None else 0.0
@@ -231,6 +234,26 @@ class DrowsinessAnalyzer:
             self.drowsy_score_low, self.drowsy_score_high,
             self.perclos_sleep,
         )
+
+    def reset(self) -> None:
+        """Discard temporal state when the monitored driver is no longer present."""
+        self._eye_closed_buf.clear()
+        self._distracted_counter = 0
+        self._yawn_buf.clear()
+        self._yawning_prev = False
+        for ema_filter in (
+            self._ema_ear,
+            self._ema_mar,
+            self._ema_yaw,
+            self._ema_pitch,
+        ):
+            ema_filter.reset()
+        self.ear = 0.0
+        self.mar = 0.0
+        self.perclos = 0.0
+        self.drowsy_score = 0.0
+        self.state = DriverState.AWAKE
+        self._prev_state = DriverState.AWAKE
 
     # ── Feature extraction ──────────────────────────────────────────────
 

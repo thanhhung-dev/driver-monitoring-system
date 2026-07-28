@@ -15,6 +15,10 @@ class DrowsinessStage:
         return "drowsiness"
 
     def process(self, ctx: FrameContext) -> FrameContext:
+        if ctx.is_driver is False:
+            if self._analyzer is not None:
+                self._analyzer.reset()
+            return ctx
         if self._analyzer is None or ctx.landmarks is None:
             return ctx
 

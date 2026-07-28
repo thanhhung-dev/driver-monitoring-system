@@ -190,6 +190,17 @@ class GazeStage:
         return last_gaze, last_age, last_center, display_gaze
 
     def process(self, ctx: FrameContext) -> FrameContext:
+        if ctx.is_driver is False:
+            self._last_gaze_l = None
+            self._last_gaze_r = None
+            self._last_center_l = None
+            self._last_center_r = None
+            self._last_age_l = 999
+            self._last_age_r = 999
+            if self._eye_gaze is not None:
+                self._eye_gaze._prev_gaze_l = None
+                self._eye_gaze._prev_gaze_r = None
+            return ctx
         if self._eye_gaze is None or ctx.landmarks is None:
             return ctx
         use_head_fallback = (

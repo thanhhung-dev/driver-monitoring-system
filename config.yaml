@@ -2,26 +2,35 @@ camera:
   # Use device_id (int) for camera, or source (string path) for video file
   # source: "data/Dataset2.mp4"
   # source: "data/test3.mp4"
-  source: "data/0601.mp4"
+  # source: "data/0601.mp4"
   # source: "data/dataset.mp4"
   # source: "data/image.png"
-  # source: 0
+  source: 0
   device_id: 0
   resolution:
-    width: 640
-    height: 480
+    width: 1280
+    height: 720
   frame_timeout_ms: 2000
 system:
   log_level: INFO
   log_file: logs/dms.log
   threaded: true
 models:
+  driver_identity: true # Đã bật tính năng nhận diện tài xế
   facemap: true          # FaceMap 3DMM landmark
   attrib: false           # Facial attribute (eyes/glasses/mask...)
   head_pose: true       # MobileNetV2 head pose
   analyzer: false         # Drowsiness analyzer
   visualizer: true       # Hiển thị cửa sổ OpenCV
   eye_gaze: true
+identity:
+  model_path: "models/w600k_mbf.onnx"
+  drivers_dir: "data/drivers"
+  # Thư mục chứa cấu trúc đa tài xế: data/drivers/<Tên tài xế>/<ảnh>
+  # Vùng ROI của ghế lái (x_min, y_min, x_max, y_max) tính theo tỷ lệ màn hình [0.0 -> 1.0]. Mặc định là nửa bên phải.
+  driver_roi: [0.45, 0.0, 1.0, 1.0]
+  # reference_embedding: "data/driver-embedding.npy"
+  similarity_threshold: 0.4
 analysis:
   distraction:
     enabled: true

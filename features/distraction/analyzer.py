@@ -50,6 +50,23 @@ class DistractionAnalyzer:
         self.gaze_x: float = 0.0
         self.gaze_y: float = 0.0
 
+    def reset(self) -> None:
+        """Discard temporal state when the monitored driver is no longer present."""
+        self._lookaway_counter = 0
+        self._distracted_buf.clear()
+        for ema_filter in (
+            self._ema_gaze_x,
+            self._ema_gaze_y,
+            self._ema_yaw,
+            self._ema_pitch,
+        ):
+            ema_filter.reset()
+        self.distraction_score = 0.0
+        self.is_distracted = False
+        self.lookaway_duration = 0.0
+        self.gaze_x = 0.0
+        self.gaze_y = 0.0
+
     def update(
         self,
         gaze_x: Optional[float],

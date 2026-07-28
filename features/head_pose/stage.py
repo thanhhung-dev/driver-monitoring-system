@@ -155,6 +155,21 @@ class HeadPoseStage:
     def name(self) -> str:
         return "head_pose"
 
+    def _reset_tracking(self) -> None:
+        self._counter = 0
+        self._last_head_pose = None
+        self._last_R = None
+        self._last_stable_pitch = None
+        self._last_stable_roll = None
+        self._profile_hold = 0
+        self._yaw_latched = False
+        self._latch_sign = 1.0
+        self._recovery_count = 0
+        self._latch_entry_yaw = 0.0
+        self._latch_yaw_velocity = 0.0
+        if self._feedback is not None:
+            self._feedback.last_head_pose = None
+
     def _preprocess(self, bgr_crop: np.ndarray) -> np.ndarray:
         """BGR crop → ImageNet-normalized NCHW float32.
 
@@ -249,6 +264,10 @@ class HeadPoseStage:
         # liên tục đo yaw → DetectStage mới thấy yaw giảm <75° và thoát
         # extreme_pose_mode khi tài xế quay mặt về (nếu không, yaw đóng băng ở
         # giá trị bão hòa và hệ thống kẹt extreme = "đứng hình").
+        if ctx.is_driver is False:
+            self._reset_tracking()
+            RECORDER.log_skip(ctx.frame_number, "not_driver")
+            return ctx
         if ctx.bbox is None:
             RECORDER.log_skip(ctx.frame_number, "no_bbox")
             return ctx

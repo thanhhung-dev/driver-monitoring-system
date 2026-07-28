@@ -20,6 +20,16 @@ class FrameContext:
     frame_number: int = 0
     bbox: tuple[int, int, int, int] | None = None
     face_kpss: np.ndarray | None = None
+    face_detections: np.ndarray | None = None
+    face_keypoints: np.ndarray | None = None
+    face_detection_fresh: bool = False
+    is_driver: bool | None = None
+    driver_name: str | None = None
+    out_of_position: bool = False
+    driver_roi: tuple[float, float, float, float] | None = None
+    identity_similarity: float | None = None
+    face_similarities: np.ndarray | None = None
+    driver_face_index: int | None = None
     landmarks: np.ndarray | None = None
     facemap_pose: tuple[float, float, float] | None = None
     head_pose: tuple[float, float, float] | None = None

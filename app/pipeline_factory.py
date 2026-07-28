@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import cv2
+import numpy as np
 import yaml
 
 from alerting.alert_manager import AlertManager
@@ -11,6 +13,8 @@ from features.drowsiness.stage import DrowsinessStage
 from features.face.attribute_detector import FaceAttribDetector
 from features.face.attribute_stage import AttribStage
 from features.face.detector import FaceDetector
+from features.face.identity_stage import DriverIdentityStage
+from features.face.recognizer import ArcFaceRecognizer
 from features.face.stage import DetectStage
 from features.gaze.debug import GazeDebugLogger
 from features.gaze.estimator import EyeGazeEstimation
@@ -57,6 +61,53 @@ def create_application(config_path: str | Path = CONFIG_PATH) -> Application:
 
     # 2. AI Models
     face_detector = FaceDetector(model_path=str(PROJECT_ROOT / "models/det_2.5g.onnx"))
+    identity_stage = None
+    if model_cfg.get("driver_identity", False):
+        identity_cfg = config.get("identity", {})
+        model_path = PROJECT_ROOT / identity_cfg.get("model_path", "models/w600k_mbf.onnx")
+        recognizer = ArcFaceRecognizer(str(model_path))
+
+        drivers_dir = identity_cfg.get("drivers_dir")
+        if drivers_dir:
+            dir_path = PROJECT_ROOT / drivers_dir
+            driver_embeddings_map = {}
+            if dir_path.is_dir():
+                for driver_folder in dir_path.iterdir():
+                    if not driver_folder.is_dir():
+                        continue
+                    driver_name = driver_folder.name
+                    embeddings = []
+                    for img_file in driver_folder.glob("*.*"):
+                        if img_file.suffix.lower() not in [".jpg", ".jpeg", ".png"]:
+                            continue
+                        img = cv2.imread(str(img_file))
+                        if img is None:
+                            continue
+                        dets, kpss = face_detector.detect(img)
+                        if kpss is not None and len(kpss) > 0:
+                            # Take the largest face if multiple
+                            best_face_idx = 0
+                            if len(dets) > 1:
+                                areas = [(d[2]-d[0])*(d[3]-d[1]) for d in dets]
+                                best_face_idx = int(np.argmax(areas))
+                            emb = recognizer.get_embedding(img, kpss[best_face_idx])
+                            embeddings.append(emb)
+                    if embeddings:
+                        driver_embeddings_map[driver_name] = np.vstack(embeddings)
+                
+                if not driver_embeddings_map:
+                    logger.warning(f"No valid faces found in drivers directory: {drivers_dir}")
+            else:
+                logger.warning(f"Drivers directory not found: {drivers_dir}")
+        else:
+            raise ValueError("Driver identity requires identity.drivers_dir")
+
+        identity_stage = DriverIdentityStage(
+            recognizer=recognizer,
+            driver_embeddings=driver_embeddings_map,
+            similarity_threshold=identity_cfg.get("similarity_threshold", 0.4),
+            driver_roi=identity_cfg.get("driver_roi", [0.45, 0.0, 1.0, 1.0]),
+        )
     facemap = FaceMap3DMMDetector() if model_cfg.get("facemap", True) else None
     attrib_detector = FaceAttribDetector() if model_cfg.get("attrib", True) else None
     eye_gaze = EyeGazeEstimation() if model_cfg.get("eye_gaze", False) else None
@@ -128,6 +179,7 @@ def create_application(config_path: str | Path = CONFIG_PATH) -> Application:
 
     logger.info(
         f"Models enabled → facemap={facemap is not None}, "
+        f"driver_identity={identity_stage is not None}, "
         f"attrib={attrib_detector is not None}, head_pose={head_pose is not None}, "
         f"analyzer={analyzer is not None}, distraction={distraction_analyzer is not None}, "
         f"visualizer={visualizer is not None}"
@@ -137,6 +189,7 @@ def create_application(config_path: str | Path = CONFIG_PATH) -> Application:
     stages = [s for s in [
         CaptureStage(capture),
         DetectStage(face_detector, interval=5, feedback=head_pose_feedback),
+        identity_stage,
         LandmarkStage(facemap),
         head_pose,
         GazeStage(eye_gaze, visualizer, debug_logger=gaze_debug),
@@ -145,7 +198,10 @@ def create_application(config_path: str | Path = CONFIG_PATH) -> Application:
         DistractionStage(distraction_analyzer) if distraction_analyzer else None,
         RiskStage(risk_engine, event_bus=event_bus),
         DebugStage(logger, config),
-        VizStage(visualizer, capture),
+        VizStage(
+            visualizer, 
+            capture
+        ),
     ] if s is not None]
 
     threaded = config.get("system", {}).get("threaded", False)

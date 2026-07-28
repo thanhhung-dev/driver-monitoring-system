@@ -4,7 +4,7 @@ Reads gaze and head pose from FrameContext, computes distraction score,
 and updates the context with results.
 """
 
-import time
+import dataclasses
 
 from features.distraction.analyzer import DistractionAnalyzer
 from pipeline.context import FrameContext
@@ -28,6 +28,10 @@ class DistractionStage:
         Returns:
             Updated FrameContext with distraction_score.
         """
+        if ctx.is_driver is False:
+            self._analyzer.reset()
+            return ctx
+
         # Extract gaze data
         gaze_x = None
         gaze_y = None
@@ -61,25 +65,4 @@ class DistractionStage:
         }
 
         # Return new context with distraction data
-        return FrameContext(
-            frame=ctx.frame,
-            frame_number=ctx.frame_number,
-            bbox=ctx.bbox,
-            face_kpss=ctx.face_kpss,
-            landmarks=ctx.landmarks,
-            facemap_pose=ctx.facemap_pose,
-            head_pose=ctx.head_pose,
-            head_rotation_matrix=ctx.head_rotation_matrix,
-            gaze_l=ctx.gaze_l,
-            gaze_r=ctx.gaze_r,
-            gaze_vec_world=ctx.gaze_vec_world,
-            eye_center_l=ctx.eye_center_l,
-            eye_center_r=ctx.eye_center_r,
-            attribs=ctx.attribs,
-            driver_state=ctx.driver_state,
-            frame_flipped=ctx.frame_flipped,
-            face_lost_extreme_pose=ctx.face_lost_extreme_pose,
-            extreme_pose_mode=ctx.extreme_pose_mode,
-            gaze_render_data=ctx.gaze_render_data,
-            distraction_score=score,
-        )
+        return dataclasses.replace(ctx, distraction_score=score)

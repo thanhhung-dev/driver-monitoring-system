@@ -18,7 +18,7 @@ class AttribStage:
         return "attrib"
 
     def process(self, ctx: FrameContext) -> FrameContext:
-        if self._detector is None or ctx.bbox is None:
+        if self._detector is None or ctx.bbox is None or ctx.is_driver is False:
             return ctx
 
         attribs = self._detector.detect(ctx.frame, ctx.bbox)
