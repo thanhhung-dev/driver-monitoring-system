@@ -157,7 +157,7 @@ class Visualizer:
         focal_length: float | None = None,
         head_pose: tuple[float, float, float] | None = None,
         crosshair_size: float = 2.0,
-        crosshair_thickness: int = 1,
+        crosshair_thickness: int = 2,
         opacity_scale: float = 1.0,
         show_crosshair: bool = True,
     ) -> np.ndarray:
@@ -166,15 +166,15 @@ class Visualizer:
         Each dot is treated as a 3D disk perpendicular to the gaze vector.
         """
         H, W = image.shape[:2]
-    
+
         # Extract gaze vector components
         v = np.asarray(v_world, dtype=np.float64)
         norm = np.linalg.norm(v)
         if norm < 1e-6 or eye_depth <= 0:
             return image
-        v_unit = v/norm
+        v_unit = v / norm
         vx, vy, vz = float(v_unit[0]), float(v_unit[1]), float(v_unit[2])
-        
+
         # ──────── PINHOLE CAMERA SETUP ────────
         f = float(focal_length) if focal_length is not None else float(max(W, H))
         cx, cy = W * 0.5, H * 0.5
@@ -195,30 +195,38 @@ class Visualizer:
         progress_denominator = max(num_dots - 1, 1)
         spacing_power = max(float(dot_spacing_power), 1.0)
         eye_to_gaze_offset = float(np.clip(start_offset, 0.0, 1.0))
+
+        # ──────── TRAIL DOTS: nhỏ ở gần mắt (t=0) -> to dần khi tiến ra xa/gần camera (t=1) ────────
         for i in range(num_dots):
-            normalized_progress = i / progress_denominator
-            spacing_progress = normalized_progress ** spacing_power
-            distance_progress = eye_to_gaze_offset + (1.0 - eye_to_gaze_offset) * spacing_progress
-            radius_progress = normalized_progress
+            t = i / progress_denominator
+            distance_progress = eye_to_gaze_offset + (1.0 - eye_to_gaze_offset) * t
 
             X = X_e + distance_progress * L * vx
             Y = Y_e + distance_progress * L * vy
             Z = Z_e + distance_progress * L * vz
             pos_3d = np.array([X, Y, Z])
 
-            r_pixel = min_radius + (max_radius - min_radius) * radius_progress
-            r_3d = r_pixel * Z_e / f
+            # Kich thuoc hien thi mong muon, monotonic tuyet doi theo t (khong phu thuoc Z)
+            r_pixel_target = min_radius * (1.0 - t) + max_radius * t
 
-            (u, v), (major, minor), angle_deg = self._project_circle_to_ellipse(
-                pos_3d, r_3d, gaze_normal, f, cx, cy
+            # Chi dung phep chieu de lay TI LE mep hinh (foreshortening) va goc nghieng,
+            # KHONG lay do lon tuyet doi tu day (radius=1.0 co dinh)
+            (u, v), (probe_major, probe_minor), angle_deg = self._project_circle_to_ellipse(
+                pos_3d, radius=1.0, normal_3d=gaze_normal, focal_length=f, cx=cx, cy=cy
             )
-            
+            shape_ratio = probe_minor / max(probe_major, 1e-6)  # <= 1
+            major = r_pixel_target
+            minor = r_pixel_target * shape_ratio
+
             px, py = int(round(u)), int(round(v))
             if not (0 <= px < W and 0 <= py < H):
                 continue
-            alpha = alpha_global
+
+            alpha = alpha_global * t
+            print(f"[major, minor, alpha, t]: [{major:.2f}, {minor:.2f}, {alpha:.2f}, {t:.2f}]")
+
             scale_factor = Z_e / max(Z, 0.1)
-            curr_glow = glow_size * (0.5 + 0.5 * radius_progress) * scale_factor
+            curr_glow = glow_size * (0.5 + 0.5 * t) * scale_factor
             overlay = image.copy()
             if curr_glow > 0:
                 cv2.ellipse(
@@ -226,33 +234,39 @@ class Visualizer:
                     (int(round(major + curr_glow)), int(round(minor + curr_glow))),
                     angle_deg, 0, 360, color, -1, cv2.LINE_AA
                 )
-            
+
             cv2.ellipse(
                 overlay, (px, py),
                 (int(round(major)), int(round(minor))),
                 angle_deg, 0, 360, color, -1, cv2.LINE_AA
             )
-            
+
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
 
+        # ──────── END-POINT CROSSHAIR (giu nguyen, khong doi) ────────
         X_end = X_e + L * vx
         Y_end = Y_e + L * vy
         Z_end = Z_e + L * vz
         pos_end_3d = np.array([X_end, Y_end, Z_end])
-        
+
         u_end = f * X_end / max(Z_end, 0.1) + cx
         v_end = f * Y_end / max(Z_end, 0.1) + cy
         end_x, end_y = int(round(u_end)), int(round(v_end))
-        
+
         if 0 <= end_x < W and 0 <= end_y < H:
             overlay_end = image.copy()
-            marker_radius = max_radius + max(2.0, crosshair_size)
-            r_end_3d = marker_radius * Z_e / f
-            _, (maj_end, min_end), ang_end = self._project_circle_to_ellipse(
-                pos_end_3d, r_end_3d, gaze_normal, f, cx, cy
+            # Kich thuoc blob nen cua crosshair KHONG con phu thuoc max_radius nua,
+            # dieu chinh truc tiep qua tham so crosshair_size de thu nho tuy y
+            marker_radius = crosshair_size
+            # Chi dung phep chieu de lay TI LE mep hinh (shape), khong lay do lon
+            # tuyet doi (radius=1.0 co dinh) -> kich thuoc marker khong con phu
+            # thuoc Z_end, tranh 2 crosshair (trai/phai mat) bi lech size nhau
+            _, (probe_maj_end, probe_min_end), ang_end = self._project_circle_to_ellipse(
+                pos_end_3d, 1.0, gaze_normal, f, cx, cy
             )
-            major_i = max(1, int(round(maj_end)))
-            minor_i = max(1, int(round(min_end)))
+            end_shape_ratio = probe_min_end / max(probe_maj_end, 1e-6)
+            major_i = max(1, int(round(marker_radius)))
+            minor_i = max(1, int(round(marker_radius * end_shape_ratio)))
             cv2.ellipse(overlay_end, (end_x, end_y), (major_i, minor_i), ang_end, 0, 360, color, -1, cv2.LINE_AA)
 
             if show_crosshair and crosshair_size > 0:
@@ -271,9 +285,8 @@ class Visualizer:
                     crosshair_color, crosshair_thickness, cv2.LINE_AA,
                 )
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
-        
-        return image
 
+        return image
     def show(self, window_name, frame):
         cv2.imshow(window_name, frame)
         
