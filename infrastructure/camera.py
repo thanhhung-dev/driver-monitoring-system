@@ -2,9 +2,8 @@ import time
 import os
 
 import cv2
-import yaml
 
-from utils.logger import setup_logger
+from utils.logger import load_yaml_config, setup_logger
 
 
 class CameraNotFoundError(Exception):
@@ -69,8 +68,7 @@ class VideoCapture:
     def _load_config(self, config_path: str) -> dict:
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Config file not found: {config_path}")
-        with open(config_path, "r") as f:
-            return yaml.safe_load(f)
+        return load_yaml_config(config_path)
 
     def open(self) -> None:
         """

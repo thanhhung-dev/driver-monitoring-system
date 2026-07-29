@@ -3,6 +3,31 @@ import os
 import sys
 import yaml
 
+
+def load_yaml_config(config_path: str) -> dict:
+    """Load YAML config with a robust fallback for Windows encoding issues."""
+    if not os.path.exists(config_path):
+        return {}
+
+    with open(config_path, "rb") as handle:
+        raw_bytes = handle.read()
+
+    for encoding in ("utf-8-sig", "utf-8", "cp1252", "latin-1"):
+        try:
+            text = raw_bytes.decode(encoding)
+            sanitized_text = "".join(ch if ch in "\t\n\r" or ch.isprintable() else " " for ch in text)
+            return yaml.safe_load(sanitized_text) or {}
+        except (UnicodeDecodeError, yaml.YAMLError):
+            continue
+
+    try:
+        text = raw_bytes.decode("utf-8", errors="replace")
+        sanitized_text = "".join(ch if ch in "\t\n\r" or ch.isprintable() else " " for ch in text)
+        return yaml.safe_load(sanitized_text) or {}
+    except yaml.YAMLError:
+        return {}
+
+
 def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
     """
     Khoi Tao Logger tu file Config.yaml
@@ -14,8 +39,7 @@ def setup_logger(name:str, config_path:str = "config.yaml") -> logging.Logger:
     log_file: str | None = None
     
     if os.path.exists(config_path):
-        with open(config_path, "r") as f:
-            config = yaml.safe_load(f) or {}
+        config = load_yaml_config(config_path)
         log_level_str = config.get("system", {}).get("log_level", "INFO")
         log_level = getattr(logging, log_level_str, logging.INFO)
         log_file = config.get("system", {}).get("log_file")

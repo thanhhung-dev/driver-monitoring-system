@@ -16,29 +16,33 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QMainWindow, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QMainWindow, QSizePolicy, QSpacerItem, QSplitter,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1280, 720)
+        MainWindow.resize(1280, 743)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.mainLayout = QHBoxLayout(self.centralwidget)
-        self.mainLayout.setSpacing(0)
-        self.mainLayout.setObjectName(u"mainLayout")
-        self.mainLayout.setContentsMargins(0, 0, 0, 0)
-        self.sidebarFrame = QFrame(self.centralwidget)
+        self.centralLayout = QVBoxLayout(self.centralwidget)
+        self.centralLayout.setSpacing(0)
+        self.centralLayout.setObjectName(u"centralLayout")
+        self.centralLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainSplitter = QSplitter(self.centralwidget)
+        self.mainSplitter.setObjectName(u"mainSplitter")
+        self.mainSplitter.setOrientation(Qt.Orientation.Horizontal)
+        self.mainSplitter.setChildrenCollapsible(False)
+        self.sidebarFrame = QFrame(self.mainSplitter)
         self.sidebarFrame.setObjectName(u"sidebarFrame")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.sidebarFrame.sizePolicy().hasHeightForWidth())
         self.sidebarFrame.setSizePolicy(sizePolicy)
-        self.sidebarFrame.setMinimumSize(QSize(260, 0))
-        self.sidebarFrame.setMaximumSize(QSize(260, 16777215))
+        self.sidebarFrame.setMinimumSize(QSize(180, 0))
+        self.sidebarFrame.setMaximumSize(QSize(400, 16777215))
         self.sidebarLayout = QVBoxLayout(self.sidebarFrame)
         self.sidebarLayout.setSpacing(8)
         self.sidebarLayout.setObjectName(u"sidebarLayout")
@@ -66,13 +70,13 @@ class Ui_MainWindow(object):
         self.vboxLayout.setObjectName(u"vboxLayout")
         self.lblDistractionVal = QLabel(self.distractionFrame)
         self.lblDistractionVal.setObjectName(u"lblDistractionVal")
-        self.lblDistractionVal.setAlignment(Qt.AlignCenter)
+        self.lblDistractionVal.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.vboxLayout.addWidget(self.lblDistractionVal)
 
         self.lblDistractionTitle = QLabel(self.distractionFrame)
         self.lblDistractionTitle.setObjectName(u"lblDistractionTitle")
-        self.lblDistractionTitle.setAlignment(Qt.AlignCenter)
+        self.lblDistractionTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.vboxLayout.addWidget(self.lblDistractionTitle)
 
@@ -85,13 +89,13 @@ class Ui_MainWindow(object):
         self.vboxLayout1.setObjectName(u"vboxLayout1")
         self.lblDrowsyVal = QLabel(self.drowsyFrame)
         self.lblDrowsyVal.setObjectName(u"lblDrowsyVal")
-        self.lblDrowsyVal.setAlignment(Qt.AlignCenter)
+        self.lblDrowsyVal.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.vboxLayout1.addWidget(self.lblDrowsyVal)
 
         self.lblDrowsyTitle = QLabel(self.drowsyFrame)
         self.lblDrowsyTitle.setObjectName(u"lblDrowsyTitle")
-        self.lblDrowsyTitle.setAlignment(Qt.AlignCenter)
+        self.lblDrowsyTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.vboxLayout1.addWidget(self.lblDrowsyTitle)
 
@@ -233,6 +237,7 @@ class Ui_MainWindow(object):
         self.vboxLayout9.setObjectName(u"vboxLayout9")
         self.lblGazeDirTitle = QLabel(self.gazeDirFrame)
         self.lblGazeDirTitle.setObjectName(u"lblGazeDirTitle")
+        self.lblGazeDirTitle.setMinimumSize(QSize(0, 15))
 
         self.vboxLayout9.addWidget(self.lblGazeDirTitle)
 
@@ -282,28 +287,53 @@ class Ui_MainWindow(object):
 
         self.sidebarLayout.addItem(self.verticalSpacer)
 
-
-        self.mainLayout.addWidget(self.sidebarFrame)
-
-        self.videoContainer = QFrame(self.centralwidget)
+        self.mainSplitter.addWidget(self.sidebarFrame)
+        self.videoContainer = QFrame(self.mainSplitter)
         self.videoContainer.setObjectName(u"videoContainer")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(1)
+        sizePolicy1.setVerticalStretch(1)
+        sizePolicy1.setHeightForWidth(self.videoContainer.sizePolicy().hasHeightForWidth())
+        self.videoContainer.setSizePolicy(sizePolicy1)
         self.videoLayout = QVBoxLayout(self.videoContainer)
         self.videoLayout.setSpacing(0)
         self.videoLayout.setObjectName(u"videoLayout")
         self.videoLayout.setContentsMargins(0, 0, 0, 0)
+        self.notifyBar = QLabel(self.videoContainer)
+        self.notifyBar.setObjectName(u"notifyBar")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(1)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.notifyBar.sizePolicy().hasHeightForWidth())
+        self.notifyBar.setSizePolicy(sizePolicy2)
+        self.notifyBar.setMinimumSize(QSize(0, 40))
+        self.notifyBar.setMaximumSize(QSize(16777215, 40))
+        self.notifyBar.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.videoLayout.addWidget(self.notifyBar)
+
         self.videoLabel = QLabel(self.videoContainer)
         self.videoLabel.setObjectName(u"videoLabel")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy1.setHorizontalStretch(1)
-        sizePolicy1.setVerticalStretch(1)
+        self.videoLabel.setEnabled(True)
         sizePolicy1.setHeightForWidth(self.videoLabel.sizePolicy().hasHeightForWidth())
         self.videoLabel.setSizePolicy(sizePolicy1)
-        self.videoLabel.setAlignment(Qt.AlignCenter)
+        self.videoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.videoLayout.addWidget(self.videoLabel)
 
+        self.captionBar = QLabel(self.videoContainer)
+        self.captionBar.setObjectName(u"captionBar")
+        sizePolicy2.setHeightForWidth(self.captionBar.sizePolicy().hasHeightForWidth())
+        self.captionBar.setSizePolicy(sizePolicy2)
+        self.captionBar.setMinimumSize(QSize(0, 32))
+        self.captionBar.setMaximumSize(QSize(16777215, 32))
+        self.captionBar.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.mainLayout.addWidget(self.videoContainer)
+        self.videoLayout.addWidget(self.captionBar)
+
+        self.mainSplitter.addWidget(self.videoContainer)
+
+        self.centralLayout.addWidget(self.mainSplitter)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -337,11 +367,13 @@ class Ui_MainWindow(object):
         self.lblHeadDirVal.setText(QCoreApplication.translate("MainWindow", u"+6\u00b0   +35\u00b0   +3\u00b0", None))
         self.lblGazeDirTitle.setText(QCoreApplication.translate("MainWindow", u"GAZE DIR (PY)", None))
         self.lblGazeDirVal.setText(QCoreApplication.translate("MainWindow", u"+6\u00b0        +39\u00b0", None))
-        self.lblGazeZoneTitle.setText(QCoreApplication.translate("MainWindow", u"\U0001f441 GAZE ZONE", None))
+        self.lblGazeZoneTitle.setText(QCoreApplication.translate("MainWindow", u"GAZE ZONE", None))
         self.lblGazeZoneVal.setText(QCoreApplication.translate("MainWindow", u"FRONT_WINDSHIELD", None))
-        self.lblHeadZoneTitle.setText(QCoreApplication.translate("MainWindow", u"\U0001f464 HEAD ZONE", None))
+        self.lblHeadZoneTitle.setText(QCoreApplication.translate("MainWindow", u"HEAD ZONE", None))
         self.lblHeadZoneVal.setText(QCoreApplication.translate("MainWindow", u"FRONT_WINDSHIELD", None))
+        self.notifyBar.setText("")
         self.videoLabel.setStyleSheet(QCoreApplication.translate("MainWindow", u"background-color: #0d1117;", None))
         self.videoLabel.setText(QCoreApplication.translate("MainWindow", u"Camera Feed", None))
+        self.captionBar.setText(QCoreApplication.translate("MainWindow", u"Driver Monitoring System", None))
     # retranslateUi
 

@@ -1,7 +1,7 @@
 import os
 import sys
 
-# Add project root to sys.path so we can run directly from Qt Creator
+
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
@@ -11,7 +11,7 @@ import numpy as np
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QIODevice, Slot, QTimer, Qt, QObject, QThread, Signal
+from PySide6.QtCore import QFile, QIODevice, Slot, QTimer, Qt, QObject, QThread
 from PySide6.QtGui import QImage, QPixmap
 
 from app.pipeline_factory import create_application
@@ -19,10 +19,24 @@ from presentation.opencv.stage import VizStage
 from presentation.qt.stage import QtVizStage
 from pipeline.context import FrameContext
 
-# --- QSS for styling the app to match the dark theme in the image ---
+
 QSS_STYLE = """
 QMainWindow {
     background-color: #1a202c;
+}
+
+QLabel#notifyBar {
+    background-color: #1e2638;
+    color: #fc8181;
+    font-size: 15px;
+    font-weight: bold;
+}
+QLabel#captionBar {
+    background-color: #1e2638;
+    color: #a0aec0;
+    font-size: 12px;
+    font-weight: normal;
+    border-top: 1px solid #2d3748;
 }
 QFrame#sidebarFrame {
     background-color: #1e2638;

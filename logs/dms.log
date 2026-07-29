@@ -125871,3 +125871,74 @@
 [2026-07-27 00:27:54] [INFO] [Main] [HEAD-POSE] P=  -2.3° Y= +82.6° R=  +4.4°  dir=Trái
 [2026-07-27 00:27:54] [INFO] [VideoCapture] Camera released.
 [2026-07-27 00:27:54] [INFO] [Main] System shutdown
+[2026-07-29 01:42:24] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 01:44:14] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 01:44:17] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 01:44:20] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 01:44:20] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 01:44:20] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 01:44:21] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 01:44:21] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 01:53:57] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 01:53:58] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 01:53:59] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 01:53:59] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 01:53:59] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 01:53:59] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 01:53:59] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 01:57:21] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 01:57:22] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 01:57:23] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 01:57:23] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 01:57:23] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 01:57:23] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 01:57:23] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 02:00:57] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 02:00:58] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 02:00:59] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 02:00:59] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 02:00:59] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 02:00:59] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 02:00:59] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 10:56:45] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 10:56:48] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 10:56:51] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 10:56:51] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 10:56:51] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 10:56:52] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 10:56:52] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 12:04:48] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 12:04:49] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 12:04:51] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 12:04:51] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 12:04:51] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 12:04:51] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 12:04:51] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 12:22:05] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 12:22:06] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 12:22:07] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 12:22:07] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 12:22:07] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 12:22:07] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 12:22:07] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 12:29:25] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 12:29:26] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 12:29:27] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 12:29:27] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 12:29:27] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 12:29:27] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 12:29:27] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 12:35:20] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 12:35:20] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 12:35:22] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 12:35:22] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 12:35:22] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 12:35:22] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 12:35:22] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV
+[2026-07-29 23:55:49] [INFO] [Main] Initializing Driver Monitoring System...
+[2026-07-29 23:55:52] [WARNING] [Main] Drivers directory not found: data/drivers
+[2026-07-29 23:55:55] [INFO] [Main] Models enabled → facemap=True, driver_identity=True, attrib=False, head_pose=True, analyzer=False, distraction=True, visualizer=True
+[2026-07-29 23:55:55] [INFO] [Main] Running in THREADED mode (capture + inference on separate threads)
+[2026-07-29 23:55:56] [INFO] [VideoCapture] Opening video source: D:\Workspace\driver_monitoring\data/IMG_9945.MOV ...
+[2026-07-29 23:55:56] [INFO] [VideoCapture] Video native FPS: 24.94 → pacing on
+[2026-07-29 23:55:56] [INFO] [VideoCapture] Source opened successfully: D:\Workspace\driver_monitoring\data/IMG_9945.MOV

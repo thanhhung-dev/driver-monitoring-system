@@ -40,19 +40,8 @@ class VizStage:
             roi_box = (int(w * x_min), int(h * y_min), int(w * x_max), int(h * y_max))
             draw_bbox(canvas, roi_box, (117, 255, 117), thickness=2)
             cv2.putText(canvas, "", (roi_box[0] + 5, roi_box[1] + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 150, 0), 2)
-            
-        # Draw OUT OF POSITION Warning
-        if getattr(ctx, "out_of_position", False):
-            h, w = canvas.shape[:2]
-            warning_text = "WARNING: OUT OF POSITION"
-            text_size = cv2.getTextSize(warning_text, cv2.FONT_HERSHEY_SIMPLEX, 1.5, 4)[0]
-            text_x = (w - text_size[0]) // 2
-            text_y = h // 4
-            cv2.putText(canvas, warning_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
 
         if ctx.is_driver is not None:
-            if not has_detected_faces:
-                self._visualizer.draw_no_face_warning(canvas)
             for index, detection in enumerate(detections if has_detected_faces else []):
                 is_driver = index == ctx.driver_face_index
                 similarity = (
@@ -72,8 +61,6 @@ class VizStage:
                         (255, 128, 255),
                         thickness=2
                     )
-        elif ctx.bbox is None:
-            self._visualizer.draw_no_face_warning(canvas)
 
         if ctx.bbox is not None:
             if ctx.landmarks is not None and not ctx.extreme_pose_mode:
@@ -86,8 +73,6 @@ class VizStage:
                 canvas, ctx.bbox, ctx.landmarks,
                 ctx.driver_state, head_pose=hp, draw_box=draw_box,
             )
-            if ctx.face_lost_extreme_pose:
-                self._visualizer.draw_extreme_pose_warning(canvas)
             # Vẽ gaze arrows (màu) trên canvas
             if ctx.gaze_render_data is not None:
                 d = ctx.gaze_render_data

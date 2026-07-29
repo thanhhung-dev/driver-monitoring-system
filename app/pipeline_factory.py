@@ -2,7 +2,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import yaml
 
 from alerting.alert_manager import AlertManager
 from app.application import Application
@@ -34,15 +33,14 @@ from pipeline.runner import DMSPipeline
 from presentation.opencv.debug_stage import DebugStage
 from presentation.opencv.stage import VizStage
 from presentation.opencv.visualizer import Visualizer
-from utils.logger import setup_logger
+from utils.logger import load_yaml_config, setup_logger
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 
 
 def _load_config(path: str | Path) -> dict:
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+    return load_yaml_config(str(path))
 
 
 def create_application(config_path: str | Path = CONFIG_PATH) -> Application:
