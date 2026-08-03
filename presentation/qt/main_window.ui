@@ -75,18 +75,23 @@
         </property>
         <item>
          <widget class="QFrame" name="profileFrame">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>29</height>
+           </size>
+          </property>
           <layout class="QHBoxLayout">
-           <item>
-            <widget class="QLabel" name="driverIcon">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QLabel" name="driverName">
              <property name="text">
-              <string>Chun-Ting</string>
+              <string>Name Driver</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -469,6 +474,12 @@
             <width>16777215</width>
             <height>32</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="text">
            <string>Driver Monitoring System</string>

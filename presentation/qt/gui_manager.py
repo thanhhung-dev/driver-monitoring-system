@@ -108,17 +108,13 @@ class PipelineWorker(QThread):
         self.application = None
 
     def run(self):
-        # Create the full application pipeline
         self.application = create_application()
         
-        # Inject our QtVizStage into the pipeline
         pipeline = self.application.pipeline
         stages = pipeline._stages
         
-        # Find the original VizStage and replace it
         for i, stage in enumerate(stages):
             if isinstance(stage, VizStage) and not isinstance(stage, QtVizStage):
-                # Pass the visualizer and capture from original stage
                 self.qt_viz_stage._visualizer = stage._visualizer
                 self.qt_viz_stage._capture = stage._capture
                 stages[i] = self.qt_viz_stage
@@ -150,7 +146,6 @@ class GUIManager(QObject):
         self.window = loader.load(ui_file)
         ui_file.close()
         
-        # Apply dark theme styling
         self.window.setStyleSheet(QSS_STYLE)
         
         # Setup AI Pipeline Thread

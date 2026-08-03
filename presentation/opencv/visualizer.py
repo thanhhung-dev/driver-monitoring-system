@@ -14,12 +14,12 @@ class Visualizer:
         self.gaze_history = deque(maxlen=8)
         self.gaze_history_l = deque(maxlen=8)
         self.gaze_history_r = deque(maxlen=8)
-
-
     def draw_fps(self, frame, fps):
-        cv2.putText(frame, f"FPS: {fps:.2f}", (20, 40), self.font, 1, self.color_normal, 2)
+        h = frame.shape[0]
+        cv2.putText(frame, str(int(fps)), (20, h - 20), self.font, 0.4, self.color_normal, 1)
 
-    def draw_face_info(self, frame, bbox, landmarks, driver_state, head_pose=None, draw_box=True):
+
+    def draw_face_info(self, frame, bbox, landmarks, head_pose=None, draw_box=True):
         """Vẽ bbox + trục head-pose (nếu có).
 
         Args:
@@ -27,16 +27,15 @@ class Visualizer:
             bbox:         (x1, y1, x2, y2).
             landmarks:    List 68 (x, y) hoặc None — landmark mesh đã được vẽ
                           trực tiếp trong pipeline qua FaceMap3DMMDetector.draw_full_mesh.
-            driver_state: Trạng thái driver (chưa dùng, để mở rộng cảnh báo).
             head_pose:    Tuple (yaw, pitch, roll) độ, hoặc None để không vẽ trục.
             draw_box:     False để ẩn bbox SCRFD (vùng transition 80–85°).
         """
-        # Bounding box với corner-accent
+        # bounding box với corner-accent
         if draw_box:
             draw_bbox(frame, bbox, self.color_normal, fixed_size=(250, 250))
 
 
-        # 3D head-pose axes
+        # 3d head-pose axes
         if head_pose is not None:
             yaw, pitch, roll = head_pose
             draw_axis(frame, yaw, pitch, roll, list(bbox))
