@@ -7,11 +7,168 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>743</height>
+    <height>1107</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Driver Monitoring System</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #1a202c;
+}
+
+QFrame#sidebarFrame {
+    background-color: #293043;
+    border-right: 2px solid #2d3748;
+}
+
+QFrame#profileFrame {
+    background-color: #38516f;
+    border: 1px solid #ffffff;
+    border-radius: 10px;
+}
+
+QFrame#distractionFrame,
+QFrame#drowsyFrame {
+    background-color: #38516f;
+    border: 1px solid #ffffff;
+    border-radius: 10px;
+    padding: 6px;
+}
+
+QHBoxLayout#actionIconRow {
+    display: flex;
+    width: 116px;
+    height: 20px;
+    padding: 10px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+}
+
+QFrame#actionFrame,
+QFrame#expressionFrame,
+QFrame#eyeOpFrame,
+QFrame#blinkFrame,
+QFrame#headLocFrame,
+QFrame#eyeLocFrame,
+QFrame#headDirFrame,
+QFrame#gazeDirFrame,
+QFrame#gazeZoneFrame,
+QFrame#headZoneFrame {
+    border: 0;
+    border-bottom: 1px solid #38516f;
+    padding: 2px;
+}
+
+QLabel {
+    color: #a0aec0;
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QLabel#driverName {
+    color: #ffffff;
+    border: 0;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+QLabel#lblDistractionVal,
+QLabel#lblDrowsyVal {
+    color: #ffffff;
+    font-size: 20px;
+}
+
+QLabel#lblDistractionTitle,
+QLabel#lblDrowsyTitle {
+    color: #83DDDC;
+    font-size: 11px;
+}
+
+QLabel#lblActionTitle,
+QLabel#lblExpTitle,
+QLabel#lblEyeOpTitle,
+QLabel#lblBlinkTitle,
+QLabel#lblHeadLocTitle,
+QLabel#lblEyeLocTitle,
+QLabel#lblHeadDirTitle,
+QLabel#lblGazeDirTitle,
+QLabel#lblGazeZoneTitle,
+QLabel#lblHeadZoneTitle {
+    color: #83DDDC;
+    font-size: 13px;
+}
+
+QLabel#lblExpVal,
+QLabel#lblEyeOpL,
+QLabel#lblEyeOpR,
+QLabel#lblBlinkVal,
+QLabel#lblBlinkRVal,
+QLabel#lblHeadLocVal,
+QLabel#lblHeadLocYVal,
+QLabel#lblHeadLocZVal,
+QLabel#lblEyeLocLPrefix,
+QLabel#lblEyeLocRPrefix,
+QLabel#lblEyeLocVal,
+QLabel#lblEyeLocLYVal,
+QLabel#lblEyeLocLZVal,
+QLabel#lblEyeLocRXVal,
+QLabel#lblEyeLocRYVal,
+QLabel#lblEyeLocRZVal,
+QLabel#lblHeadDirVal,
+QLabel#lblHeadDirYawVal,
+QLabel#lblHeadDirRollVal,
+QLabel#lblGazeDirVal,
+QLabel#lblGazeDirYawVal,
+QLabel#lblGazeZoneVal,
+QLabel#lblHeadZoneVal {
+    color: #EDA200;
+    border-bottom: 0;
+    font-size: 12px;
+    padding: 5px 0;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel#notifyBar {
+    background-color: #34394c;
+    color: #fc8181;
+    font-size: 15px;
+}
+
+QLabel#videoLabel {
+    background-color: #0d1117;
+}
+
+QLabel#captionBar {
+    background-color: #34394a;
+    color: #a0aec0;
+    border-top: 1px solid #2d3748;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+QPushButton {
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    font-weight: bold;
+    stroke-width: 2px;
+    stroke: #FFF;
+}
+
+QLabel#lblRegValue,
+QLabel#lblExpVal {
+    color: #B04A4A;
+    font-size: 12px;
+    min-height: 16px;
+}
+
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="centralLayout">
@@ -35,12 +192,15 @@
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
+      <property name="handleWidth">
+       <number>0</number>
+      </property>
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
       <widget class="QFrame" name="sidebarFrame">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -53,7 +213,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>400</width>
+         <width>180</width>
          <height>16777215</height>
         </size>
        </property>
@@ -62,31 +222,153 @@
          <number>8</number>
         </property>
         <property name="leftMargin">
-         <number>10</number>
+         <number>0</number>
         </property>
         <property name="topMargin">
          <number>10</number>
         </property>
         <property name="rightMargin">
-         <number>10</number>
+         <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>10</number>
         </property>
         <item>
          <widget class="QFrame" name="profileFrame">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>29</height>
+            <height>70</height>
            </size>
           </property>
-          <layout class="QHBoxLayout">
+          <layout class="QVBoxLayout" name="profileLayout">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <property name="leftMargin">
+            <number>8</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>8</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="statusIconRow">
+             <property name="spacing">
+              <number>10</number>
+             </property>
+             <item>
+              <spacer name="spacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="iconGlasses">
+               <property name="minimumSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap>:/access/glasses.svg</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="iconDevice">
+               <property name="minimumSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap>:/access/face-mask.svg</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="iconPerson">
+               <property name="minimumSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap>:/access/user-slash.svg</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <widget class="QLabel" name="driverName">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>18</height>
+              </size>
+             </property>
              <property name="text">
               <string>Name Driver</string>
              </property>
@@ -152,20 +434,148 @@
         </item>
         <item>
          <widget class="QFrame" name="actionFrame">
-          <layout class="QVBoxLayout">
+          <layout class="QVBoxLayout" name="actionLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblActionTitle">
+            <layout class="QHBoxLayout" name="actionTitleRow">
+             <item>
+              <widget class="QLabel" name="iconActionTitle">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblActionTitle">
+               <property name="text">
+                <string>REGULAR ACTION</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblRegValue">
              <property name="text">
-              <string>REGULAR ACTION</string>
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="lblActionIcons">
-             <property name="text">
-              <string>Phone / Drink / Smoke</string>
+            <layout class="QHBoxLayout" name="actionIconRow">
+             <property name="spacing">
+              <number>8</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QLabel" name="iconActionPhone">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="iconActionDrink">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="iconActionSmoke">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="iconActionYawn">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -173,17 +583,50 @@
         <item>
          <widget class="QFrame" name="expressionFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblExpTitle">
-             <property name="text">
-              <string>EYE BLINK</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconExpression">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblExpTitle">
+               <property name="text">
+                <string>EXPRESSION</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLabel" name="lblExpVal">
              <property name="text">
               <string>NEUTRAL</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -193,26 +636,65 @@
         <item>
          <widget class="QFrame" name="eyeOpFrame">
           <layout class="QVBoxLayout">
-           <item>
-            <widget class="QLabel" name="lblEyeOpTitle">
-             <property name="text">
-              <string>EYE LOC (mm)</string>
-             </property>
-            </widget>
-           </item>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
             <layout class="QHBoxLayout">
              <item>
+              <widget class="QLabel" name="iconEyeOpenness">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblEyeOpTitle">
+               <property name="text">
+                <string>EYE OPENNESS</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="eyeOpValueRow" stretch="1,1">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <item>
               <widget class="QLabel" name="lblEyeOpL">
                <property name="text">
-                <string>99%</string>
+                <string>70%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QLabel" name="lblEyeOpR">
                <property name="text">
-                <string>99%</string>
+                <string>70%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -224,19 +706,63 @@
         <item>
          <widget class="QFrame" name="blinkFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblBlinkTitle">
-             <property name="text">
-              <string>EYE BLINK</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconEyeBlink">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblBlinkTitle">
+               <property name="text">
+                <string>EYE BLINK</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QLabel" name="lblBlinkVal">
-             <property name="text">
-              <string>0.2/s        0.8/s</string>
+            <layout class="QHBoxLayout" name="blinkValueRow" stretch="1,1">
+             <property name="spacing">
+              <number>12</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QLabel" name="lblBlinkVal">
+               <property name="text">
+                <string>0.2/s</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblBlinkRVal">
+               <property name="text">
+                <string>0.8/s</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -244,19 +770,70 @@
         <item>
          <widget class="QFrame" name="headLocFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblHeadLocTitle">
-             <property name="text">
-              <string>HEAD LOC (mm)</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconHeadLoc">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadLocTitle">
+               <property name="text">
+                <string>HEAD LOC (mm)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QLabel" name="lblHeadLocVal">
-             <property name="text">
-              <string>213   -79   546</string>
+            <layout class="QHBoxLayout" name="headLocValueRow" stretch="1,1,1">
+             <property name="spacing">
+              <number>8</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QLabel" name="lblHeadLocVal">
+               <property name="text">
+                <string>213</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadLocYVal">
+               <property name="text">
+                <string>-79</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadLocZVal">
+               <property name="text">
+                <string>546</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -264,19 +841,108 @@
         <item>
          <widget class="QFrame" name="eyeLocFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblEyeLocTitle">
-             <property name="text">
-              <string>EYE LOC (mm)</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconEyeLoc">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblEyeLocTitle">
+               <property name="text">
+                <string>EYE LOC (mm)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QLabel" name="lblEyeLocVal">
-             <property name="text">
-              <string>L: 233  -77  552\nR: 192  -81  530</string>
+            <layout class="QGridLayout" name="eyeLocValueGrid" columnstretch="0,1,1,1">
+             <property name="horizontalSpacing">
+              <number>4</number>
              </property>
-            </widget>
+             <property name="verticalSpacing">
+              <number>2</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="lblEyeLocLPrefix">
+               <property name="text">
+                <string>L:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="lblEyeLocVal">
+               <property name="text">
+                <string>233</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="lblEyeLocLYVal">
+               <property name="text">
+                <string>-77</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="lblEyeLocLZVal">
+               <property name="text">
+                <string>552</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="lblEyeLocRPrefix">
+               <property name="text">
+                <string>R:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="lblEyeLocRXVal">
+               <property name="text">
+                <string>192</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="lblEyeLocRYVal">
+               <property name="text">
+                <string>-81</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QLabel" name="lblEyeLocRZVal">
+               <property name="text">
+                <string>530</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -284,19 +950,70 @@
         <item>
          <widget class="QFrame" name="headDirFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblHeadDirTitle">
-             <property name="text">
-              <string>HEAD DIR (PYR)</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconHeadDir">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadDirTitle">
+               <property name="text">
+                <string>HEAD DIR (PYR)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QLabel" name="lblHeadDirVal">
-             <property name="text">
-              <string>+6°   +35°   +3°</string>
+            <layout class="QHBoxLayout" name="headDirValueRow" stretch="1,1,1">
+             <property name="spacing">
+              <number>8</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QLabel" name="lblHeadDirVal">
+               <property name="text">
+                <string>+6°</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadDirYawVal">
+               <property name="text">
+                <string>+35°</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadDirRollVal">
+               <property name="text">
+                <string>+3°</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -304,25 +1021,69 @@
         <item>
          <widget class="QFrame" name="gazeDirFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblGazeDirTitle">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>GAZE DIR (PY)</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconGazeDir">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblGazeDirTitle">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>GAZE DIR (PY)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QLabel" name="lblGazeDirVal">
-             <property name="text">
-              <string>+6°        +39°</string>
+            <layout class="QHBoxLayout" name="gazeDirValueRow" stretch="1,1">
+             <property name="spacing">
+              <number>12</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QLabel" name="lblGazeDirVal">
+               <property name="text">
+                <string>+6°</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblGazeDirYawVal">
+               <property name="text">
+                <string>+39°</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -330,12 +1091,42 @@
         <item>
          <widget class="QFrame" name="gazeZoneFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblGazeZoneTitle">
-             <property name="text">
-              <string>GAZE ZONE</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconGazeZone">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblGazeZoneTitle">
+               <property name="text">
+                <string>GAZE ZONE</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLabel" name="lblGazeZoneVal">
@@ -350,12 +1141,42 @@
         <item>
          <widget class="QFrame" name="headZoneFrame">
           <layout class="QVBoxLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QLabel" name="lblHeadZoneTitle">
-             <property name="text">
-              <string>HEAD ZONE</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="iconHeadZone">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblHeadZoneTitle">
+               <property name="text">
+                <string>HEAD ZONE</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLabel" name="lblHeadZoneVal">
@@ -380,14 +1201,102 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="bottomButtonRow">
+          <property name="spacing">
+           <number>16</number>
+          </property>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnAddDriver">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="access/resources.qrc">
+              <normaloff>:/access/add-driver.svg</normaloff>:/access/add-driver.svg</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnLogout">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="access/resources.qrc">
+              <normaloff>:/access/exit.svg</normaloff>:/access/exit.svg</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
       <widget class="QFrame" name="videoContainer">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>1</horstretch>
          <verstretch>1</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
        <layout class="QVBoxLayout" name="videoLayout">
         <property name="spacing">
@@ -416,7 +1325,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>40</height>
+            <height>26</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -443,9 +1352,6 @@
             <horstretch>1</horstretch>
             <verstretch>1</verstretch>
            </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string>background-color: #0d1117;</string>
           </property>
           <property name="text">
            <string>Camera Feed</string>
@@ -477,8 +1383,9 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>14</pointsize>
-            <bold>true</bold>
+            <family>Segoe UI</family>
+            <pointsize>-1</pointsize>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">

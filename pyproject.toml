@@ -4,5 +4,6 @@ version = "1.0.0"
 description = "Driver Monitoring System using PySide6 and OpenCV"
 dependencies = [
     "PySide6",
-    "opencv-python"
+    "opencv-python",
+    "QtAwesome"
 ]

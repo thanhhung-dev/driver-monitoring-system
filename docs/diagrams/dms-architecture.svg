@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -26 2000 1186" width="2000" height="1186" font-family="Cascadia Code, Consolas, monospace" style="background:#ffffff">
+<defs><marker id="ah_868e96" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#868e96"/></marker>
+  <marker id="ah_9c36b5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#9c36b5"/></marker>
+  <marker id="ah_fab005" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#fab005"/></marker>
+  <marker id="ah_1971c2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#1971c2"/></marker></defs>
+<text x="40" y="38" font-family="Cascadia Code, Consolas, monospace" font-size="24" fill="#343a40" text-anchor="start">Driver Monitoring System — Kiến trúc &amp; luồng dữ liệu  (camera → pipeline → alert → GUI)</text>
+<rect x="60" y="110" width="320" height="330" rx="0" fill="#f1f3f5" stroke="#868e96" stroke-width="2" opacity="1.0" stroke-dasharray="8 6"/>
+<text x="72" y="134" font-family="Cascadia Code, Consolas, monospace" font-size="16" fill="#868e96" text-anchor="start">① INPUT</text>
+<rect x="430" y="60" width="920" height="800" rx="0" fill="#f3f0ff" stroke="#9c36b5" stroke-width="2" opacity="1.0" stroke-dasharray="8 6"/>
+<text x="442" y="84" font-family="Cascadia Code, Consolas, monospace" font-size="16" fill="#9c36b5" text-anchor="start">② PIPELINE — 12 stage (FrameContext)</text>
+<rect x="1400" y="60" width="560" height="570" rx="0" fill="#fffbf0" stroke="#fab005" stroke-width="2" opacity="1.0" stroke-dasharray="8 6"/>
+<text x="1412" y="84" font-family="Cascadia Code, Consolas, monospace" font-size="16" fill="#fab005" text-anchor="start">③ ACTION — alert &amp; log</text>
+<rect x="1400" y="680" width="560" height="440" rx="0" fill="#edf6ff" stroke="#1971c2" stroke-width="2" opacity="1.0" stroke-dasharray="8 6"/>
+<text x="1412" y="704" font-family="Cascadia Code, Consolas, monospace" font-size="16" fill="#1971c2" text-anchor="start">④ PRESENTATION — UI</text>
+<ellipse cx="220" cy="240" rx="130" ry="70" fill="#ffc9c9" stroke="#e03131" stroke-width="2"/>
+<text x="220" y="223" font-family="Cascadia Code, Consolas, monospace" font-size="13" fill="#343a40" text-anchor="middle">VideoCapture</text>
+<text x="220" y="240" font-family="Cascadia Code, Consolas, monospace" font-size="13" fill="#343a40" text-anchor="middle">camera · video · ảnh</text>
+<text x="220" y="257" font-family="Cascadia Code, Consolas, monospace" font-size="13" fill="#343a40" text-anchor="middle">pacing FPS gốc · loop</text>
+<text x="70" y="352" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#868e96" text-anchor="start">config.yaml — nguồn video,</text>
+<text x="70" y="368" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#868e96" text-anchor="start">bật/tắt model, ngưỡng,</text>
+<text x="70" y="383" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#868e96" text-anchor="start">threaded · ROI tài xế</text>
+<rect x="500" y="130" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="590" y="169" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">CaptureStage</text>
+<text x="590" y="185" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">đọc frame · flip ·</text>
+<text x="590" y="201" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">frame_number</text>
+<rect x="710" y="130" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="800" y="169" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">DetectStage</text>
+<text x="800" y="185" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">SCRFD · interval 5</text>
+<text x="800" y="201" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">extreme pose 88°→80°</text>
+<rect x="920" y="130" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="1010" y="177" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">IdentityStage</text>
+<text x="1010" y="193" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">ArcFace · ROI · is_driver</text>
+<rect x="1130" y="130" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="1220" y="177" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">LandmarkStage</text>
+<text x="1220" y="193" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">FaceMap 3DMM · 68 điểm</text>
+<rect x="1130" y="300" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="1220" y="339" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">HeadPoseStage</text>
+<text x="1220" y="355" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">ResNet50 · yaw/pitch/roll</text>
+<text x="1220" y="371" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">latch ~90° · feedback</text>
+<rect x="920" y="300" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="1010" y="339" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">GazeStage</text>
+<text x="1010" y="355" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">EyeNet · EMA smooth</text>
+<text x="1010" y="371" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">head fallback &gt;70°</text>
+<rect x="710" y="300" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="800" y="347" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">AttribStage</text>
+<text x="800" y="363" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">kính · khẩu trang …</text>
+<rect x="500" y="300" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="590" y="347" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">DrowsinessStage</text>
+<text x="590" y="363" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">EAR · PERCLOS · MAR</text>
+<rect x="500" y="470" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="590" y="517" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">DistractionStage</text>
+<text x="590" y="533" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">gaze + yaw ≥ 25° · 2s</text>
+<rect x="710" y="470" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="800" y="509" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">RiskStage</text>
+<text x="800" y="525" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">trọng số · severity</text>
+<text x="800" y="541" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">→ publish RiskEvent</text>
+<rect x="920" y="470" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="1010" y="517" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">DebugStage</text>
+<text x="1010" y="533" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">log hướng đầu · telemetry</text>
+<rect x="1130" y="470" width="180" height="110" rx="0" fill="#e599f7" stroke="#9c36b5" stroke-width="2" opacity="1.0"/>
+<text x="1220" y="517" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">VizStage</text>
+<text x="1220" y="533" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">vẽ overlay (Visualizer)</text>
+<path d="M 350 240 L 500 185" fill="none" stroke="#868e96" stroke-width="3" marker-end="url(#ah_868e96)"/>
+<path d="M 680 185 L 710 185" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 890 185 L 920 185" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1100 185 L 1130 185" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1220 240 L 1220 300" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1130 355 L 1100 355" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 920 355 L 890 355" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 710 355 L 680 355" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 590 410 L 590 470" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 680 525 L 710 525" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 890 525 L 920 525" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1100 525 L 1130 525" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1340 355 L 1340 85 L 800 85 L 800 130" fill="none" stroke="#9c36b5" stroke-width="2" marker-end="url(#ah_9c36b5)" stroke-dasharray="6 5"/>
+<text x="830" y="72" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#9c36b5" text-anchor="start">HeadPoseFeedback (cross-frame): yaw frame trước → extreme_pose_mode</text>
+<text x="460" y="652" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="start">FrameContext (frozen dataclass) — frame, bbox, landmarks, head_pose, gaze, scores…</text>
+<text x="460" y="684" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="start">Threaded: Capture (main) → Queue(2) → Inference (ProducerStage) → Queue(2) → Viz (main)</text>
+<text x="460" y="716" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="start">Risk = 0.45·drowsy + 0.35·distraction + 0.20·activity → chỉ HIGH/CRITICAL mới cảnh báo</text>
+<text x="460" y="748" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="start">extreme_pose_mode: |yaw| ≥ 88° → bỏ landmark/gaze, giữ SCRFD + head pose; &lt; 80° tắt (hysteresis + EMA)</text>
+<rect x="1460" y="130" width="220" height="70" rx="0" fill="#fff3bf" stroke="#fab005" stroke-width="2" opacity="1.0"/>
+<text x="1570" y="157" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">EventBus</text>
+<text x="1570" y="173" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">subscribe('risk') · publish</text>
+<rect x="1460" y="260" width="220" height="110" rx="0" fill="#ffd8a8" stroke="#e8590c" stroke-width="2" opacity="1.0"/>
+<text x="1570" y="299" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">AlertManager</text>
+<text x="1570" y="315" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">HIGH → beep · CRITICAL → alarm</text>
+<text x="1570" y="331" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">cooldown 5s / 2s</text>
+<rect x="1740" y="130" width="200" height="100" rx="0" fill="#ffec99" stroke="#f08c00" stroke-width="2" opacity="1.0"/>
+<text x="1840" y="164" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">EventLogger</text>
+<text x="1840" y="180" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">dms.db + events.jsonl</text>
+<text x="1840" y="196" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">min_severity = medium</text>
+<rect x="1740" y="270" width="200" height="90" rx="0" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2" opacity="1.0"/>
+<text x="1840" y="307" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">SQLite</text>
+<text x="1840" y="323" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">data/dms.db</text>
+<path d="M 890 525 L 1460 165" fill="none" stroke="#fab005" stroke-width="3" marker-end="url(#ah_fab005)"/>
+<text x="1160" y="382" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#fab005" text-anchor="middle">RiskEvent</text>
+<text x="1160" y="398" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#fab005" text-anchor="middle">(HIGH/CRITICAL)</text>
+<path d="M 1570 200 L 1570 260" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1680 165 L 1740 165" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<path d="M 1840 230 L 1840 270" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<rect x="1460" y="760" width="220" height="130" rx="0" fill="#a5d8ff" stroke="#1971c2" stroke-width="2" opacity="1.0"/>
+<text x="1570" y="809" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">Visualizer (OpenCV)</text>
+<text x="1570" y="825" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">mesh · trục 3D · gaze trail</text>
+<text x="1570" y="841" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">cv2.imshow</text>
+<rect x="1740" y="760" width="200" height="150" rx="0" fill="#a5d8ff" stroke="#1971c2" stroke-width="2" opacity="1.0"/>
+<text x="1840" y="812" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">Qt GUI (PySide6)</text>
+<text x="1840" y="827" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">QtVizStage → frame_ready</text>
+<text x="1840" y="843" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">→ GUIManager</text>
+<text x="1840" y="858" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#343a40" text-anchor="middle">cập nhật sidebar</text>
+<path d="M 1310 525 L 1460 825" fill="none" stroke="#868e96" stroke-width="2" marker-end="url(#ah_868e96)"/>
+<text x="1400" y="670" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#1971c2" text-anchor="middle">frame đã vẽ + ctx</text>
+<path d="M 1310 525 L 1310 700 L 1840 700 L 1840 760" fill="none" stroke="#1971c2" stroke-width="2" marker-end="url(#ah_1971c2)" stroke-dasharray="6 5"/>
+<text x="1610" y="686" font-family="Cascadia Code, Consolas, monospace" font-size="12" fill="#1971c2" text-anchor="middle">QtVizStage thay VizStage → frame_ready signal (QueuedConnection)</text>
+</svg>

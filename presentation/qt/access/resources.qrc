@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="access">
+    <file>add-driver.svg</file>
+    <file>arrow-up.svg</file>
+    <file>eye.svg</file>
+    <file>exit.svg</file>
+    <file>face-mask.svg</file>
+    <file>glasses.svg</file>
+    <file>head-side.svg</file>
+    <file>ruler.svg</file>
+    <file>user-emotion.svg</file>
+    <file>user-slash.svg</file>
+    <file>user-viewfinder.svg</file>
+  </qresource>
+</RCC>

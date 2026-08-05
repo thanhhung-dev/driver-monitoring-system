@@ -1,24 +1,19 @@
 import sys
+from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
+from PySide6.QtWidgets import QApplication
 
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
-class QtMainWindow(QMainWindow):
-    def __init__(self) -> None:
-        super().__init__()
-        self.setWindowTitle("Driver Monitoring System - Qt Launcher")
-        self.setFixedSize(800, 600)
-
-        label = QLabel("Hello from Qt! This is the DMS Qt starter window.")
-        label.setAlignment(Qt.AlignCenter)
-        self.setCentralWidget(label)
+from presentation.qt.gui_manager import GUIManager
 
 
 def main() -> None:
     app = QApplication(sys.argv)
-    window = QtMainWindow()
-    window.show()
+    manager = GUIManager()
+    manager.show()
     sys.exit(app.exec())
 
 

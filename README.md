@@ -23,10 +23,11 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run the Qt demo window:
+Run the Qt application:
 
 ```bash
 python app/qt_gui.py
 ```
 
-This will open a Qt-based IDE-style application window for the project.
+The launcher loads `presentation/qt/main_window.ui` directly at runtime, so
+saved Qt Designer changes do not require regenerating `ui_main_window.py`.
