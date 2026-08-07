@@ -217,7 +217,6 @@ class Visualizer:
                 continue
 
             alpha = alpha_global * t
-            print(f"[major, minor, alpha, t]: [{major:.2f}, {minor:.2f}, {alpha:.2f}, {t:.2f}]")
 
             scale_factor = Z_e / max(Z, 0.1)
             curr_glow = glow_size * (0.5 + 0.5 * t) * scale_factor

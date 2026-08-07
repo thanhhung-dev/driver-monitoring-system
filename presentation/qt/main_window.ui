@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>1107</height>
+    <height>1212</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,8 @@ QFrame#sidebarFrame {
     border-right: 2px solid #2d3748;
 }
 
-QFrame#profileFrame {
+QFrame#profileFrame
+{
     background-color: #38516f;
     border: 1px solid #ffffff;
     border-radius: 10px;
@@ -34,18 +35,6 @@ QFrame#drowsyFrame {
     background-color: #38516f;
     border: 1px solid #ffffff;
     border-radius: 10px;
-    padding: 6px;
-}
-
-QHBoxLayout#actionIconRow {
-    display: flex;
-    width: 116px;
-    height: 20px;
-    padding: 10px;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 7px;
-    flex-shrink: 0;
 }
 
 QFrame#actionFrame,
@@ -77,15 +66,31 @@ QLabel#driverName {
     min-height: 20px;
 }
 
-QLabel#lblDistractionVal,
-QLabel#lblDrowsyVal {
+QProgressBar#lblDistractionVal,
+QProgressBar#lblDrowsyVal {
+    background-color: #253247;
+    border: 1px solid #ffffff;
+    border-radius: 10px;
     color: #ffffff;
-    font-size: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+QProgressBar#lblDistractionVal::chunk,
+QProgressBar#lblDrowsyVal::chunk {
+    border-radius: 9px;
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #22c55e,
+        stop: 0.5 #facc15,
+        stop: 1 #ef4444
+    );
 }
 
 QLabel#lblDistractionTitle,
 QLabel#lblDrowsyTitle {
-    color: #83DDDC;
+    color: #ffffff;
     font-size: 11px;
 }
 
@@ -129,7 +134,7 @@ QLabel#lblHeadZoneVal {
     color: #EDA200;
     border-bottom: 0;
     font-size: 12px;
-    padding: 5px 0;
+    padding: 2px 0;
     qproperty-alignment: AlignCenter;
 }
 
@@ -157,8 +162,6 @@ QPushButton {
     border-radius: 4px;
     padding: 8px;
     font-weight: bold;
-    stroke-width: 2px;
-    stroke: #FFF;
 }
 
 QLabel#lblRegValue,
@@ -234,6 +237,33 @@ QLabel#lblExpVal {
          <number>10</number>
         </property>
         <item>
+         <widget class="QFrame" name="userFrame">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <layout class="QHBoxLayout" name="userLayout">
+           <property name="spacing">
+            <number>10</number>
+           </property>
+           <property name="leftMargin">
+            <number>12</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>12</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QFrame" name="profileFrame">
           <property name="minimumSize">
            <size>
@@ -292,9 +322,6 @@ QLabel#lblExpVal {
                <property name="text">
                 <string/>
                </property>
-               <property name="pixmap">
-                <pixmap>:/access/glasses.svg</pixmap>
-               </property>
                <property name="scaledContents">
                 <bool>true</bool>
                </property>
@@ -319,9 +346,6 @@ QLabel#lblExpVal {
                </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap>:/access/face-mask.svg</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -348,9 +372,6 @@ QLabel#lblExpVal {
                <property name="text">
                 <string/>
                </property>
-               <property name="pixmap">
-                <pixmap>:/access/user-slash.svg</pixmap>
-               </property>
                <property name="scaledContents">
                 <bool>true</bool>
                </property>
@@ -366,7 +387,7 @@ QLabel#lblExpVal {
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>18</height>
+               <height>20</height>
               </size>
              </property>
              <property name="text">
@@ -382,52 +403,182 @@ QLabel#lblExpVal {
         </item>
         <item>
          <widget class="QFrame" name="distractionFrame">
-          <layout class="QVBoxLayout">
-           <item>
-            <widget class="QLabel" name="lblDistractionVal">
-             <property name="text">
-              <string>5%</string>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>80</height>
+           </size>
+          </property>
+          <layout class="QGridLayout" name="distractionStack">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="currentIndex" stdset="0">
+            <number>1</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QProgressBar" name="lblDistractionVal">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximum">
+              <number>80</number>
+             </property>
+             <property name="value">
+              <number>5</number>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+             <property name="textVisible">
+              <bool>true</bool>
+             </property>
+             <property name="format">
+              <string>%p%</string>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QLabel" name="lblDistractionTitle">
-             <property name="text">
-              <string>DISTRACTION LEVEL</string>
+           <item row="0" column="0">
+            <layout class="QVBoxLayout" name="distractionTextLayout">
+             <property name="leftMargin">
+              <number>0</number>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
+             <property name="topMargin">
+              <number>0</number>
              </property>
-            </widget>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>5</number>
+             </property>
+             <item>
+              <spacer name="distractionTitleSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblDistractionTitle">
+               <property name="text">
+                <string>DISTRACTION LEVEL</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
         </item>
         <item>
          <widget class="QFrame" name="drowsyFrame">
-          <layout class="QVBoxLayout">
-           <item>
-            <widget class="QLabel" name="lblDrowsyVal">
-             <property name="text">
-              <string>0%</string>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>80</height>
+           </size>
+          </property>
+          <layout class="QGridLayout" name="drowsyStack">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="currentIndex" stdset="0">
+            <number>1</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QProgressBar" name="lblDrowsyVal">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>0</number>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+             <property name="textVisible">
+              <bool>true</bool>
+             </property>
+             <property name="format">
+              <string>%p%</string>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QLabel" name="lblDrowsyTitle">
-             <property name="text">
-              <string>DROWSY LEVEL</string>
+           <item row="0" column="0">
+            <layout class="QVBoxLayout" name="drowsyTextLayout">
+             <property name="leftMargin">
+              <number>0</number>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
+             <property name="topMargin">
+              <number>0</number>
              </property>
-            </widget>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>5</number>
+             </property>
+             <item>
+              <spacer name="drowsyTitleSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblDrowsyTitle">
+               <property name="text">
+                <string>DROWSY LEVEL</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -475,7 +626,7 @@ QLabel#lblExpVal {
            <item>
             <widget class="QLabel" name="lblRegValue">
              <property name="text">
-              <string>TextLabel</string>
+              <string>TEXTLABLE</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1189,19 +1340,6 @@ QLabel#lblExpVal {
          </widget>
         </item>
         <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="bottomButtonRow">
           <property name="spacing">
            <number>16</number>
@@ -1230,10 +1368,6 @@ QLabel#lblExpVal {
             <property name="text">
              <string/>
             </property>
-            <property name="icon">
-             <iconset resource="access/resources.qrc">
-              <normaloff>:/access/add-driver.svg</normaloff>:/access/add-driver.svg</iconset>
-            </property>
             <property name="iconSize">
              <size>
               <width>24</width>
@@ -1252,10 +1386,6 @@ QLabel#lblExpVal {
             </property>
             <property name="text">
              <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="access/resources.qrc">
-              <normaloff>:/access/exit.svg</normaloff>:/access/exit.svg</iconset>
             </property>
             <property name="iconSize">
              <size>

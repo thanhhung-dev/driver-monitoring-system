@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 import qtawesome as qta
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QLabel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QSize, Slot, QTimer, Qt, QObject, QThread
 from PySide6.QtGui import QIcon, QImage, QPixmap
@@ -95,6 +95,12 @@ class GUIManager(QObject):
         self.window.mainSplitter.setStretchFactor(1, 1)
         self.window.mainSplitter.setSizes([180, self.window.width() - 180])
 
+        # Keep score labels above the full-frame progress bar layer.
+        self.window.lblDistractionTitle.raise_()
+        self.window.lblDrowsyTitle.raise_()
+
+        self._passenger_icons = []
+        self._icon_states = {}
         self.setup_icons()
 
         self.qt_viz_stage = QtVizStage(None, None)
@@ -139,16 +145,16 @@ class GUIManager(QObject):
             "iconHeadZone": "head-side.svg",
         }
         for name, icon_name in title_icons.items():
-            self._set_label_icon(name, icon_name, color=accent, size=16)
+            self._set_label_icon(name, icon_name, color=accent, size=17)
 
         self.action_icon_defs = {
-            "iconActionPhone": "fa5s.phone-alt",
-            "iconActionDrink": "fa5s.mug-hot",
-            "iconActionSmoke": "fa5s.smoking",
-            "iconActionYawn": "fa5s.tired",
+            "iconActionPhone": "phone-call.svg",
+            "iconActionDrink": "drinking.svg",
+            "iconActionSmoke": "smoking.svg",
+            "iconActionYawn": "emotion-yawn.svg",
         }
         for name, icon_name in self.action_icon_defs.items():
-            self._set_label_icon(name, icon_name, color=muted, size=24)
+            self._set_label_icon(name, icon_name, color=muted, size=20)
 
         # -- 2 nút dưới cùng --
         asset_dir = Path(__file__).resolve().parent / "access"
@@ -192,9 +198,28 @@ class GUIManager(QObject):
         label = getattr(self.window, label_name, None)
         if label is None:
             return
+        if self._icon_states.get(label_name) == active:
+            return
         color = "#4fd1c5" if active else "#4a5568"
-        icon = qta.icon(icon_name, color=color)
-        self._set_icon_pixmap(label, icon, 24)
+        self._set_label_icon(label_name, icon_name, color=color, size=24)
+        self._icon_states[label_name] = active
+
+    def _set_passenger_icons(self, passenger_count: int):
+        self.window.userLayout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        while len(self._passenger_icons) < passenger_count:
+            label = QLabel(self.window.userFrame)
+            label.setFixedSize(25, 25)
+            label.setAlignment(Qt.AlignCenter)
+            self._set_icon_pixmap(
+                label,
+                QIcon(str(Path(__file__).resolve().parent / "access" / "user.svg")),
+                25,
+            )
+            self.window.userLayout.addWidget(label)
+            self._passenger_icons.append(label)
+
+        for index, label in enumerate(self._passenger_icons):
+            label.setVisible(index < passenger_count)
 
     def show(self):
         self.window.show()
@@ -224,23 +249,26 @@ class GUIManager(QObject):
         """
         Slot called every time the AI pipeline finishes processing a frame.
         """
-        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        h, w, ch = rgb_image.shape
-        bytes_per_line = ch * w
+        try:
+            rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            h, w, ch = rgb_image.shape
+            bytes_per_line = ch * w
 
-        qt_image = QImage(
-            rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888
-        ).copy()
-        pixmap = QPixmap.fromImage(qt_image)
+            qt_image = QImage(
+                rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888
+            ).copy()
+            pixmap = QPixmap.fromImage(qt_image)
 
-        scaled_pixmap = pixmap.scaled(
-            self.window.videoLabel.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation,
-        )
-        self.window.videoLabel.setPixmap(scaled_pixmap)
+            scaled_pixmap = pixmap.scaled(
+                self.window.videoLabel.size(),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation,
+            )
+            self.window.videoLabel.setPixmap(scaled_pixmap)
 
-        self.update_metrics(ctx)
+            self.update_metrics(ctx)
+        finally:
+            self.qt_viz_stage.frame_consumed()
 
     def update_metrics(self, ctx: FrameContext):
         """
@@ -250,15 +278,22 @@ class GUIManager(QObject):
         if getattr(ctx, "driver_name", None):
             self.window.driverName.setText(ctx.driver_name)
 
+        # Passenger count excludes the recognized driver when present.
+        detections = getattr(ctx, "face_detections", None)
+        passenger_count = len(detections) if detections is not None else 0
+        if getattr(ctx, "driver_face_index", None) is not None:
+            passenger_count = max(0, passenger_count - 1)
+        self._set_passenger_icons(passenger_count)
+
         # Distraction Level
         if ctx.distraction_score is not None:
             val = int(ctx.distraction_score * 100)
-            self.window.lblDistractionVal.setText(f"{val}%")
+            self.window.lblDistractionVal.setValue(val)
 
         # Drowsy Level
         if ctx.drowsiness_score is not None:
             val = int(ctx.drowsiness_score * 100)
-            self.window.lblDrowsyVal.setText(f"{val}%")
+            self.window.lblDrowsyVal.setValue(val)
 
         attribs = getattr(ctx, "attribs", None) or {}
 

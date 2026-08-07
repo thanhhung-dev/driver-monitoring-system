@@ -16,14 +16,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QMainWindow, QPushButton, QSizePolicy,
-    QSpacerItem, QSplitter, QVBoxLayout, QWidget)
+    QLabel, QMainWindow, QProgressBar, QPushButton,
+    QSizePolicy, QSpacerItem, QSplitter, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1280, 1107)
+        MainWindow.resize(1280, 1212)
         MainWindow.setStyleSheet(u"QMainWindow {\n"
 "    background-color: #1a202c;\n"
 "}\n"
@@ -33,7 +34,8 @@ class Ui_MainWindow(object):
 "    border-right: 2px solid #2d3748;\n"
 "}\n"
 "\n"
-"QFrame#profileFrame {\n"
+"QFrame#profileFrame\n"
+"{\n"
 "    background-color: #38516f;\n"
 "    border: 1px solid #ffffff;\n"
 "    border-radius: 10px;\n"
@@ -44,18 +46,6 @@ class Ui_MainWindow(object):
 "    background-color: #38516f;\n"
 "    border: 1px solid #ffffff;\n"
 "    border-radius: 10px;\n"
-"    padding: 6px;\n"
-"}\n"
-"\n"
-"QHBoxLayout#actionIconRow {\n"
-"    display: flex;\n"
-"    width: 116px;\n"
-"    height: 20px;\n"
-"    padding: 10px;\n"
-"    justify-content: flex-end;\n"
-"    align-items: center;\n"
-"    gap: 7px;\n"
-"    flex-shrink: 0;\n"
 "}\n"
 "\n"
 "QFrame#actionFrame,\n"
@@ -69,8 +59,7 @@ class Ui_MainWindow(object):
 "QFrame#gazeZoneFrame,\n"
 "QFrame#headZoneFrame {\n"
 "    border: 0;\n"
-"    border-bottom:"
-                        " 1px solid #38516f;\n"
+"    border-bottom: 1px solid #38516f;\n"
 "    padding: 2px;\n"
 "}\n"
 "\n"
@@ -83,20 +72,37 @@ class Ui_MainWindow(object):
 "\n"
 "QLabel#driverName {\n"
 "    color: #ffffff;\n"
-"    border: 0;\n"
+""
+                        "    border: 0;\n"
 "    font-size: 14px;\n"
 "    min-height: 20px;\n"
 "}\n"
 "\n"
-"QLabel#lblDistractionVal,\n"
-"QLabel#lblDrowsyVal {\n"
+"QProgressBar#lblDistractionVal,\n"
+"QProgressBar#lblDrowsyVal {\n"
+"    background-color: #253247;\n"
+"    border: 1px solid #ffffff;\n"
+"    border-radius: 10px;\n"
 "    color: #ffffff;\n"
-"    font-size: 20px;\n"
+"    font-size: 12px;\n"
+"    font-weight: bold;\n"
+"    text-align: center;\n"
+"}\n"
+"\n"
+"QProgressBar#lblDistractionVal::chunk,\n"
+"QProgressBar#lblDrowsyVal::chunk {\n"
+"    border-radius: 9px;\n"
+"    background: qlineargradient(\n"
+"        x1: 0, y1: 0, x2: 1, y2: 0,\n"
+"        stop: 0 #22c55e,\n"
+"        stop: 0.5 #facc15,\n"
+"        stop: 1 #ef4444\n"
+"    );\n"
 "}\n"
 "\n"
 "QLabel#lblDistractionTitle,\n"
 "QLabel#lblDrowsyTitle {\n"
-"    color: #83DDDC;\n"
+"    color: #ffffff;\n"
 "    font-size: 11px;\n"
 "}\n"
 "\n"
@@ -109,7 +115,8 @@ class Ui_MainWindow(object):
 "QLabel#lblHeadDirTitle,\n"
 "QLabel#lblGazeDirTitle,\n"
 "QLabel#lblGazeZoneTitle,\n"
-"QLabel#lblHeadZoneTitle {\n"
+"QL"
+                        "abel#lblHeadZoneTitle {\n"
 "    color: #83DDDC;\n"
 "    font-size: 13px;\n"
 "}\n"
@@ -119,8 +126,7 @@ class Ui_MainWindow(object):
 "QLabel#lblEyeOpR,\n"
 "QLabel#lblBlinkVal,\n"
 "QLabel#lblBlinkRVal,\n"
-"Q"
-                        "Label#lblHeadLocVal,\n"
+"QLabel#lblHeadLocVal,\n"
 "QLabel#lblHeadLocYVal,\n"
 "QLabel#lblHeadLocZVal,\n"
 "QLabel#lblEyeLocLPrefix,\n"
@@ -141,7 +147,7 @@ class Ui_MainWindow(object):
 "    color: #EDA200;\n"
 "    border-bottom: 0;\n"
 "    font-size: 12px;\n"
-"    padding: 5px 0;\n"
+"    padding: 2px 0;\n"
 "    qproperty-alignment: AlignCenter;\n"
 "}\n"
 "\n"
@@ -153,7 +159,8 @@ class Ui_MainWindow(object):
 "\n"
 "QLabel#videoLabel {\n"
 "    background-color: #0d1117;\n"
-"}\n"
+""
+                        "}\n"
 "\n"
 "QLabel#captionBar {\n"
 "    background-color: #34394a;\n"
@@ -163,15 +170,12 @@ class Ui_MainWindow(object):
 "    font-weight: normal;\n"
 "}\n"
 "\n"
-"QPushB"
-                        "utton {\n"
+"QPushButton {\n"
 "    color: #ffffff;\n"
 "    border: none;\n"
 "    border-radius: 4px;\n"
 "    padding: 8px;\n"
 "    font-weight: bold;\n"
-"    stroke-width: 2px;\n"
-"    stroke: #FFF;\n"
 "}\n"
 "\n"
 "QLabel#lblRegValue,\n"
@@ -206,6 +210,16 @@ class Ui_MainWindow(object):
         self.sidebarLayout.setSpacing(8)
         self.sidebarLayout.setObjectName(u"sidebarLayout")
         self.sidebarLayout.setContentsMargins(0, 10, 0, 10)
+        self.userFrame = QFrame(self.sidebarFrame)
+        self.userFrame.setObjectName(u"userFrame")
+        self.userFrame.setMinimumSize(QSize(0, 25))
+        self.userLayout = QHBoxLayout(self.userFrame)
+        self.userLayout.setSpacing(10)
+        self.userLayout.setObjectName(u"userLayout")
+        self.userLayout.setContentsMargins(12, 6, 12, 6)
+
+        self.sidebarLayout.addWidget(self.userFrame)
+
         self.profileFrame = QFrame(self.sidebarFrame)
         self.profileFrame.setObjectName(u"profileFrame")
         self.profileFrame.setMinimumSize(QSize(0, 70))
@@ -224,7 +238,6 @@ class Ui_MainWindow(object):
         self.iconGlasses.setObjectName(u"iconGlasses")
         self.iconGlasses.setMinimumSize(QSize(28, 28))
         self.iconGlasses.setMaximumSize(QSize(28, 28))
-        self.iconGlasses.setPixmap(QPixmap(u":/access/glasses.svg"))
         self.iconGlasses.setScaledContents(True)
         self.iconGlasses.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -234,7 +247,6 @@ class Ui_MainWindow(object):
         self.iconDevice.setObjectName(u"iconDevice")
         self.iconDevice.setMinimumSize(QSize(28, 28))
         self.iconDevice.setMaximumSize(QSize(28, 28))
-        self.iconDevice.setPixmap(QPixmap(u":/access/face-mask.svg"))
         self.iconDevice.setScaledContents(True)
         self.iconDevice.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -244,7 +256,6 @@ class Ui_MainWindow(object):
         self.iconPerson.setObjectName(u"iconPerson")
         self.iconPerson.setMinimumSize(QSize(28, 28))
         self.iconPerson.setMaximumSize(QSize(28, 28))
-        self.iconPerson.setPixmap(QPixmap(u":/access/user-slash.svg"))
         self.iconPerson.setScaledContents(True)
         self.iconPerson.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -255,7 +266,7 @@ class Ui_MainWindow(object):
 
         self.driverName = QLabel(self.profileFrame)
         self.driverName.setObjectName(u"driverName")
-        self.driverName.setMinimumSize(QSize(0, 18))
+        self.driverName.setMinimumSize(QSize(0, 20))
         self.driverName.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.profileLayout.addWidget(self.driverName)
@@ -265,38 +276,77 @@ class Ui_MainWindow(object):
 
         self.distractionFrame = QFrame(self.sidebarFrame)
         self.distractionFrame.setObjectName(u"distractionFrame")
-        self.vboxLayout = QVBoxLayout(self.distractionFrame)
-        self.vboxLayout.setObjectName(u"vboxLayout")
-        self.lblDistractionVal = QLabel(self.distractionFrame)
+        self.distractionFrame.setMaximumSize(QSize(16777215, 80))
+        self.distractionStack = QGridLayout(self.distractionFrame)
+        self.distractionStack.setObjectName(u"distractionStack")
+        self.distractionStack.setProperty(u"currentIndex", 1)
+        self.distractionStack.setContentsMargins(0, 0, 0, 0)
+        self.lblDistractionVal = QProgressBar(self.distractionFrame)
         self.lblDistractionVal.setObjectName(u"lblDistractionVal")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.lblDistractionVal.sizePolicy().hasHeightForWidth())
+        self.lblDistractionVal.setSizePolicy(sizePolicy1)
+        self.lblDistractionVal.setMaximum(80)
+        self.lblDistractionVal.setValue(5)
         self.lblDistractionVal.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lblDistractionVal.setTextVisible(True)
 
-        self.vboxLayout.addWidget(self.lblDistractionVal)
+        self.distractionStack.addWidget(self.lblDistractionVal, 0, 0, 1, 1)
+
+        self.distractionTextLayout = QVBoxLayout()
+        self.distractionTextLayout.setObjectName(u"distractionTextLayout")
+        self.distractionTextLayout.setContentsMargins(0, 0, 0, 5)
+        self.distractionTitleSpacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.distractionTextLayout.addItem(self.distractionTitleSpacer)
 
         self.lblDistractionTitle = QLabel(self.distractionFrame)
         self.lblDistractionTitle.setObjectName(u"lblDistractionTitle")
         self.lblDistractionTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.vboxLayout.addWidget(self.lblDistractionTitle)
+        self.distractionTextLayout.addWidget(self.lblDistractionTitle)
+
+
+        self.distractionStack.addLayout(self.distractionTextLayout, 0, 0, 1, 1)
 
 
         self.sidebarLayout.addWidget(self.distractionFrame)
 
         self.drowsyFrame = QFrame(self.sidebarFrame)
         self.drowsyFrame.setObjectName(u"drowsyFrame")
-        self.vboxLayout1 = QVBoxLayout(self.drowsyFrame)
-        self.vboxLayout1.setObjectName(u"vboxLayout1")
-        self.lblDrowsyVal = QLabel(self.drowsyFrame)
+        self.drowsyFrame.setMaximumSize(QSize(16777215, 80))
+        self.drowsyStack = QGridLayout(self.drowsyFrame)
+        self.drowsyStack.setObjectName(u"drowsyStack")
+        self.drowsyStack.setProperty(u"currentIndex", 1)
+        self.drowsyStack.setContentsMargins(0, 0, 0, 0)
+        self.lblDrowsyVal = QProgressBar(self.drowsyFrame)
         self.lblDrowsyVal.setObjectName(u"lblDrowsyVal")
+        sizePolicy1.setHeightForWidth(self.lblDrowsyVal.sizePolicy().hasHeightForWidth())
+        self.lblDrowsyVal.setSizePolicy(sizePolicy1)
+        self.lblDrowsyVal.setMaximum(100)
+        self.lblDrowsyVal.setValue(0)
         self.lblDrowsyVal.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lblDrowsyVal.setTextVisible(True)
 
-        self.vboxLayout1.addWidget(self.lblDrowsyVal)
+        self.drowsyStack.addWidget(self.lblDrowsyVal, 0, 0, 1, 1)
+
+        self.drowsyTextLayout = QVBoxLayout()
+        self.drowsyTextLayout.setObjectName(u"drowsyTextLayout")
+        self.drowsyTextLayout.setContentsMargins(0, 0, 0, 5)
+        self.drowsyTitleSpacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.drowsyTextLayout.addItem(self.drowsyTitleSpacer)
 
         self.lblDrowsyTitle = QLabel(self.drowsyFrame)
         self.lblDrowsyTitle.setObjectName(u"lblDrowsyTitle")
         self.lblDrowsyTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.vboxLayout1.addWidget(self.lblDrowsyTitle)
+        self.drowsyTextLayout.addWidget(self.lblDrowsyTitle)
+
+
+        self.drowsyStack.addLayout(self.drowsyTextLayout, 0, 0, 1, 1)
 
 
         self.sidebarLayout.addWidget(self.drowsyFrame)
@@ -374,9 +424,9 @@ class Ui_MainWindow(object):
 
         self.expressionFrame = QFrame(self.sidebarFrame)
         self.expressionFrame.setObjectName(u"expressionFrame")
-        self.vboxLayout2 = QVBoxLayout(self.expressionFrame)
-        self.vboxLayout2.setObjectName(u"vboxLayout2")
-        self.vboxLayout2.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout = QVBoxLayout(self.expressionFrame)
+        self.vboxLayout.setObjectName(u"vboxLayout")
+        self.vboxLayout.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout = QHBoxLayout()
         self.hboxLayout.setObjectName(u"hboxLayout")
         self.iconExpression = QLabel(self.expressionFrame)
@@ -394,22 +444,22 @@ class Ui_MainWindow(object):
         self.hboxLayout.addItem(self.spacerItem1)
 
 
-        self.vboxLayout2.addLayout(self.hboxLayout)
+        self.vboxLayout.addLayout(self.hboxLayout)
 
         self.lblExpVal = QLabel(self.expressionFrame)
         self.lblExpVal.setObjectName(u"lblExpVal")
         self.lblExpVal.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.vboxLayout2.addWidget(self.lblExpVal)
+        self.vboxLayout.addWidget(self.lblExpVal)
 
 
         self.sidebarLayout.addWidget(self.expressionFrame)
 
         self.eyeOpFrame = QFrame(self.sidebarFrame)
         self.eyeOpFrame.setObjectName(u"eyeOpFrame")
-        self.vboxLayout3 = QVBoxLayout(self.eyeOpFrame)
-        self.vboxLayout3.setObjectName(u"vboxLayout3")
-        self.vboxLayout3.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout1 = QVBoxLayout(self.eyeOpFrame)
+        self.vboxLayout1.setObjectName(u"vboxLayout1")
+        self.vboxLayout1.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout1 = QHBoxLayout()
         self.hboxLayout1.setObjectName(u"hboxLayout1")
         self.iconEyeOpenness = QLabel(self.eyeOpFrame)
@@ -427,7 +477,7 @@ class Ui_MainWindow(object):
         self.hboxLayout1.addItem(self.spacerItem2)
 
 
-        self.vboxLayout3.addLayout(self.hboxLayout1)
+        self.vboxLayout1.addLayout(self.hboxLayout1)
 
         self.eyeOpValueRow = QHBoxLayout()
         self.eyeOpValueRow.setSpacing(12)
@@ -447,16 +497,16 @@ class Ui_MainWindow(object):
         self.eyeOpValueRow.setStretch(0, 1)
         self.eyeOpValueRow.setStretch(1, 1)
 
-        self.vboxLayout3.addLayout(self.eyeOpValueRow)
+        self.vboxLayout1.addLayout(self.eyeOpValueRow)
 
 
         self.sidebarLayout.addWidget(self.eyeOpFrame)
 
         self.blinkFrame = QFrame(self.sidebarFrame)
         self.blinkFrame.setObjectName(u"blinkFrame")
-        self.vboxLayout4 = QVBoxLayout(self.blinkFrame)
-        self.vboxLayout4.setObjectName(u"vboxLayout4")
-        self.vboxLayout4.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout2 = QVBoxLayout(self.blinkFrame)
+        self.vboxLayout2.setObjectName(u"vboxLayout2")
+        self.vboxLayout2.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout2 = QHBoxLayout()
         self.hboxLayout2.setObjectName(u"hboxLayout2")
         self.iconEyeBlink = QLabel(self.blinkFrame)
@@ -474,7 +524,7 @@ class Ui_MainWindow(object):
         self.hboxLayout2.addItem(self.spacerItem3)
 
 
-        self.vboxLayout4.addLayout(self.hboxLayout2)
+        self.vboxLayout2.addLayout(self.hboxLayout2)
 
         self.blinkValueRow = QHBoxLayout()
         self.blinkValueRow.setSpacing(12)
@@ -492,16 +542,16 @@ class Ui_MainWindow(object):
         self.blinkValueRow.setStretch(0, 1)
         self.blinkValueRow.setStretch(1, 1)
 
-        self.vboxLayout4.addLayout(self.blinkValueRow)
+        self.vboxLayout2.addLayout(self.blinkValueRow)
 
 
         self.sidebarLayout.addWidget(self.blinkFrame)
 
         self.headLocFrame = QFrame(self.sidebarFrame)
         self.headLocFrame.setObjectName(u"headLocFrame")
-        self.vboxLayout5 = QVBoxLayout(self.headLocFrame)
-        self.vboxLayout5.setObjectName(u"vboxLayout5")
-        self.vboxLayout5.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout3 = QVBoxLayout(self.headLocFrame)
+        self.vboxLayout3.setObjectName(u"vboxLayout3")
+        self.vboxLayout3.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout3 = QHBoxLayout()
         self.hboxLayout3.setObjectName(u"hboxLayout3")
         self.iconHeadLoc = QLabel(self.headLocFrame)
@@ -519,7 +569,7 @@ class Ui_MainWindow(object):
         self.hboxLayout3.addItem(self.spacerItem4)
 
 
-        self.vboxLayout5.addLayout(self.hboxLayout3)
+        self.vboxLayout3.addLayout(self.hboxLayout3)
 
         self.headLocValueRow = QHBoxLayout()
         self.headLocValueRow.setSpacing(8)
@@ -543,16 +593,16 @@ class Ui_MainWindow(object):
         self.headLocValueRow.setStretch(1, 1)
         self.headLocValueRow.setStretch(2, 1)
 
-        self.vboxLayout5.addLayout(self.headLocValueRow)
+        self.vboxLayout3.addLayout(self.headLocValueRow)
 
 
         self.sidebarLayout.addWidget(self.headLocFrame)
 
         self.eyeLocFrame = QFrame(self.sidebarFrame)
         self.eyeLocFrame.setObjectName(u"eyeLocFrame")
-        self.vboxLayout6 = QVBoxLayout(self.eyeLocFrame)
-        self.vboxLayout6.setObjectName(u"vboxLayout6")
-        self.vboxLayout6.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout4 = QVBoxLayout(self.eyeLocFrame)
+        self.vboxLayout4.setObjectName(u"vboxLayout4")
+        self.vboxLayout4.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout4 = QHBoxLayout()
         self.hboxLayout4.setObjectName(u"hboxLayout4")
         self.iconEyeLoc = QLabel(self.eyeLocFrame)
@@ -570,7 +620,7 @@ class Ui_MainWindow(object):
         self.hboxLayout4.addItem(self.spacerItem5)
 
 
-        self.vboxLayout6.addLayout(self.hboxLayout4)
+        self.vboxLayout4.addLayout(self.hboxLayout4)
 
         self.eyeLocValueGrid = QGridLayout()
         self.eyeLocValueGrid.setObjectName(u"eyeLocValueGrid")
@@ -620,16 +670,16 @@ class Ui_MainWindow(object):
         self.eyeLocValueGrid.setColumnStretch(2, 1)
         self.eyeLocValueGrid.setColumnStretch(3, 1)
 
-        self.vboxLayout6.addLayout(self.eyeLocValueGrid)
+        self.vboxLayout4.addLayout(self.eyeLocValueGrid)
 
 
         self.sidebarLayout.addWidget(self.eyeLocFrame)
 
         self.headDirFrame = QFrame(self.sidebarFrame)
         self.headDirFrame.setObjectName(u"headDirFrame")
-        self.vboxLayout7 = QVBoxLayout(self.headDirFrame)
-        self.vboxLayout7.setObjectName(u"vboxLayout7")
-        self.vboxLayout7.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout5 = QVBoxLayout(self.headDirFrame)
+        self.vboxLayout5.setObjectName(u"vboxLayout5")
+        self.vboxLayout5.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout5 = QHBoxLayout()
         self.hboxLayout5.setObjectName(u"hboxLayout5")
         self.iconHeadDir = QLabel(self.headDirFrame)
@@ -647,7 +697,7 @@ class Ui_MainWindow(object):
         self.hboxLayout5.addItem(self.spacerItem6)
 
 
-        self.vboxLayout7.addLayout(self.hboxLayout5)
+        self.vboxLayout5.addLayout(self.hboxLayout5)
 
         self.headDirValueRow = QHBoxLayout()
         self.headDirValueRow.setSpacing(8)
@@ -671,16 +721,16 @@ class Ui_MainWindow(object):
         self.headDirValueRow.setStretch(1, 1)
         self.headDirValueRow.setStretch(2, 1)
 
-        self.vboxLayout7.addLayout(self.headDirValueRow)
+        self.vboxLayout5.addLayout(self.headDirValueRow)
 
 
         self.sidebarLayout.addWidget(self.headDirFrame)
 
         self.gazeDirFrame = QFrame(self.sidebarFrame)
         self.gazeDirFrame.setObjectName(u"gazeDirFrame")
-        self.vboxLayout8 = QVBoxLayout(self.gazeDirFrame)
-        self.vboxLayout8.setObjectName(u"vboxLayout8")
-        self.vboxLayout8.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout6 = QVBoxLayout(self.gazeDirFrame)
+        self.vboxLayout6.setObjectName(u"vboxLayout6")
+        self.vboxLayout6.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout6 = QHBoxLayout()
         self.hboxLayout6.setObjectName(u"hboxLayout6")
         self.iconGazeDir = QLabel(self.gazeDirFrame)
@@ -699,7 +749,7 @@ class Ui_MainWindow(object):
         self.hboxLayout6.addItem(self.spacerItem7)
 
 
-        self.vboxLayout8.addLayout(self.hboxLayout6)
+        self.vboxLayout6.addLayout(self.hboxLayout6)
 
         self.gazeDirValueRow = QHBoxLayout()
         self.gazeDirValueRow.setSpacing(12)
@@ -717,16 +767,16 @@ class Ui_MainWindow(object):
         self.gazeDirValueRow.setStretch(0, 1)
         self.gazeDirValueRow.setStretch(1, 1)
 
-        self.vboxLayout8.addLayout(self.gazeDirValueRow)
+        self.vboxLayout6.addLayout(self.gazeDirValueRow)
 
 
         self.sidebarLayout.addWidget(self.gazeDirFrame)
 
         self.gazeZoneFrame = QFrame(self.sidebarFrame)
         self.gazeZoneFrame.setObjectName(u"gazeZoneFrame")
-        self.vboxLayout9 = QVBoxLayout(self.gazeZoneFrame)
-        self.vboxLayout9.setObjectName(u"vboxLayout9")
-        self.vboxLayout9.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout7 = QVBoxLayout(self.gazeZoneFrame)
+        self.vboxLayout7.setObjectName(u"vboxLayout7")
+        self.vboxLayout7.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout7 = QHBoxLayout()
         self.hboxLayout7.setObjectName(u"hboxLayout7")
         self.iconGazeZone = QLabel(self.gazeZoneFrame)
@@ -744,21 +794,21 @@ class Ui_MainWindow(object):
         self.hboxLayout7.addItem(self.spacerItem8)
 
 
-        self.vboxLayout9.addLayout(self.hboxLayout7)
+        self.vboxLayout7.addLayout(self.hboxLayout7)
 
         self.lblGazeZoneVal = QLabel(self.gazeZoneFrame)
         self.lblGazeZoneVal.setObjectName(u"lblGazeZoneVal")
 
-        self.vboxLayout9.addWidget(self.lblGazeZoneVal)
+        self.vboxLayout7.addWidget(self.lblGazeZoneVal)
 
 
         self.sidebarLayout.addWidget(self.gazeZoneFrame)
 
         self.headZoneFrame = QFrame(self.sidebarFrame)
         self.headZoneFrame.setObjectName(u"headZoneFrame")
-        self.vboxLayout10 = QVBoxLayout(self.headZoneFrame)
-        self.vboxLayout10.setObjectName(u"vboxLayout10")
-        self.vboxLayout10.setContentsMargins(0, -1, 0, -1)
+        self.vboxLayout8 = QVBoxLayout(self.headZoneFrame)
+        self.vboxLayout8.setObjectName(u"vboxLayout8")
+        self.vboxLayout8.setContentsMargins(0, -1, 0, -1)
         self.hboxLayout8 = QHBoxLayout()
         self.hboxLayout8.setObjectName(u"hboxLayout8")
         self.iconHeadZone = QLabel(self.headZoneFrame)
@@ -776,19 +826,15 @@ class Ui_MainWindow(object):
         self.hboxLayout8.addItem(self.spacerItem9)
 
 
-        self.vboxLayout10.addLayout(self.hboxLayout8)
+        self.vboxLayout8.addLayout(self.hboxLayout8)
 
         self.lblHeadZoneVal = QLabel(self.headZoneFrame)
         self.lblHeadZoneVal.setObjectName(u"lblHeadZoneVal")
 
-        self.vboxLayout10.addWidget(self.lblHeadZoneVal)
+        self.vboxLayout8.addWidget(self.lblHeadZoneVal)
 
 
         self.sidebarLayout.addWidget(self.headZoneFrame)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.sidebarLayout.addItem(self.verticalSpacer)
 
         self.bottomButtonRow = QHBoxLayout()
         self.bottomButtonRow.setSpacing(16)
@@ -800,9 +846,6 @@ class Ui_MainWindow(object):
         self.btnAddDriver = QPushButton(self.sidebarFrame)
         self.btnAddDriver.setObjectName(u"btnAddDriver")
         self.btnAddDriver.setMinimumSize(QSize(40, 40))
-        icon = QIcon()
-        icon.addFile(u":/access/add-driver.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btnAddDriver.setIcon(icon)
         self.btnAddDriver.setIconSize(QSize(24, 24))
 
         self.bottomButtonRow.addWidget(self.btnAddDriver)
@@ -810,9 +853,6 @@ class Ui_MainWindow(object):
         self.btnLogout = QPushButton(self.sidebarFrame)
         self.btnLogout.setObjectName(u"btnLogout")
         self.btnLogout.setMinimumSize(QSize(40, 40))
-        icon1 = QIcon()
-        icon1.addFile(u":/access/exit.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btnLogout.setIcon(icon1)
         self.btnLogout.setIconSize(QSize(24, 24))
 
         self.bottomButtonRow.addWidget(self.btnLogout)
@@ -828,11 +868,11 @@ class Ui_MainWindow(object):
         self.videoContainer = QFrame(self.mainSplitter)
         self.videoContainer.setObjectName(u"videoContainer")
         self.videoContainer.setEnabled(True)
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy1.setHorizontalStretch(1)
-        sizePolicy1.setVerticalStretch(1)
-        sizePolicy1.setHeightForWidth(self.videoContainer.sizePolicy().hasHeightForWidth())
-        self.videoContainer.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy2.setHorizontalStretch(1)
+        sizePolicy2.setVerticalStretch(1)
+        sizePolicy2.setHeightForWidth(self.videoContainer.sizePolicy().hasHeightForWidth())
+        self.videoContainer.setSizePolicy(sizePolicy2)
         self.videoContainer.setMinimumSize(QSize(0, 0))
         self.videoLayout = QVBoxLayout(self.videoContainer)
         self.videoLayout.setSpacing(0)
@@ -840,11 +880,11 @@ class Ui_MainWindow(object):
         self.videoLayout.setContentsMargins(0, 0, 0, 0)
         self.notifyBar = QLabel(self.videoContainer)
         self.notifyBar.setObjectName(u"notifyBar")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(1)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.notifyBar.sizePolicy().hasHeightForWidth())
-        self.notifyBar.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(1)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.notifyBar.sizePolicy().hasHeightForWidth())
+        self.notifyBar.setSizePolicy(sizePolicy3)
         self.notifyBar.setMinimumSize(QSize(0, 26))
         self.notifyBar.setMaximumSize(QSize(16777215, 40))
         self.notifyBar.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -854,16 +894,16 @@ class Ui_MainWindow(object):
         self.videoLabel = QLabel(self.videoContainer)
         self.videoLabel.setObjectName(u"videoLabel")
         self.videoLabel.setEnabled(True)
-        sizePolicy1.setHeightForWidth(self.videoLabel.sizePolicy().hasHeightForWidth())
-        self.videoLabel.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.videoLabel.sizePolicy().hasHeightForWidth())
+        self.videoLabel.setSizePolicy(sizePolicy2)
         self.videoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.videoLayout.addWidget(self.videoLabel)
 
         self.captionBar = QLabel(self.videoContainer)
         self.captionBar.setObjectName(u"captionBar")
-        sizePolicy2.setHeightForWidth(self.captionBar.sizePolicy().hasHeightForWidth())
-        self.captionBar.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.captionBar.sizePolicy().hasHeightForWidth())
+        self.captionBar.setSizePolicy(sizePolicy3)
         self.captionBar.setMinimumSize(QSize(0, 32))
         self.captionBar.setMaximumSize(QSize(16777215, 32))
         font = QFont()
@@ -891,13 +931,13 @@ class Ui_MainWindow(object):
         self.iconDevice.setText("")
         self.iconPerson.setText("")
         self.driverName.setText(QCoreApplication.translate("MainWindow", u"Name Driver", None))
-        self.lblDistractionVal.setText(QCoreApplication.translate("MainWindow", u"5%", None))
+        self.lblDistractionVal.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
         self.lblDistractionTitle.setText(QCoreApplication.translate("MainWindow", u"DISTRACTION LEVEL", None))
-        self.lblDrowsyVal.setText(QCoreApplication.translate("MainWindow", u"0%", None))
+        self.lblDrowsyVal.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
         self.lblDrowsyTitle.setText(QCoreApplication.translate("MainWindow", u"DROWSY LEVEL", None))
         self.iconActionTitle.setText("")
         self.lblActionTitle.setText(QCoreApplication.translate("MainWindow", u"REGULAR ACTION", None))
-        self.lblRegValue.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.lblRegValue.setText(QCoreApplication.translate("MainWindow", u"TEXTLABLE", None))
         self.iconActionPhone.setText("")
         self.iconActionDrink.setText("")
         self.iconActionSmoke.setText("")
