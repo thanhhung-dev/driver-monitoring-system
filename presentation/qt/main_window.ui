@@ -63,7 +63,7 @@ QLabel {
 QLabel#driverName {
     color: #ffffff;
     border: 0;
-    font-size: 14px;
+    font-size: 16px;
     min-height: 20px;
 }
 
@@ -91,7 +91,8 @@ QProgressBar#lblDrowsyVal::chunk {
 QLabel#lblDistractionTitle,
 QLabel#lblDrowsyTitle {
     color: #ffffff;
-    font-size: 11px;
+    padding: 2px 0;
+    font-size: 12px;
     font-weight: bold;
 }
 
@@ -132,7 +133,7 @@ QLabel#lblGazeDirVal,
 QLabel#lblGazeDirYawVal,
 QLabel#lblGazeZoneVal,
 QLabel#lblHeadZoneVal {
-    color: #EDA200;
+    color: #F6D6D6;
     border-bottom: 0;
     font-size: 12px;
     padding: 2px 0;
@@ -183,13 +184,7 @@ QFrame#userFrame{
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
     <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
      <number>0</number>
     </property>
     <property name="bottomMargin">
@@ -320,14 +315,14 @@ QFrame#userFrame{
               <widget class="QLabel" name="iconGlasses">
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>25</width>
+                 <height>25</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>25</width>
+                 <height>25</height>
                 </size>
                </property>
                <property name="text">
@@ -345,14 +340,14 @@ QFrame#userFrame{
               <widget class="QLabel" name="iconDevice">
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>25</width>
+                 <height>25</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>25</width>
+                 <height>25</height>
                 </size>
                </property>
                <property name="text">
@@ -370,14 +365,14 @@ QFrame#userFrame{
               <widget class="QLabel" name="iconPerson">
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>25</width>
+                 <height>25</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>25</width>
+                 <height>25</height>
                 </size>
                </property>
                <property name="text">
@@ -534,6 +529,12 @@ QFrame#userFrame{
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -1526,7 +1527,7 @@ QFrame#userFrame{
            <font>
             <family>Segoe UI</family>
             <pointsize>-1</pointsize>
-            <bold>false</bold>
+            <bold>true</bold>
            </font>
           </property>
           <property name="text">

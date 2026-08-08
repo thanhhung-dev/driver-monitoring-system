@@ -128,7 +128,7 @@ class GUIManager(QObject):
             "iconPerson": "user-slash.svg",
         }
         for name, filename in status_icons.items():
-            self._set_asset_icon(name, filename, size=28)
+            self._set_asset_icon(name, filename, size=25)
         title_icons = {
             "iconActionTitle": "user-viewfinder.svg",
             "iconExpression": "user-emotion.svg",
