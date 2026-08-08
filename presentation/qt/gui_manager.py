@@ -23,9 +23,6 @@ from presentation.qt.stage import QtVizStage
 from pipeline.context import FrameContext
 
 
-
-
-
 class PipelineWorker(QThread):
     """
     Runs the AI Pipeline in a background thread to prevent GUI freezing.
@@ -95,13 +92,13 @@ class GUIManager(QObject):
         self.window.mainSplitter.setStretchFactor(1, 1)
         self.window.mainSplitter.setSizes([180, self.window.width() - 180])
 
-        # Keep score labels above the full-frame progress bar layer.
         self.window.lblDistractionTitle.raise_()
         self.window.lblDrowsyTitle.raise_()
 
         self._passenger_icons = []
         self._icon_states = {}
         self.setup_icons()
+        # self.window.setFixedSize(1366, 702)  
 
         self.qt_viz_stage = QtVizStage(None, None)
         self.qt_viz_stage.frame_ready.connect(
@@ -208,12 +205,11 @@ class GUIManager(QObject):
         self.window.userLayout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         while len(self._passenger_icons) < passenger_count:
             label = QLabel(self.window.userFrame)
-            label.setFixedSize(25, 25)
             label.setAlignment(Qt.AlignCenter)
             self._set_icon_pixmap(
                 label,
                 QIcon(str(Path(__file__).resolve().parent / "access" / "user.svg")),
-                25,
+                20,
             )
             self.window.userLayout.addWidget(label)
             self._passenger_icons.append(label)
@@ -234,7 +230,7 @@ class GUIManager(QObject):
     def stop_pipeline(self):
         if self.worker.isRunning():
             self.worker.stop()
-            self.worker.wait(timeout=3000)  # tránh treo UI vô hạn nếu thread kẹt
+            self.worker.wait(timeout=3000) 
         self.window.videoLabel.clear()
         self.window.videoLabel.setText("Pipeline Stopped")
 
@@ -261,7 +257,7 @@ class GUIManager(QObject):
 
             scaled_pixmap = pixmap.scaled(
                 self.window.videoLabel.size(),
-                Qt.KeepAspectRatio,
+                Qt.KeepAspectRatioByExpanding,
                 Qt.SmoothTransformation,
             )
             self.window.videoLabel.setPixmap(scaled_pixmap)
@@ -278,7 +274,6 @@ class GUIManager(QObject):
         if getattr(ctx, "driver_name", None):
             self.window.driverName.setText(ctx.driver_name)
 
-        # Passenger count excludes the recognized driver when present.
         detections = getattr(ctx, "face_detections", None)
         passenger_count = len(detections) if detections is not None else 0
         if getattr(ctx, "driver_face_index", None) is not None:
