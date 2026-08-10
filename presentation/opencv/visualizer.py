@@ -6,7 +6,12 @@ from features.landmarks import constants as fc
 from utils.helpers import draw_bbox
 from utils.helpers import draw_axis
 from utils.helpers import draw_head_direction_arrow
-
+import logging
+from typing import TypeAlias
+import numpy as np
+from numpy.typing import ArrayLike
+MatLike: TypeAlias = ArrayLike
+logger = logging.getLogger(__name__)
 class Visualizer:
     def __init__(self):
         self.font = cv2.FONT_HERSHEY_SIMPLEX
@@ -40,19 +45,15 @@ class Visualizer:
             thickness
         )
 
-    def draw_face_info(self, frame, bbox, landmarks, driver_state, head_pose=None, draw_box=True):
+    def draw_face_info(self,**params):
         """Vẽ bbox + trục head-pose (nếu có).
-
-        Args:
-            frame:        Ảnh BGR cần vẽ lên (in-place).
-            bbox:         (x1, y1, x2, y2).
-            landmarks:    List 68 (x, y) hoặc None — landmark mesh đã được vẽ
-                          trực tiếp trong pipeline qua FaceMap3DMMDetector.draw_full_mesh.
-            driver_state: Trạng thái driver (chưa dùng, để mở rộng cảnh báo).
-            head_pose:    Tuple (yaw, pitch, roll) độ, hoặc None để không vẽ trục.
-            draw_box:     False để ẩn bbox SCRFD (vùng transition 80–85°).
         """
         # Bounding box với corner-accent
+        frame = params["frame"]
+        bbox = params["bbox"]
+        landmarks = params.get("landmarks")
+        head_pose = params.get("head_pose")
+        draw_box = params.get("draw_box", True)
         if draw_box:
             draw_bbox(frame, bbox, self.color_normal, fixed_size=(250, 250))
 
@@ -113,14 +114,6 @@ class Visualizer:
     ) -> tuple[tuple[float, float], tuple[float, float], float]:
         """
         Projects a small 3D circle to a 2D ellipse using the Jacobian of the projection.
-        Args:
-            center_3d: (X, Y, Z) in 3D
-            radius: Radius of the 3D circle
-            normal_3d: Unit normal vector of the circle's plane
-            focal_length: Pinhole camera focal length
-            cx, cy: Principal point
-        Returns:
-            (center_2d, axes_2d, angle_deg) compatible with cv2.ellipse
         """
         X, Y, Z = center_3d
         Z = max(Z, 0.01)
@@ -149,7 +142,7 @@ class Visualizer:
         min_ratio = 0.1
         minor_axis = max(minor_axis, major_axis * min_ratio)
         major_vec = evecs[:, 1].copy()
-        if major_vec[1] < 0:  # Always point "downward" in image coords
+        if major_vec[1] < 0:  
             major_vec = -major_vec
         angle_rad = np.arctan2(major_vec[1], major_vec[0])
         angle_deg = float(np.degrees(angle_rad))
@@ -161,28 +154,29 @@ class Visualizer:
         image: np.ndarray,
         eye_pos: np.ndarray,
         v_world: np.ndarray,
-        length: float | None = None,
-        color: tuple[int, int, int] = (255, 255, 0),
-        num_dots: int = 6,
-        min_radius: int = 1,
-        max_radius: int = 14,
-        glow_size: int = 1,
-        eye_depth: float = 1.0,
-        start_offset: float = 0.15,
-        dot_spacing_power: float = 2.0,
-        focal_length: float | None = None,
-        head_pose: tuple[float, float, float] | None = None,
-        crosshair_size: float = 2.0,
-        crosshair_thickness: int = 2,
-        opacity_scale: float = 1.0,
-        show_crosshair: bool = True,
+        **kwargs 
     ) -> np.ndarray:
         """
         Proper 3D perspective projection with depth-based ellipse deformation.
         Each dot is treated as a 3D disk perpendicular to the gaze vector.
         """
+        color: tuple[int, int, int] = (255, 255, 0)
+        num_dots: int = 6
+        glow_size: float = 1.5
+        eye_depth: float = 1.0
+        min_radius: int = 1
+        max_radius: int = 16
+        start_offset: float = 0.15
+        dot_spacing_power: float = 2.0
+        focal_length: float | None = None
+        crosshair_size: float = 2.0
+        crosshair_thickness: int = 2
+        opacity_scale: float = 1.0
+        dot_spaccing = 0.2
+        show_crosshair = bool(kwargs.get("show_crosshair", True))
+        length = float(kwargs.get("length"))
         H, W = image.shape[:2]
-
+        # kwargs.show_crosshair = xxx
         # Extract gaze vector components
         v = np.asarray(v_world, dtype=np.float64)
         norm = np.linalg.norm(v)
@@ -190,8 +184,6 @@ class Visualizer:
             return image
         v_unit = v / norm
         vx, vy, vz = float(v_unit[0]), float(v_unit[1]), float(v_unit[2])
-
-        # ──────── PINHOLE CAMERA SETUP ────────
         f = float(focal_length) if focal_length is not None else float(max(W, H))
         cx, cy = W * 0.5, H * 0.5
         Z_e = float(eye_depth)
@@ -212,21 +204,15 @@ class Visualizer:
         spacing_power = max(float(dot_spacing_power), 1.0)
         eye_to_gaze_offset = float(np.clip(start_offset, 0.0, 1.0))
 
-        # ──────── TRAIL DOTS: nhỏ ở gần mắt (t=0) -> to dần khi tiến ra xa/gần camera (t=1) ────────
         for i in range(num_dots):
             t = i / progress_denominator
-            distance_progress = eye_to_gaze_offset + (1.0 - eye_to_gaze_offset) * t
+            distance_progress = eye_to_gaze_offset + dot_spaccing * i;
 
             X = X_e + distance_progress * L * vx
             Y = Y_e + distance_progress * L * vy
             Z = Z_e + distance_progress * L * vz
             pos_3d = np.array([X, Y, Z])
-
-            # Kich thuoc hien thi mong muon, monotonic tuyet doi theo t (khong phu thuoc Z)
-            r_pixel_target = min_radius * (1.0 - t) + max_radius * t
-
-            # Chi dung phep chieu de lay TI LE mep hinh (foreshortening) va goc nghieng,
-            # KHONG lay do lon tuyet doi tu day (radius=1.0 co dinh)
+            r_pixel_target = min_radius + (max_radius - min_radius) * (t ** 0.7)
             (u, v), (probe_major, probe_minor), angle_deg = self._project_circle_to_ellipse(
                 pos_3d, radius=1.0, normal_3d=gaze_normal, focal_length=f, cx=cx, cy=cy
             )
@@ -239,8 +225,6 @@ class Visualizer:
                 continue
 
             alpha = alpha_global * t
-
-
             scale_factor = Z_e / max(Z, 0.1)
             curr_glow = glow_size * (0.5 + 0.5 * t) * scale_factor
             overlay = image.copy()
@@ -258,11 +242,11 @@ class Visualizer:
             )
 
             cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
-
-        # ──────── END-POINT CROSSHAIR (giu nguyen, khong doi) ────────
-        X_end = X_e + L * vx
-        Y_end = Y_e + L * vy
-        Z_end = Z_e + L * vz
+        # day la phan crosshair
+        last_distance_process = np.clip(eye_to_gaze_offset + dot_spaccing * max(num_dots - 1,0.0,1.0))
+        X_end = X_e + last_distance_process * L * vx
+        Y_end = Y_e + last_distance_process * L* vy
+        Z_end = Z_e + last_distance_process * L * vz
         pos_end_3d = np.array([X_end, Y_end, Z_end])
 
         u_end = f * X_end / max(Z_end, 0.1) + cx
@@ -271,12 +255,7 @@ class Visualizer:
 
         if 0 <= end_x < W and 0 <= end_y < H:
             overlay_end = image.copy()
-            # Kich thuoc blob nen cua crosshair KHONG con phu thuoc max_radius nua,
-            # dieu chinh truc tiep qua tham so crosshair_size de thu nho tuy y
             marker_radius = crosshair_size
-            # Chi dung phep chieu de lay TI LE mep hinh (shape), khong lay do lon
-            # tuyet doi (radius=1.0 co dinh) -> kich thuoc marker khong con phu
-            # thuoc Z_end, tranh 2 crosshair (trai/phai mat) bi lech size nhau
             _, (probe_maj_end, probe_min_end), ang_end = self._project_circle_to_ellipse(
                 pos_end_3d, 1.0, gaze_normal, f, cx, cy
             )
@@ -284,7 +263,6 @@ class Visualizer:
             major_i = max(1, int(round(marker_radius)))
             minor_i = max(1, int(round(marker_radius * end_shape_ratio)))
             cv2.ellipse(overlay_end, (end_x, end_y), (major_i, minor_i), ang_end, 0, 360, color, -1, cv2.LINE_AA)
-
             if show_crosshair and crosshair_size > 0:
                 bar_len = max(1, int(round(crosshair_size + major_i)))
                 crosshair_color = (0, 255, 255)
@@ -301,8 +279,8 @@ class Visualizer:
                     crosshair_color, crosshair_thickness, cv2.LINE_AA,
                 )
             cv2.addWeighted(overlay_end, alpha_global, image, 1 - alpha_global, 0, image)
-
         return image
     def show(self, window_name, frame):
         cv2.imshow(window_name, frame)
         
+

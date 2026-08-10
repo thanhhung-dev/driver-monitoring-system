@@ -66,7 +66,7 @@ class DebugStage:
         if ctx.head_pose is not None:
             yh, ph, rh = ctx.head_pose
             direction = classify_head_direction(yh, ph)
-            self._logger.info(
-                f"[HEAD-POSE] P={ph:+6.1f}° Y={yh:+6.1f}° R={rh:+6.1f}°  dir={direction}"
-            )
+            # self._logger.info(
+            #     f"[HEAD-POSE] P={ph:+6.1f}° Y={yh:+6.1f}° R={rh:+6.1f}°  dir={direction}"
+            # )
         return ctx

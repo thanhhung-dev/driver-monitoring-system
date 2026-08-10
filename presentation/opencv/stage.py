@@ -66,13 +66,17 @@ class VizStage:
             if ctx.landmarks is not None and not ctx.extreme_pose_mode:
                 self._visualizer.draw_full_mesh(canvas, ctx.landmarks)
             hp = None if ctx.extreme_pose_mode else ctx.head_pose
-            # Chỉ vẽ bbox SCRFD khi extreme (|yaw|>85°). Bình thường (0–85°)
             # ẩn bbox, vẫn giữ mesh + trục head-pose.
             draw_box = ctx.extreme_pose_mode
-            self._visualizer.draw_face_info(
-                canvas, ctx.bbox, ctx.landmarks,
-                ctx.driver_state, head_pose=hp, draw_box=draw_box,
+            params = dict(
+                frame=canvas,
+                bbox=ctx.bbox,
+                landmarks=ctx.landmarks,
+                driver_state=ctx.driver_state,
+                head_pose=hp,
+                draw_box=draw_box,
             )
+            self._visualizer.draw_face_info(**params)
             # Vẽ gaze arrows (màu) trên canvas
             if ctx.gaze_render_data is not None:
                 d = ctx.gaze_render_data
@@ -82,11 +86,12 @@ class VizStage:
                     show_crosshair=d.get("show_crosshair", True)
                 )
                 if d["fallback"]:
-                    kwargs.update(num_dots=7, max_radius=10,
+                    kwargs.update(num_dots=7, max_radius=6, length=150,
                                   crosshair_size=0.3)
                 for center in (d["center_l"], d["center_r"]):
                     if center is not None:
                         self._visualizer.draw_gaze_3d(canvas, center, d["vec"], **kwargs)
+                
         fps = self._capture.get_fps()
         self._visualizer.draw_fps(canvas, fps)
         self._visualizer.show("Driver Monitoring", canvas)
